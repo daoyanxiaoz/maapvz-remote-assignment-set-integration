@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAAPVZ 作业集分享站</title>
+<style>
+  :root {
+    --bg: #0f1420;
+    --panel: #18202f;
+    --card: #1c2637;
+    --card-hover: #232f45;
+    --border: #2b3a55;
+    --text: #e8edf6;
+    --muted: #93a1b8;
+    --accent: #4da3ff;
+    --green: #37d67a;
+    --tag-bg: #2a3a58;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 32px 20px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--panel), var(--bg));
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header h1 .leaf { color: var(--green); }
+  header .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .stats {
+    display: flex; justify-content: center; gap: 18px;
+    font-size: 13px; color: var(--muted); margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .stats b { color: var(--text); }
+  .search-box { max-width: 480px; margin: 0 auto; }
+  .search-box input {
+    width: 100%; padding: 10px 14px; font-size: 15px;
+    background: var(--card); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; outline: none;
+  }
+  .search-box input:focus { border-color: var(--accent); }
+  main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 24px 20px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    transition: background .15s, transform .15s;
+  }
+  .card:hover { background: var(--card-hover); transform: translateY(-2px); }
+  .card .name { font-size: 18px; font-weight: 700; word-break: break-all; }
+  .card .code {
+    font-family: Consolas, "Courier New", monospace; font-size: 12px;
+    color: var(--accent); cursor: pointer; user-select: all;
+    background: rgba(77, 163, 255, .08); border: 1px dashed var(--border);
+    border-radius: 6px; padding: 3px 8px; align-self: flex-start; word-break: break-all;
+  }
+  .card .code:hover { border-color: var(--accent); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12px; color: var(--text); background: var(--tag-bg);
+    border-radius: 4px; padding: 2px 8px;
+  }
+  .meta { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+  .meta .desc { color: var(--text); font-size: 13px; }
+  .actions { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
+  .btn {
+    flex: 1; text-align: center; font-size: 14px; padding: 8px 0;
+    border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--text); cursor: pointer; text-decoration: none;
+    transition: background .15s;
+  }
+  .btn:hover { background: rgba(77, 163, 255, .12); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0b1220; font-weight: 600; }
+  .btn.primary:hover { background: #6cb4ff; }
+  .state { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 15px; }
+  .state.error { color: #ff7b72; }
+  footer {
+    text-align: center; padding: 20px; font-size: 13px; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  #toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
+    background: var(--green); color: #06130c; font-size: 14px; font-weight: 600;
+    padding: 10px 20px; border-radius: 8px; opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 600px) {
+    header h1 { font-size: 21px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="leaf">🌻</span> MAAPVZ 作业集分享站</h1>
+  <div class="sub">植物大战僵尸2 无尽模式 · 远程作业集浏览 / 下载 / 投稿</div>
+  <div class="stats">
+    <span>共 <b id="stat-count">-</b> 套作业集</span>
+    <span>索引更新于 <b id="stat-updated">-</b></span>
+  </div>
+  <div class="search-box">
+    <input id="search" type="search" placeholder="搜索名称 / code / 作者 / 简介…" autocomplete="off">
+  </div>
+</header>
+
+<main>
+  <div id="state-loading" class="state">加载中…</div>
+  <div id="state-error" class="state error" hidden>
+    作业集清单加载失败 😢<br><br>
+    <small id="error-detail"></small>
+  </div>
+  <div id="state-empty" class="state" hidden>没有匹配的作业集，换个关键词试试？</div>
+  <div id="grid" class="grid"></div>
+</main>
+
+<footer>
+  想分享自己的作业集？
+  <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration/issues/new?template=share-jobset.yml" target="_blank" rel="noopener">点这里投稿</a>
+  ·
+  <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var grid = document.getElementById("grid");
+  var elLoading = document.getElementById("state-loading");
+  var elError = document.getElementById("state-error");
+  var elEmpty = document.getElementById("state-empty");
+  var elSearch = document.getElementById("search");
+  var elToast = document.getElementById("toast");
+  var jobs = [];
+  var toastTimer = null;
+
+  function showToast(text) {
+    elToast.textContent = text;
+    elToast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { elToast.classList.remove("show"); }, 1800);
+  }
+
+  function copyText(text, okMsg) {
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); showToast(okMsg); }
+      catch (e) { showToast("复制失败，请手动复制"); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(
+        function () { showToast(okMsg); },
+        function () { fallback(); }
+      );
+    } else {
+      fallback();
+    }
+  }
+
+  function formatTime(iso) {
+    if (!iso) return "未知";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+           " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text; // ★ 一律用 textContent，防注入
+    return e;
+  }
+
+  function buildCard(job) {
+    var card = el("div", "card");
+
+    card.appendChild(el("div", "name", job.name || job.code));
+
+    var code = el("div", "code", job.code);
+    code.title = "点击复制 code";
+    code.addEventListener("click", function () {
+      copyText(job.code, "已复制 code");
+    });
+    card.appendChild(code);
+
+    if (Array.isArray(job.worlds) && job.worlds.length) {
+      var tags = el("div", "tags");
+      job.worlds.forEach(function (w) { tags.appendChild(el("span", "tag", String(w))); });
+      card.appendChild(tags);
+    }
+
+    var meta = el("div", "meta");
+    var line1 = "策略表 " + (job.tables != null ? job.tables : "?") + " 张";
+    if (job.max_level != null) line1 += " · 最高 " + job.max_level + " 关";
+    meta.appendChild(el("span", null, line1));
+    meta.appendChild(el("span", null, "更新于 " + formatTime(job.updated)));
+    if (job.author) meta.appendChild(el("span", null, "作者：" + job.author));
+    if (job.desc) meta.appendChild(el("span", "desc", job.desc));
+    card.appendChild(meta);
+
+    var actions = el("div", "actions");
+    var dl = el("a", "btn primary", "下载 JSON");
+    dl.href = "jobs/" + encodeURIComponent(job.code) + ".json";
+    dl.setAttribute("download", job.code + ".json");
+    actions.appendChild(dl);
+
+    var cp = el("button", "btn", "复制下载链接");
+    cp.type = "button";
+    cp.addEventListener("click", function () {
+      var url = new URL("jobs/" + encodeURIComponent(job.code) + ".json", location.href).href;
+      copyText(url, "链接已复制");
+    });
+    actions.appendChild(cp);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  function render() {
+    var q = elSearch.value.trim().toLowerCase();
+    var list = jobs.filter(function (j) {
+      if (!q) return true;
+      var hay = [j.name, j.code, j.author, j.desc].filter(Boolean).join("\n").toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+    grid.innerHTML = "";
+    list.forEach(function (j) { grid.appendChild(buildCard(j)); });
+    elEmpty.hidden = list.length !== 0;
+  }
+
+  elSearch.addEventListener("input", render);
+
+  fetch("index.json", { cache: "no-store" })
+    .then(function (resp) {
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      return resp.json();
+    })
+    .then(function (data) {
+      jobs = Array.isArray(data.jobs) ? data.jobs : [];
+      document.getElementById("stat-count").textContent =
+        data.count != null ? data.count : jobs.length;
+      document.getElementById("stat-updated").textContent = formatTime(data.updated);
+      elLoading.hidden = true;
+      render();
+    })
+    .catch(function (err) {
+      elLoading.hidden = true;
+      elError.hidden = false;
+      document.getElementById("error-detail").textContent =
+        "index.json 读取失败：" + err.message +
+        "（本地预览请用 python -m http.server 启动后再访问，file:// 直开无法读取清单）";
+    });
+})();
+</script>
+</body>
+</html>

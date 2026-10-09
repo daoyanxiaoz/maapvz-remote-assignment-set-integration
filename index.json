@@ -1,0 +1,20 @@
+{
+  "updated": "2026-10-09T16:50:44Z",
+  "count": 1,
+  "jobs": [
+    {
+      "code": "pvz_demo_huoshe",
+      "name": "火蛇球果（示例）",
+      "worlds": [
+        "埃及"
+      ],
+      "tables": 2,
+      "file": "jobs/pvz_demo_huoshe.json",
+      "updated": "2026-10-09T16:50:44Z",
+      "size": 806,
+      "max_level": 149,
+      "author": "道衍小道",
+      "desc": "示例作业集：火蛇球果体系，演示站点卡片与索引效果，可随时删除"
+    }
+  ]
+}

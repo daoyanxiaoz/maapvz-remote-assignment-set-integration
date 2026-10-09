@@ -1,0 +1,76 @@
+name: 投稿处理（Issue → PR）
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: issue-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  process:
+    # 只处理带「投稿」标签的 Issue
+    if: contains(github.event.issue.labels.*.name, '投稿')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: 解析并校验投稿
+        id: check
+        env:
+          # ★ issue 内容是不可信输入：一律走环境变量传给 python，绝不插进 shell 命令
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: python tools/issue_to_pr.py
+
+      - name: 无效投稿 → 评论原因 + 打标签
+        if: steps.check.outputs.status == 'invalid'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # 评论内容由 python 写入文件，--body-file 发送，避免 shell 注入
+          gh issue comment "$ISSUE_NUMBER" --body-file comment_invalid.md
+          gh issue edit "$ISSUE_NUMBER" --add-label "无效投稿"
+
+      - name: 有效投稿 → 自动开 PR
+        if: steps.check.outputs.status == 'ok'
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          # branch/code 已过 ^[A-Za-z0-9_\-]{1,64}$ 白名单校验
+          branch: ${{ steps.check.outputs.branch }}
+          add-paths: |
+            jobs/
+            meta/
+          commit-message: "feat: 投稿 ${{ steps.check.outputs.code }} (#${{ github.event.issue.number }})"
+          title: "投稿：${{ steps.check.outputs.name }}（${{ steps.check.outputs.code }}）"
+          body-path: pr_body.md
+          labels: 投稿
+          delete-branch: true
+
+      - name: 有效投稿 → 回帖通知投稿人
+        if: steps.check.outputs.status == 'ok'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          {
+            printf '校验通过 ✅ 已自动创建 PR：%s\n\n' "$PR_URL"
+            printf '维护者审核合并后，作业集会自动上架到分享站。需要修改请直接编辑本 Issue，PR 会自动同步更新。\n'
+          } > comment_ok.md
+          gh issue comment "$ISSUE_NUMBER" --body-file comment_ok.md
+          # 若之前编辑失败被打过「无效投稿」，这次通过了就摘掉
+          gh issue edit "$ISSUE_NUMBER" --remove-label "无效投稿" || true

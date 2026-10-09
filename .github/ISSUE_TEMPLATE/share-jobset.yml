@@ -1,0 +1,39 @@
+name: 分享作业集
+description: 投稿你的 MAAPVZ 作业集，审核通过后会上架到分享站
+title: "投稿："
+labels: ["投稿"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢分享！把编辑器导出的作业集 JSON 完整粘贴到下方即可。
+        提交后机器人会自动校验：通过则自动开 PR 等待维护者审核，不通过会在本 Issue 下评论原因，**直接编辑本 Issue** 即可重新校验。
+  - type: textarea
+    id: body_json
+    attributes:
+      label: 作业集 JSON
+      description: 在编辑器里导出/复制作业集 JSON，完整粘贴到这里
+      placeholder: '{"code": "...", "name": "...", "tables": [...], ...}'
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: 作者昵称
+      description: 会显示在站点卡片上（可选）
+    validations:
+      required: false
+  - type: input
+    id: desc
+    attributes:
+      label: 一句话简介
+      description: 会显示在站点卡片上（可选）
+    validations:
+      required: false
+  - type: textarea
+    id: note
+    attributes:
+      label: 补充说明（适用世界/关卡范围/注意事项）
+    validations:
+      required: false
