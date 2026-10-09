@@ -1,15 +1,125 @@
 {
-  "updated": "2026-10-09T17:51:33Z",
+  "updated": "2026-10-09T18:12:56Z",
   "count": 5,
   "jobs": [
+    {
+      "code": "pvz_20260926_235614",
+      "name": "心喷",
+      "worlds": [],
+      "tables": 2,
+      "file": "jobs/pvz_20260926_235614.json",
+      "updated": "2026-10-09T18:01:10Z",
+      "size": 148225,
+      "max_level": 149,
+      "coverage": [
+        {
+          "from": 1,
+          "to": 50
+        },
+        {
+          "from": 50,
+          "to": null
+        }
+      ],
+      "plants_max": 6,
+      "outer_pick": "auto",
+      "plants": [
+        "粉丝心叶兰",
+        "大喷菇",
+        "能量花",
+        "魔音甜菜",
+        "飓风甘蓝",
+        "甜薯"
+      ],
+      "supply": [
+        {
+          "id": "view",
+          "name": "查看"
+        },
+        {
+          "id": "all",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "name": "橙色植物"
+        },
+        {
+          "id": "white",
+          "name": "白色植物"
+        },
+        {
+          "id": "blue",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "artifact",
+          "name": "神器"
+        },
+        {
+          "id": "sun",
+          "name": "能量豆"
+        },
+        {
+          "id": "green",
+          "name": "绿色植物"
+        },
+        {
+          "id": "purple",
+          "name": "紫色植物"
+        },
+        {
+          "id": "cucumber",
+          "name": "黄瓜"
+        }
+      ]
+    },
+    {
+      "code": "pvz_20260930_045245",
+      "name": "火珊冰大",
+      "worlds": [],
+      "tables": 1,
+      "file": "jobs/pvz_20260930_045245.json",
+      "updated": "2026-10-09T18:01:10Z",
+      "size": 27516,
+      "max_level": 149,
+      "coverage": [
+        {
+          "from": 1,
+          "to": null
+        }
+      ],
+      "supply": [
+        {
+          "id": "all",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "name": "橙色植物"
+        },
+        {
+          "id": "purple",
+          "name": "紫色植物"
+        },
+        {
+          "id": "blue",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "green",
+          "name": "绿色植物"
+        }
+      ]
+    },
     {
       "code": "pvz_20261003_211014",
       "name": "沙滩无尽挂机",
       "worlds": [],
       "tables": 1,
       "file": "jobs/pvz_20261003_211014.json",
-      "updated": "2026-10-09T17:51:33Z",
-      "size": 55909,
+      "updated": "2026-10-09T18:01:10Z",
+      "size": 53800,
       "max_level": 149,
       "coverage": [
         {
@@ -74,8 +184,8 @@
       "worlds": [],
       "tables": 2,
       "file": "jobs/pvz_20261007_012547.json",
-      "updated": "2026-10-09T17:51:33Z",
-      "size": 75327,
+      "updated": "2026-10-09T18:01:10Z",
+      "size": 72347,
       "max_level": 149,
       "coverage": [
         {
@@ -282,8 +392,8 @@
       "worlds": [],
       "tables": 3,
       "file": "jobs/pvz_20261007_222722.json",
-      "updated": "2026-10-09T17:51:33Z",
-      "size": 99123,
+      "updated": "2026-10-09T18:01:10Z",
+      "size": 95209,
       "max_level": 149,
       "coverage": [
         {
@@ -469,116 +579,6 @@
       "artifact": "葫芦神器",
       "artifact_en": "artifact_calabash",
       "end_desc": "识别收尾",
-      "supply": [
-        {
-          "id": "all",
-          "name": "全部植物"
-        },
-        {
-          "id": "orange",
-          "name": "橙色植物"
-        },
-        {
-          "id": "purple",
-          "name": "紫色植物"
-        },
-        {
-          "id": "blue",
-          "name": "蓝色植物"
-        },
-        {
-          "id": "green",
-          "name": "绿色植物"
-        }
-      ]
-    },
-    {
-      "code": "pvz_20260926_235614",
-      "name": "心喷",
-      "worlds": [],
-      "tables": 2,
-      "file": "jobs/pvz_20260926_235614.json",
-      "updated": "2026-10-09T17:51:32Z",
-      "size": 153801,
-      "max_level": 149,
-      "coverage": [
-        {
-          "from": 1,
-          "to": 50
-        },
-        {
-          "from": 50,
-          "to": null
-        }
-      ],
-      "plants_max": 6,
-      "outer_pick": "auto",
-      "plants": [
-        "粉丝心叶兰",
-        "大喷菇",
-        "能量花",
-        "魔音甜菜",
-        "飓风甘蓝",
-        "甜薯"
-      ],
-      "supply": [
-        {
-          "id": "view",
-          "name": "查看"
-        },
-        {
-          "id": "all",
-          "name": "全部植物"
-        },
-        {
-          "id": "orange",
-          "name": "橙色植物"
-        },
-        {
-          "id": "white",
-          "name": "白色植物"
-        },
-        {
-          "id": "blue",
-          "name": "蓝色植物"
-        },
-        {
-          "id": "artifact",
-          "name": "神器"
-        },
-        {
-          "id": "sun",
-          "name": "能量豆"
-        },
-        {
-          "id": "green",
-          "name": "绿色植物"
-        },
-        {
-          "id": "purple",
-          "name": "紫色植物"
-        },
-        {
-          "id": "cucumber",
-          "name": "黄瓜"
-        }
-      ]
-    },
-    {
-      "code": "pvz_20260930_045245",
-      "name": "火珊冰大",
-      "worlds": [],
-      "tables": 1,
-      "file": "jobs/pvz_20260930_045245.json",
-      "updated": "2026-10-09T17:51:32Z",
-      "size": 28680,
-      "max_level": 149,
-      "coverage": [
-        {
-          "from": 1,
-          "to": null
-        }
-      ],
       "supply": [
         {
           "id": "all",
