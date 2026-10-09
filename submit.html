@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上传作业集 · MAAPVZ 作业集分享站</title>
+<link rel="icon" href="img/plants/sunflower.webp">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img src="img/plants/sunflower.webp" alt="向日葵"
+           onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
+      <span id="title-emoji" hidden>🌻</span>
+      MAAPVZ 作业集分享站
+      <small>植物大战僵尸2 · 无尽模式</small>
+    </a>
+    <nav>
+      <a class="nav-link" href="index.html">首页</a>
+      <a class="nav-link active" href="submit.html">上传作业集</a>
+      <a class="nav-link" href="about.html">关于</a>
+      <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-narrow">
+
+  <div class="form-card">
+    <h2>上传作业集</h2>
+    <p class="hint">把编辑器导出的作业集 JSON 粘贴到下面，先在本地校验一遍，再去 GitHub 投稿。提交后机器人会再校验一次并自动开 PR，维护者审核合并后即可上站。</p>
+
+    <div class="field">
+      <label for="json-input">作业集 JSON</label>
+      <textarea id="json-input" class="code-input" spellcheck="false"
+        placeholder='{"code": "...", "name": "...", "tables": [...], ...}'></textarea>
+    </div>
+
+    <div class="field">
+      <label for="author-input">作者昵称 <span class="opt">（可选，显示在卡片上）</span></label>
+      <input type="text" id="author-input" maxlength="50">
+    </div>
+
+    <div class="field">
+      <label for="desc-input">一句话简介 <span class="opt">（可选，显示在卡片上）</span></label>
+      <input type="text" id="desc-input" maxlength="100">
+    </div>
+
+    <div class="field">
+      <label for="note-input">补充说明 <span class="opt">（可选，适用世界 / 关卡范围 / 注意事项）</span></label>
+      <textarea id="note-input" rows="3"></textarea>
+    </div>
+
+    <button id="validate-btn" class="btn primary" type="button">校验</button>
+
+    <div id="check-result" class="check-result" hidden></div>
+  </div>
+
+  <div id="submit-panel" class="form-card" hidden>
+    <h2>去投稿</h2>
+    <p class="hint">两种方式任选其一。内容不大时推荐方式一，一键搞定。</p>
+
+    <p style="margin:0 0 6px;font-weight:600;font-size:14px">方式一（推荐）：一键投稿</p>
+    <div class="step-actions">
+      <a id="quick-submit" class="btn primary" href="#" target="_blank" rel="noopener">打开 GitHub 投稿（已预填）</a>
+    </div>
+    <p id="quick-note" class="step-note"></p>
+
+    <p style="margin:18px 0 6px;font-weight:600;font-size:14px">方式二：手动粘贴</p>
+    <div class="step-actions">
+      <button id="copy-body" class="btn" type="button">复制投稿正文</button>
+      <a id="manual-submit" class="btn" href="#" target="_blank" rel="noopener">打开投稿页（已预填标题）</a>
+    </div>
+    <p class="step-note">点「复制投稿正文」→ 打开投稿页 → 把正文粘进描述框 → 提交。</p>
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    <a href="index.html">返回首页</a>
+    ·
+    <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
+  </div>
+  <div>作业集格式由 <a href="https://github.com/daoyanxiaoz/MAAPVZ" target="_blank" rel="noopener">MAAPVZ</a> 编辑器导出</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var REPO = "https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration";
+  var MAX_BYTES = 2 * 1024 * 1024;
+  var CODE_RE = /^[A-Za-z0-9_\-]{1,64}$/;   // 与服务端同一套白名单
+  var QUICK_URL_LIMIT = 7500;               // 一键投稿 URL 长度上限，超了走手动粘贴
+
+  var elInput = document.getElementById("json-input");
+  var elAuthor = document.getElementById("author-input");
+  var elDesc = document.getElementById("desc-input");
+  var elNote = document.getElementById("note-input");
+  var elBtn = document.getElementById("validate-btn");
+  var elResult = document.getElementById("check-result");
+  var elPanel = document.getElementById("submit-panel");
+  var elQuick = document.getElementById("quick-submit");
+  var elQuickNote = document.getElementById("quick-note");
+  var elCopyBody = document.getElementById("copy-body");
+  var elManual = document.getElementById("manual-submit");
+  var elToast = document.getElementById("toast");
+  var toastTimer = null;
+  var knownCodes = {};   // index.json 里的 code，用于本地查撞车
+  var lastBody = "";
+
+  function showToast(text) {
+    elToast.textContent = text;
+    elToast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { elToast.classList.remove("show"); }, 1800);
+  }
+
+  function copyText(text, okMsg) {
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); showToast(okMsg); }
+      catch (e) { showToast("复制失败，请手动复制"); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { showToast(okMsg); }, fallback);
+    } else { fallback(); }
+  }
+
+  // 拉索引查 code 撞车（失败不阻塞，仅跳过该项检查）
+  fetch("index.json", { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (data && Array.isArray(data.jobs)) {
+        data.jobs.forEach(function (j) { knownCodes[j.code] = true; });
+      }
+    })
+    .catch(function () {});
+
+  function stripCodeFence(t) {
+    t = t.trim();
+    if (t.indexOf("```") === 0) {
+      var lines = t.split("\n");
+      if (lines.length && lines[0].trim().indexOf("```") === 0) lines = lines.slice(1);
+      if (lines.length && lines[lines.length - 1].trim().indexOf("```") === 0) lines = lines.slice(0, -1);
+      t = lines.join("\n").trim();
+    }
+    return t;
+  }
+
+  // 与 tools/issue_to_pr.py 同一套校验规则
+  function validate(raw) {
+    var errors = [];
+    var text = stripCodeFence(raw);
+    if (!text) return { errors: ["作业集 JSON 为空，请完整粘贴编辑器导出的内容。"] };
+
+    var data;
+    try { data = JSON.parse(text); }
+    catch (e) { return { errors: ["JSON 解析失败：" + e.message] }; }
+
+    if (typeof data !== "object" || data === null || Array.isArray(data)) {
+      return { errors: ["作业集顶层必须是 JSON 对象（{...}）。"] };
+    }
+    ["code", "name", "tables"].forEach(function (k) {
+      if (!(k in data)) errors.push("缺少必需字段 " + k + "。");
+    });
+    if (errors.length) return { errors: errors };
+
+    if (typeof data.code !== "string" || !data.code) {
+      errors.push("code 必须是非空字符串。");
+    } else if (!CODE_RE.test(data.code)) {
+      errors.push("code 含非法字符：仅允许字母、数字、下划线、连字符，长度 1~64。");
+    } else if (knownCodes[data.code]) {
+      errors.push("code 与站内已有作业集撞车，请换一个（比如加上昵称或日期后缀）。");
+    }
+
+    if (typeof data.name !== "string" || !data.name.trim()) {
+      errors.push("name 必须是非空字符串。");
+    }
+    if (!Array.isArray(data.tables) || !data.tables.length) {
+      errors.push("tables 必须是非空数组（至少 1 张关卡段策略表）。");
+    }
+
+    var size = new Blob([JSON.stringify(data)]).size;
+    if (size > MAX_BYTES) {
+      errors.push("JSON 体积超过 2MB 上限（当前约 " + Math.round(size / 1024) + "KB）。");
+    }
+
+    return { errors: errors, data: data };
+  }
+
+  function field(label, value) {
+    return "### " + label + "\n\n" + (value || "_No response_") + "\n";
+  }
+
+  function buildBody(jsonText, author, desc, note) {
+    return field("作业集 JSON", "```json\n" + jsonText + "\n```") + "\n" +
+           field("作者昵称", author) + "\n" +
+           field("一句话简介", desc) + "\n" +
+           field("补充说明（适用世界/关卡范围/注意事项）", note);
+  }
+
+  function showResult(ok, htmlBuilder) {
+    elResult.hidden = false;
+    elResult.className = "check-result " + (ok ? "ok" : "fail");
+    elResult.innerHTML = "";
+    htmlBuilder(elResult);
+  }
+
+  function appendText(parent, tag, text) {
+    var e = document.createElement(tag || "div");
+    e.textContent = text; // ★ 用户数据一律走 textContent
+    parent.appendChild(e);
+    return e;
+  }
+
+  elBtn.addEventListener("click", function () {
+    var raw = elInput.value;
+    var author = elAuthor.value.trim();
+    var desc = elDesc.value.trim();
+    var note = elNote.value.trim();
+    var res = validate(raw);
+
+    if (res.errors.length) {
+      elPanel.hidden = true;
+      showResult(false, function (box) {
+        appendText(box, "div", "❌ 校验未通过，请修改：");
+        var ul = document.createElement("ul");
+        res.errors.forEach(function (err) {
+          var li = document.createElement("li");
+          li.textContent = err;
+          ul.appendChild(li);
+        });
+        box.appendChild(ul);
+      });
+      return;
+    }
+
+    var data = res.data;
+    var jsonText = stripCodeFence(raw);
+    lastBody = buildBody(jsonText, author, desc, note);
+
+    showResult(true, function (box) {
+      appendText(box, "div", "✅ 本地校验通过！");
+      var s = document.createElement("div");
+      s.className = "summary";
+      s.textContent = "名称：" + data.name.trim() + "　code：" + data.code +
+        "　策略表 " + data.tables.length + " 张";
+      box.appendChild(s);
+    });
+
+    // 投稿链接：标题带「投稿」前缀，服务端机器人靠它识别
+    var title = "投稿：" + data.name.trim() + "（" + data.code + "）";
+    var quickUrl = REPO + "/issues/new?labels=" + encodeURIComponent("投稿") +
+      "&title=" + encodeURIComponent(title) +
+      "&body=" + encodeURIComponent(lastBody);
+    elManual.href = REPO + "/issues/new?title=" + encodeURIComponent(title);
+
+    if (quickUrl.length <= QUICK_URL_LIMIT) {
+      elQuick.removeAttribute("disabled");
+      elQuick.href = quickUrl;
+      elQuickNote.textContent = "会打开 GitHub 新建 Issue 页面，标题和正文已填好，登录后直接提交即可。";
+    } else {
+      // 内容太大塞不进 URL，只能走手动粘贴
+      elQuick.setAttribute("disabled", "");
+      elQuick.removeAttribute("href");
+      elQuickNote.textContent = "这份作业集比较大，URL 预填放不下，请用方式二手动粘贴。";
+    }
+    elPanel.hidden = false;
+    elPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  elCopyBody.addEventListener("click", function () {
+    if (!lastBody) { showToast("请先校验通过"); return; }
+    copyText(lastBody, "投稿正文已复制，去投稿页粘贴吧");
+  });
+})();
+</script>
+</body>
+</html>

@@ -4,120 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAAPVZ 作业集分享站</title>
-<style>
-  :root {
-    --bg: #0f1420;
-    --panel: #18202f;
-    --card: #1c2637;
-    --card-hover: #232f45;
-    --border: #2b3a55;
-    --text: #e8edf6;
-    --muted: #93a1b8;
-    --accent: #4da3ff;
-    --green: #37d67a;
-    --tag-bg: #2a3a58;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    padding: 32px 20px 20px;
-    text-align: center;
-    background: linear-gradient(180deg, var(--panel), var(--bg));
-    border-bottom: 1px solid var(--border);
-  }
-  header h1 { margin: 0 0 6px; font-size: 26px; }
-  header h1 .leaf { color: var(--green); }
-  header .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
-  .stats {
-    display: flex; justify-content: center; gap: 18px;
-    font-size: 13px; color: var(--muted); margin-bottom: 18px; flex-wrap: wrap;
-  }
-  .stats b { color: var(--text); }
-  .search-box { max-width: 480px; margin: 0 auto; }
-  .search-box input {
-    width: 100%; padding: 10px 14px; font-size: 15px;
-    background: var(--card); color: var(--text);
-    border: 1px solid var(--border); border-radius: 8px; outline: none;
-  }
-  .search-box input:focus { border-color: var(--accent); }
-  main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 24px 20px; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-    transition: background .15s, transform .15s;
-  }
-  .card:hover { background: var(--card-hover); transform: translateY(-2px); }
-  .card .name { font-size: 18px; font-weight: 700; word-break: break-all; }
-  .card .code {
-    font-family: Consolas, "Courier New", monospace; font-size: 12px;
-    color: var(--accent); cursor: pointer; user-select: all;
-    background: rgba(77, 163, 255, .08); border: 1px dashed var(--border);
-    border-radius: 6px; padding: 3px 8px; align-self: flex-start; word-break: break-all;
-  }
-  .card .code:hover { border-color: var(--accent); }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-size: 12px; color: var(--text); background: var(--tag-bg);
-    border-radius: 4px; padding: 2px 8px;
-  }
-  .meta { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
-  .meta .desc { color: var(--text); font-size: 13px; }
-  .actions { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
-  .btn {
-    flex: 1; text-align: center; font-size: 14px; padding: 8px 0;
-    border-radius: 6px; border: 1px solid var(--border);
-    background: transparent; color: var(--text); cursor: pointer; text-decoration: none;
-    transition: background .15s;
-  }
-  .btn:hover { background: rgba(77, 163, 255, .12); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0b1220; font-weight: 600; }
-  .btn.primary:hover { background: #6cb4ff; }
-  .state { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 15px; }
-  .state.error { color: #ff7b72; }
-  footer {
-    text-align: center; padding: 20px; font-size: 13px; color: var(--muted);
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: var(--accent); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-  #toast {
-    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
-    background: var(--green); color: #06130c; font-size: 14px; font-weight: 600;
-    padding: 10px 20px; border-radius: 8px; opacity: 0; pointer-events: none;
-    transition: opacity .2s, transform .2s;
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  @media (max-width: 600px) {
-    header h1 { font-size: 21px; }
-    .grid { grid-template-columns: 1fr; }
-  }
-</style>
+<link rel="icon" href="img/plants/sunflower.webp">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-  <h1><span class="leaf">🌻</span> MAAPVZ 作业集分享站</h1>
-  <div class="sub">植物大战僵尸2 无尽模式 · 远程作业集浏览 / 下载 / 投稿</div>
-  <div class="stats">
-    <span>共 <b id="stat-count">-</b> 套作业集</span>
-    <span>索引更新于 <b id="stat-updated">-</b></span>
-  </div>
-  <div class="search-box">
-    <input id="search" type="search" placeholder="搜索名称 / code / 作者 / 简介…" autocomplete="off">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img src="img/plants/sunflower.webp" alt="向日葵"
+           onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
+      <span id="title-emoji" hidden>🌻</span>
+      MAAPVZ 作业集分享站
+      <small>植物大战僵尸2 · 无尽模式</small>
+    </a>
+    <nav>
+      <a class="nav-link active" href="index.html">首页</a>
+      <a class="nav-link" href="submit.html">上传作业集</a>
+      <a class="nav-link" href="about.html">关于</a>
+      <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
+    </nav>
   </div>
 </header>
+
+<div class="subbar">
+  <div class="subbar-inner">
+    <span class="desc">浏览、下载玩家分享的作业集，导入 MAAPVZ 编辑器即可使用</span>
+    <div class="stats">
+      <span class="badge">作业集 <b id="stat-count">-</b> 套</span>
+      <span class="badge">索引更新 <b id="stat-updated">-</b></span>
+    </div>
+    <div class="search-box">
+      <input id="search" type="search" placeholder="搜索名称 / code / 作者 / 简介…" autocomplete="off">
+    </div>
+  </div>
+</div>
 
 <main>
   <div id="state-loading" class="state">加载中…</div>
@@ -130,10 +51,12 @@
 </main>
 
 <footer>
-  想分享自己的作业集？
-  <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration/issues/new?template=share-jobset.yml" target="_blank" rel="noopener">点这里投稿</a>
-  ·
-  <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
+  <div>
+    想分享自己的作业集？<a href="submit.html">点这里投稿</a>
+    ·
+    <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
+  </div>
+  <div>作业集格式由 <a href="https://github.com/daoyanxiaoz/MAAPVZ" target="_blank" rel="noopener">MAAPVZ</a> 编辑器导出</div>
 </footer>
 
 <div id="toast"></div>
@@ -148,7 +71,37 @@
   var elSearch = document.getElementById("search");
   var elToast = document.getElementById("toast");
   var jobs = [];
+  var PLANT_EN = {};    // 植物中文名 → 英文文件名
+  var PLANT_RARE = {};  // 植物中文名 → 稀有度 0~4（card_bg 底图）
   var toastTimer = null;
+
+  // 世界 → 卡片顶部色带（worlds 空 → 不画）
+  var WORLD_BAND = [
+    ["埃及", "#d4a017"], ["海盗", "#2e86c1"], ["西部", "#b9770e"], ["未来", "#7b5aa6"],
+    ["功夫", "#c0392b"], ["黑暗", "#5d4a8a"], ["沙滩", "#e67e22"], ["冰河", "#5dade2"],
+    ["天空", "#7c95e8"], ["失落", "#b7950b"], ["摇滚", "#af4c8f"], ["恐龙", "#1e8449"],
+    ["摩登", "#707b7c"], ["蒸汽", "#9c640c"], ["复兴", "#8e44ad"], ["平安", "#cd6155"],
+    ["童话", "#ec87b8"], ["亚特兰蒂斯", "#148f77"], ["月球", "#2e4053"]
+  ];
+
+  function worldBand(worlds) {
+    if (Array.isArray(worlds)) {
+      for (var i = 0; i < worlds.length; i++) {
+        var w = String(worlds[i]);
+        for (var j = 0; j < WORLD_BAND.length; j++) {
+          if (w.indexOf(WORLD_BAND[j][0]) !== -1) return WORLD_BAND[j][1];
+        }
+      }
+    }
+    return null; // 空/未知 → 不画色带（卡片退回木棕顶边）
+  }
+
+  // 覆盖条配色：草坪绿系深浅轮换（按表序）
+  var COV_SHADES = ["#5da130", "#86bd50", "#4a8527", "#a5d176", "#3c7023", "#6fb03e"];
+
+  // 内联 SVG 图标（静态字符串，非用户数据）
+  var SVG_COPY = '<svg viewBox="0 0 16 16"><path d="M4 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-1v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h1V2zm2 0v1h4a2 2 0 0 1 2 2v5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1h1zM3 4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H3z" transform="translate(1,1) scale(0.875)"/></svg>';
+  var SVG_LINK = '<svg viewBox="0 0 16 16"><path d="M6.5 9.5a3 3 0 0 0 4.24 0l3-3a3 3 0 1 0-4.24-4.24l-1.5 1.5a4.98 4.98 0 0 0-1.13 1.13 2.99 2.99 0 0 1 2.63-.62l1.5-1.5a2 2 0 1 1 2.83 2.83l-3 3a2 2 0 0 1-2.83-2.83l1-1a4.98 4.98 0 0 0-1.5 1.1l-1-1z"/><path d="M9.5 6.5a3 3 0 0 0-4.24 0l-3 3a3 3 0 1 0 4.24 4.24l1.5-1.5c.4-.4.8-.75 1.13-1.13a2.99 2.99 0 0 1-2.63.62l-1.5 1.5a2 2 0 1 1-2.83-2.83l3-3a2 2 0 0 1 2.83 2.83l-1 1c.5.4 1 .8 1.5 1.1l1-1z" transform="translate(0.2,0.2) scale(0.95)"/></svg>';
 
   function showToast(text) {
     elToast.textContent = text;
@@ -191,50 +144,182 @@
   function el(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
-    if (text != null) e.textContent = text; // ★ 一律用 textContent，防注入
+    if (text != null) e.textContent = text; // ★ 用户数据一律走 textContent，防注入
     return e;
+  }
+
+  function iconBtn(svg, title, onClick) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "icon-btn";
+    b.title = title;
+    b.innerHTML = svg; // 静态 SVG，非用户输入
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  function jobUrl(code) {
+    return "jobs/" + encodeURIComponent(code) + ".json";
+  }
+
+  // 关卡覆盖条：图层规则 = 数组里先出现的表优先；levels 是权威覆盖，
+  // 空则退化为 [from, to) 连续区间；to=null → 到 MAX
+  function buildCoverageBar(coverage, maxLevel) {
+    var frag = document.createDocumentFragment();
+    var bar = el("div", "cov-bar");
+    frag.appendChild(bar);
+    if (!Array.isArray(coverage) || !coverage.length) return frag;
+    var max = maxLevel || 149;
+    var owner = new Array(max + 1).fill(-1);
+    coverage.forEach(function (c, ti) {
+      if (Array.isArray(c.levels) && c.levels.length) {
+        c.levels.forEach(function (lv) {
+          lv = Math.round(Number(lv));
+          if (lv >= 1 && lv <= max && owner[lv] === -1) owner[lv] = ti;
+        });
+      } else if (typeof c.from === "number") {
+        var t = (typeof c.to === "number") ? Math.min(c.to - 1, max) : max;
+        for (var u = Math.max(1, Math.round(c.from)); u <= t; u++) {
+          if (owner[u] === -1) owner[u] = ti;
+        }
+      }
+    });
+    var u = 1;
+    while (u <= max) {
+      var o = owner[u], v = u;
+      while (v <= max && owner[v] === o) v++;
+      if (o !== -1) {
+        var seg = document.createElement("div");
+        seg.className = "cov-seg";
+        seg.style.left = ((u - 1) / max * 100) + "%";
+        seg.style.width = ((v - u) / max * 100) + "%";
+        seg.style.background = COV_SHADES[o % COV_SHADES.length];
+        var c = coverage[o];
+        seg.title = "表" + (o + 1) + "：" + c.from + "~" +
+                    (typeof c.to === "number" ? (c.to - 1) : "MAX") + " 关";
+        bar.appendChild(seg);
+      }
+      u = v;
+    }
+    var label = el("div", "cov-label");
+    label.appendChild(el("span", null, "关卡覆盖"));
+    label.appendChild(el("span", null, "1 ~ " + max));
+    frag.appendChild(label);
+    return frag;
+  }
+
+  // 植物图标（稀有度底图垫底）；无图 → 文字块
+  function plantSlot(name) {
+    var slot = el("span", "plant-slot");
+    var rare = PLANT_RARE[name];
+    if (rare != null) {
+      slot.style.backgroundImage = "url(img/card_bg/rare_" + rare + ".webp)";
+    }
+    var en = PLANT_EN[name];
+    if (en) {
+      var img = document.createElement("img");
+      img.src = "img/plants/" + en + ".webp";
+      img.alt = String(name);
+      img.title = String(name);
+      img.loading = "lazy";
+      img.onerror = function () {
+        this.remove();
+        slot.appendChild(el("span", "plant-fallback", String(name).slice(0, 4)));
+      };
+      slot.appendChild(img);
+    } else {
+      slot.appendChild(el("span", "plant-fallback", String(name).slice(0, 4)));
+    }
+    return slot;
   }
 
   function buildCard(job) {
     var card = el("div", "card");
+    var band = worldBand(job.worlds);
+    if (band) card.style.setProperty("--band", band);
 
-    card.appendChild(el("div", "name", job.name || job.code));
+    // 名称 = 详情页链接
+    var nameDiv = el("div", "name");
+    var nameLink = el("a", null, job.name || job.code);
+    nameLink.href = "job.html?code=" + encodeURIComponent(job.code);
+    nameDiv.appendChild(nameLink);
+    card.appendChild(nameDiv);
 
-    var code = el("div", "code", job.code);
-    code.title = "点击复制 code";
-    code.addEventListener("click", function () {
+    // code：名字下方小字 + 复制图标
+    var codeRow = el("div", "code-row");
+    codeRow.appendChild(el("span", "code-text", job.code));
+    codeRow.appendChild(iconBtn(SVG_COPY, "复制 code", function () {
       copyText(job.code, "已复制 code");
-    });
-    card.appendChild(code);
+    }));
+    card.appendChild(codeRow);
 
+    // 世界标签（worlds 空 → 整条不渲染）
     if (Array.isArray(job.worlds) && job.worlds.length) {
       var tags = el("div", "tags");
       job.worlds.forEach(function (w) { tags.appendChild(el("span", "tag", String(w))); });
       card.appendChild(tags);
     }
 
+    // 阵容植物图标条；空阵容 = 编队换阵型作业集
+    if (Array.isArray(job.plants) && job.plants.length) {
+      var strip = el("div", "plant-strip");
+      job.plants.forEach(function (p) { strip.appendChild(plantSlot(p)); });
+      card.appendChild(strip);
+    } else {
+      card.appendChild(el("span", "deck-note", "编队换阵"));
+    }
+
+    // 关卡覆盖条
+    card.appendChild(buildCoverageBar(job.coverage, job.max_level));
+
+    // 摘要行 + 徽标
     var meta = el("div", "meta");
-    var line1 = "策略表 " + (job.tables != null ? job.tables : "?") + " 张";
-    if (job.max_level != null) line1 += " · 最高 " + job.max_level + " 关";
+    var line1 = "表 " + (job.tables != null ? job.tables : "?") + " 张";
+    if (job.plants_max) line1 += " · " + job.plants_max + " 植物";
+    if (job.artifact) line1 += " · " + job.artifact;
     meta.appendChild(el("span", null, line1));
-    meta.appendChild(el("span", null, "更新于 " + formatTime(job.updated)));
-    if (job.author) meta.appendChild(el("span", null, "作者：" + job.author));
+    var line2parts = [];
+    if (job.author) line2parts.push(job.author);
+    line2parts.push("更新于 " + formatTime(job.updated));
+    meta.appendChild(el("span", null, line2parts.join(" · ")));
     if (job.desc) meta.appendChild(el("span", "desc", job.desc));
     card.appendChild(meta);
 
+    // 特性徽标：收尾方式 / 自动选卡
+    var chips = [];
+    if (job.end_desc) chips.push(job.end_desc);
+    if (job.outer_pick === "auto") chips.push("自动选卡");
+    if (chips.length) {
+      var chipRow = el("div", "tags");
+      chips.forEach(function (c) { chipRow.appendChild(el("span", "tag purple", c)); });
+      card.appendChild(chipRow);
+    }
+
+    // 补给优先序（图标按顺序排）
+    if (Array.isArray(job.supply) && job.supply.length) {
+      var row = el("div", "supply-row");
+      row.appendChild(el("span", "supply-label", "补给"));
+      job.supply.forEach(function (s) {
+        var img = document.createElement("img");
+        img.src = "img/supply/" + encodeURIComponent(s.id) + ".png";
+        img.alt = String(s.name);
+        img.title = String(s.name);
+        img.loading = "lazy";
+        img.onerror = function () { this.remove(); };
+        row.appendChild(img);
+      });
+      card.appendChild(row);
+    }
+
+    // 下载（阳光黄）+ 复制链接（图标按钮，放右侧）
     var actions = el("div", "actions");
     var dl = el("a", "btn primary", "下载 JSON");
-    dl.href = "jobs/" + encodeURIComponent(job.code) + ".json";
+    dl.href = jobUrl(job.code);
     dl.setAttribute("download", job.code + ".json");
     actions.appendChild(dl);
-
-    var cp = el("button", "btn", "复制下载链接");
-    cp.type = "button";
-    cp.addEventListener("click", function () {
-      var url = new URL("jobs/" + encodeURIComponent(job.code) + ".json", location.href).href;
-      copyText(url, "链接已复制");
-    });
-    actions.appendChild(cp);
+    actions.appendChild(iconBtn(SVG_LINK, "复制下载链接", function () {
+      copyText(new URL(jobUrl(job.code), location.href).href, "链接已复制");
+    }));
     card.appendChild(actions);
 
     return card;
@@ -254,12 +339,24 @@
 
   elSearch.addEventListener("input", render);
 
-  fetch("index.json", { cache: "no-store" })
-    .then(function (resp) {
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      return resp.json();
+  Promise.all([
+    fetch("index.json", { cache: "no-store" }),
+    fetch("data/plants.json", { cache: "no-store" })
+  ])
+    .then(function (rs) {
+      if (!rs[0].ok) throw new Error("HTTP " + rs[0].status);
+      return Promise.all([rs[0].json(), rs[1].ok ? rs[1].json() : []]);
     })
-    .then(function (data) {
+    .then(function (pair) {
+      var data = pair[0], plants = pair[1];
+      if (Array.isArray(plants)) {
+        plants.forEach(function (p) {
+          if (p && p.name) {
+            if (p.en) PLANT_EN[p.name] = p.en;
+            if (p.rare != null) PLANT_RARE[p.name] = p.rare;
+          }
+        });
+      }
       jobs = Array.isArray(data.jobs) ? data.jobs : [];
       document.getElementById("stat-count").textContent =
         data.count != null ? data.count : jobs.length;

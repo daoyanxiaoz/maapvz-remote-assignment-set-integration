@@ -78,6 +78,65 @@ def build_entry(path, fname):
     if isinstance(data.get("max_level"), (int, float)):
         entry["max_level"] = data["max_level"]
 
+    # 关卡覆盖（图层模型：levels 是权威覆盖，空则退化为 [from_level, to_level) 区间；
+    # to_level 为 None 表示到 MAX）
+    coverage = []
+    plants_max = 0
+    if isinstance(tables, list):
+        for t in tables:
+            if not isinstance(t, dict):
+                continue
+            cov = {}
+            if isinstance(t.get("from_level"), (int, float)):
+                cov["from"] = t["from_level"]
+            cov["to"] = t["to_level"] if isinstance(t.get("to_level"), (int, float)) else None
+            if isinstance(t.get("levels"), list) and t["levels"]:
+                cov["levels"] = t["levels"]
+            if cov.get("from") is not None:
+                coverage.append(cov)
+            lu = t.get("lineup")
+            if isinstance(lu, dict) and isinstance(lu.get("plants"), list):
+                plants_max = max(plants_max, len([p for p in lu["plants"] if p]))
+    if coverage:
+        entry["coverage"] = coverage
+    if plants_max:
+        entry["plants_max"] = plants_max
+
+    # 局外选卡模式（auto=自动选卡）
+    op = data.get("outer_pick")
+    if isinstance(op, dict) and op.get("mode"):
+        entry["outer_pick"] = str(op["mode"])
+
+    # 从第一张表提取阵容植物和神器（首页卡片图标条 / 详情页用）
+    if isinstance(tables, list) and tables and isinstance(tables[0], dict):
+        first = tables[0]
+        lineup = first.get("lineup")
+        if isinstance(lineup, dict) and isinstance(lineup.get("plants"), list):
+            plants = [str(p) for p in lineup["plants"] if p]
+            if plants:
+                entry["plants"] = plants[:8]  # 8 个槽位封顶
+        if first.get("artifact"):
+            entry["artifact"] = str(first["artifact"])
+        if first.get("artifact_en"):
+            entry["artifact_en"] = str(first["artifact_en"])
+        # 收尾方式徽标（术语与编辑器同源）
+        et = first.get("endType")
+        if et == "detect":
+            entry["end_desc"] = "识别收尾"
+        elif et == "loops":
+            entry["end_desc"] = "循环×%s收尾" % (first.get("endLoopCount") or "?")
+        elif et == "once":
+            entry["end_desc"] = "单次收尾"
+        # 补给优先序（只留 id+name，图标站点按 id 自己映射）
+        sp = first.get("supplyPicks")
+        if isinstance(sp, list):
+            supply = [
+                {"id": str(s.get("id")), "name": str(s.get("name", s.get("id")))}
+                for s in sp if isinstance(s, dict) and s.get("id")
+            ]
+            if supply:
+                entry["supply"] = supply
+
     # 合并 sidecar 作者/简介（meta/<code>.json）
     if CODE_RE.match(code):
         meta_path = os.path.join(META_DIR, code + ".json")

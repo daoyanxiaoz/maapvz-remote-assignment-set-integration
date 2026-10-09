@@ -1,0 +1,1165 @@
+{
+  "code": "pvz_20260930_045245",
+  "name": "火珊冰大",
+  "version": "1.0",
+  "worlds": [],
+  "max_level": 149,
+  "everyN": 10,
+  "tables": [
+    {
+      "from_level": 1,
+      "to_level": null,
+      "lineup": {
+        "plants": [],
+        "deck": "2"
+      },
+      "slots": {
+        "1": "超级机枪射手",
+        "2": "暗物质火龙果",
+        "3": "电能豌豆",
+        "4": "寒冰射手",
+        "5": "泡泡姬珊瑚",
+        "6": "凤凰木花车",
+        "7": "飓风甘蓝",
+        "8": "魔音甜菜"
+      },
+      "squad": 2,
+      "slotModes": {
+        "card1": "loop",
+        "card2": "loop",
+        "card3": "loop",
+        "card4": "loop",
+        "card5": "loop",
+        "card6": "loop",
+        "card7": "end",
+        "card8": "end",
+        "feed": "loop",
+        "shovel": "loop"
+      },
+      "slotOrder": [
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        }
+      ],
+      "loopOrder": [
+        {
+          "key": "card2",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card1",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card5",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card4",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card6",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "endOrder": [],
+      "waitAfter": {},
+      "endPostDelay": 15000,
+      "endLastPostDelay": 6000,
+      "endAfterAction": "restart",
+      "endSubAction": "loop",
+      "bossSlotModes": {},
+      "bossSlotOrder": [],
+      "bossLoopOrder": [
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "bossEndOrder": [],
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "img": "全部植物.png",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "img": "橙色植物.png",
+          "name": "橙色植物"
+        },
+        {
+          "id": "purple",
+          "img": "紫色植物.png",
+          "name": "紫色植物"
+        },
+        {
+          "id": "blue",
+          "img": "蓝色植物.png",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "green",
+          "img": "绿色植物.png",
+          "name": "绿色植物"
+        }
+      ],
+      "innerWaits": {
+        "end": {},
+        "loop": {},
+        "once": {}
+      },
+      "boardEarly": [
+        [
+          [
+            {
+              "id": "card2",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "loop",
+              "col": 1,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 0
+            }
+          ],
+          [
+            {
+              "id": "card5",
+              "label": "泡泡姬珊瑚",
+              "type": "plant",
+              "mode": "loop",
+              "col": 2,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "泡泡姬珊瑚",
+                "img": "static/plant/bubblecoral.webp",
+                "rare": 4
+              },
+              "ord": 5
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 10
+            },
+            {
+              "id": "card4",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 15
+            }
+          ],
+          [
+            {
+              "id": "card6",
+              "label": "凤凰木花车",
+              "type": "plant",
+              "mode": "loop",
+              "col": 4,
+              "row": 1,
+              "seq": 3,
+              "plant": {
+                "name": "凤凰木花车",
+                "img": "static/plant/phoenixfloat.webp",
+                "rare": 4
+              },
+              "ord": 22
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card2",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "loop",
+              "col": 1,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 1
+            }
+          ],
+          [
+            {
+              "id": "card5",
+              "label": "泡泡姬珊瑚",
+              "type": "plant",
+              "mode": "loop",
+              "col": 2,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "泡泡姬珊瑚",
+                "img": "static/plant/bubblecoral.webp",
+                "rare": 4
+              },
+              "ord": 6
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 11
+            },
+            {
+              "id": "card4",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 16
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card2",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "loop",
+              "col": 1,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 2
+            }
+          ],
+          [
+            {
+              "id": "card5",
+              "label": "泡泡姬珊瑚",
+              "type": "plant",
+              "mode": "loop",
+              "col": 2,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "泡泡姬珊瑚",
+                "img": "static/plant/bubblecoral.webp",
+                "rare": 4
+              },
+              "ord": 7
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 12
+            },
+            {
+              "id": "card4",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 17
+            }
+          ],
+          [
+            {
+              "id": "card6",
+              "label": "凤凰木花车",
+              "type": "plant",
+              "mode": "loop",
+              "col": 4,
+              "row": 3,
+              "seq": 2,
+              "plant": {
+                "name": "凤凰木花车",
+                "img": "static/plant/phoenixfloat.webp",
+                "rare": 4
+              },
+              "ord": 21
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card2",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "loop",
+              "col": 1,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 3
+            }
+          ],
+          [
+            {
+              "id": "card5",
+              "label": "泡泡姬珊瑚",
+              "type": "plant",
+              "mode": "loop",
+              "col": 2,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "泡泡姬珊瑚",
+                "img": "static/plant/bubblecoral.webp",
+                "rare": 4
+              },
+              "ord": 8
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 13
+            },
+            {
+              "id": "card4",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 18
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card2",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "loop",
+              "col": 1,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 4
+            }
+          ],
+          [
+            {
+              "id": "card5",
+              "label": "泡泡姬珊瑚",
+              "type": "plant",
+              "mode": "loop",
+              "col": 2,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "泡泡姬珊瑚",
+                "img": "static/plant/bubblecoral.webp",
+                "rare": 4
+              },
+              "ord": 9
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 14
+            },
+            {
+              "id": "card4",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 19
+            }
+          ],
+          [
+            {
+              "id": "card6",
+              "label": "凤凰木花车",
+              "type": "plant",
+              "mode": "loop",
+              "col": 4,
+              "row": 5,
+              "seq": 1,
+              "plant": {
+                "name": "凤凰木花车",
+                "img": "static/plant/phoenixfloat.webp",
+                "rare": 4
+              },
+              "ord": 20
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card3",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 0
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card3",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 1
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card3",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 2
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card3",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 3
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card3",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 4
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "1",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "2",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "5",
+            "cells": [
+              "格子2_1",
+              "格子2_2",
+              "格子2_3",
+              "格子2_4",
+              "格子2_5"
+            ]
+          },
+          {
+            "slot": "6",
+            "cells": [
+              "格子4_1",
+              "格子4_3",
+              "格子4_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "card2",
+            "slot": 2,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "mode": "loop",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "mode": "loop",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card5",
+            "slot": 5,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "mode": "loop",
+            "cells": [
+              "格子2_1",
+              "格子2_2",
+              "格子2_3",
+              "格子2_4",
+              "格子2_5"
+            ]
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "寒冰射手",
+            "mode": "loop",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card6",
+            "slot": 6,
+            "type": "plant",
+            "label": "凤凰木花车",
+            "mode": "loop",
+            "cells": [
+              "格子4_5",
+              "格子4_3",
+              "格子4_1"
+            ]
+          }
+        ],
+        "end_chain": [],
+        "sequence": [
+          {
+            "slot": 2,
+            "order": 1,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 2,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 3,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 4,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 5,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 3,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 4,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 5,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 1,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "cell": "格子2_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 2,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "cell": "格子2_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 3,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 4,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 5,
+            "type": "plant",
+            "label": "泡泡姬珊瑚",
+            "cell": "格子2_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 4,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 5,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 1,
+            "type": "plant",
+            "label": "凤凰木花车",
+            "cell": "格子4_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 2,
+            "type": "plant",
+            "label": "凤凰木花车",
+            "cell": "格子4_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 3,
+            "type": "plant",
+            "label": "凤凰木花车",
+            "cell": "格子4_1",
+            "mode": "loop"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [
+          {
+            "slot": "3",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [],
+        "loop_chain": [
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "电能豌豆",
+            "mode": "loop",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          }
+        ],
+        "end_chain": [],
+        "sequence": [
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 4,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 5,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_5",
+            "mode": "loop"
+          }
+        ]
+      }
+    }
+  ]
+}

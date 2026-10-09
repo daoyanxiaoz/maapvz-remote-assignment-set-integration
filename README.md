@@ -1,6 +1,6 @@
 # MAAPVZ 远程作业集分享站
 
-《植物大战僵尸2》无尽模式自动化项目 [MAAPVZ](https://github.com/daoyanxiaoz) 的作业集分享站。
+《植物大战僵尸2》无尽模式自动化项目 [MAAPVZ](https://github.com/daoyanxiaoz/MAAPVZ) 的作业集分享站。
 在这里可以浏览、下载其他玩家分享的作业集，也可以投稿自己的作品。
 
 - 🌐 站点地址：<https://daoyanxiaoz.github.io/maapvz-remote-assignment-set-integration/>
@@ -18,7 +18,11 @@
 
 ## 投稿作业集（玩家）
 
-1. 点上方「投稿入口」，使用「分享作业集」模板开 Issue；
+方式一（推荐）：站点导航栏点「上传作业集」，粘贴 JSON → 本地校验 → 一键打开 GitHub 投稿（标题正文已预填）。
+
+方式二（手动）：
+
+1. 打开[投稿入口](https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration/issues/new?template=share-jobset.yml)，使用「分享作业集」模板开 Issue；
 2. 把编辑器导出的作业集 JSON **完整粘贴**到「作业集 JSON」一栏，
    作者昵称、一句话简介可选填；
 3. 提交后机器人自动校验：
@@ -45,7 +49,9 @@
 1. **Settings → Pages** → Deploy from a branch → `main` / `(root)`；
 2. **Settings → Actions → General** → Workflow permissions →
    勾选 **Read and write permissions**；
-3. **Settings → Issues** 保持开启（投稿入口）。
+3. **Settings → Issues** 保持开启（投稿入口）；
+4. 建两个 label：`投稿`、`无效投稿`（Issues → Labels → New label，
+   机器人打标签和投稿模板都依赖它们）。
 
 ### 手动上架
 
@@ -103,10 +109,16 @@ Action「重建作业集索引」会自动重建 `index.json`，几分钟后站�
 ## 仓库结构
 
 ```
-├── index.html            站点首页（纯静态，无外部依赖）
+├── index.html            首页：作业集卡片列表 + 搜索
+├── job.html              详情页：阵容植物/阶数/装扮/神器/关卡范围（?code=<code>）
+├── submit.html           上传作业集：本地校验 + 一键投稿
+├── about.html            关于（待开发）
+├── style.css             全站共享样式（本地文件，无外部依赖）
 ├── index.json            作业集清单（Action 自动维护，勿手改）
 ├── jobs/<code>.json      作业集本体
 ├── meta/<code>.json      可选 sidecar：作者 / 简介
+├── data/                 plants.json / artifacts.json（名称映射表）
+├── img/                  植物/神器/阶数/世界立绘/挂件图（来源见 img/plants/README.md）
 ├── tools/
 │   ├── build_index.py    重建 index.json
 │   └── issue_to_pr.py    投稿 Issue → 校验 → 自动开 PR
@@ -114,6 +126,23 @@ Action「重建作业集索引」会自动重建 `index.json`，几分钟后站�
     ├── workflows/        两个 Action：索引重建、投稿处理
     └── ISSUE_TEMPLATE/   投稿表单
 ```
+
+### 植物阶数 / 装扮的显示（可选字段）
+
+当前编辑器导出的作业集**不含**阶数/装扮数据。详情页已预留展示位：
+作业集里加 `plant_meta` 字段即自动显示（表级优先于全局）——
+
+```json
+{
+  "plant_meta": {
+    "娜迦蛇皮果": { "tier": 5, "costume": true },
+    "大嘴花": { "tier": 4 }
+  }
+}
+```
+
+`tier` 取 1~5（显示阶数角标），`costume: true` 显示装扮标记。
+加在顶层对所有表生效，加在 `tables[i].plant_meta` 只对该表生效。
 
 ## 本地预览
 

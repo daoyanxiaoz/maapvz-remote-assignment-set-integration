@@ -15,8 +15,8 @@ concurrency:
 
 jobs:
   process:
-    # 只处理带「投稿」标签的 Issue
-    if: contains(github.event.issue.labels.*.name, '投稿')
+    # 处理带「投稿」标签的 Issue；或标题以「投稿」开头的（站点一键投稿走的普通 Issue 可能没标签）
+    if: contains(github.event.issue.labels.*.name, '投稿') || startsWith(github.event.issue.title, '投稿')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
