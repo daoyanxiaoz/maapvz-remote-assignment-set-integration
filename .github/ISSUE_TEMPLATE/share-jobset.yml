@@ -6,15 +6,23 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢分享！把编辑器导出的作业集 JSON 完整粘贴到下方即可。
+        感谢分享！**把编辑器导出的 .json 文件直接拖进下方「作业集 JSON」框**（GitHub 会自动上传成附件链接），也可以直接粘贴 JSON 全文。
         提交后机器人会自动校验：通过则自动开 PR 等待维护者审核，不通过会在本 Issue 下评论原因，**直接编辑本 Issue** 即可重新校验。
   - type: textarea
     id: body_json
     attributes:
       label: 作业集 JSON
-      description: 在编辑器里导出/复制作业集 JSON，完整粘贴到这里
-      placeholder: '{"code": "...", "name": "...", "tables": [...], ...}'
+      description: 把 .json 文件拖进来（推荐，会变成附件链接），或粘贴 JSON 全文
+      placeholder: "把 .json 文件拖到这里"
       render: json
+    validations:
+      required: true
+  - type: textarea
+    id: costumes
+    attributes:
+      label: 装扮标注
+      description: 作业集里出现的每一棵植物都要标注「需要/不需要」装扮，每行一条，一颗不落
+      placeholder: "娜迦蛇皮果:需要&#10;大嘴花:不需要"
     validations:
       required: true
   - type: input

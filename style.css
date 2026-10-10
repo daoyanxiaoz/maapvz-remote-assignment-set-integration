@@ -271,9 +271,155 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
 }
 .plant-cell .costume-badge {
   position: absolute; top: 3px; right: 3px;
-  font-size: 10px; line-height: 1; color: #fff; background: var(--zombie);
+  font-size: 10px; line-height: 1; color: #4a2f12; background: var(--sun); font-weight: 700;
   border-radius: 4px; padding: 2px 4px;
 }
+
+/* —— 主页三维筛选栏 —— */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
+.filter-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.filter-label { font-size: 12.5px; color: var(--on-dark-muted); }
+.f-chip {
+  font-size: 12.5px; padding: 3px 10px; border-radius: 999px; cursor: pointer;
+  background: rgba(0, 0, 0, .3); color: var(--on-dark);
+  border: 1px solid rgba(247, 236, 201, .25);
+}
+.f-chip:hover { border-color: var(--sun); }
+.f-chip.on { background: var(--lawn); border-color: var(--lawn); color: #fff; }
+.tri { display: flex; border: 1px solid rgba(247, 236, 201, .25); border-radius: 999px; overflow: hidden; }
+.tri button {
+  background: rgba(0, 0, 0, .3); color: var(--on-dark); border: 0;
+  padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+}
+.tri button.on { background: var(--sun); color: #4a2f12; font-weight: 700; }
+
+/* 植物可搜索多选 */
+.picker { position: relative; }
+.picker-toggle {
+  font-size: 12.5px; padding: 4px 12px; border-radius: 999px; cursor: pointer;
+  background: rgba(0, 0, 0, .3); color: var(--on-dark);
+  border: 1px solid rgba(247, 236, 201, .25);
+}
+.picker-toggle:hover { border-color: var(--sun); }
+.picker-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; width: 320px;
+  background: var(--parchment); color: var(--ink); border: 2px solid var(--wood);
+  border-radius: 10px; box-shadow: var(--shadow-hover); padding: 10px;
+}
+.picker-panel input {
+  width: 100%; padding: 6px 10px; border: 2px solid var(--wood); border-radius: 6px;
+  background: var(--parchment-in); color: var(--ink); margin-bottom: 8px; outline: none;
+}
+.picker-panel input:focus { border-color: var(--lawn); }
+.picker-list { max-height: 260px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.picker-item {
+  display: flex; align-items: center; gap: 6px; font-size: 12.5px;
+  padding: 3px 6px; border-radius: 6px; cursor: pointer;
+}
+.picker-item:hover { background: #efe2bd; }
+.picker-item.on { background: #e2efd2; font-weight: 600; }
+.picker-item img { width: 22px; height: 22px; object-fit: contain; }
+
+/* —— 关卡覆盖画板（详情页，只读） —— */
+.layer-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.layer-item {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 4px 10px;
+  border: 1.5px solid var(--wood-light); border-radius: 999px; cursor: pointer;
+  color: var(--ink); background: var(--parchment-in);
+}
+.layer-item.on { border-color: var(--wood); box-shadow: 0 0 0 2px rgba(93, 161, 48, .45); }
+.layer-dot { width: 10px; height: 10px; border-radius: 3px; }
+.cov-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 3px; }
+.lz-cell {
+  position: relative; aspect-ratio: 1; border-radius: 4px;
+  background: #efe2bd; border: 1px solid var(--wood-light);
+  font-size: 10px; color: var(--ink-muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .12s;
+}
+.lz-cell .lz-badge {
+  position: absolute; right: 1px; bottom: 1px; font-size: 8px; line-height: 1;
+  padding: 1px 2px; border-radius: 2px; color: #fff;
+}
+.lz-cell.lz-boss { border: 1.5px solid #d4a017; }
+.lz-cell.lz-uncovered { background: var(--danger); color: #fff; }
+.lz-cell.lz-dim { opacity: .18; }
+.cov-warn { color: var(--danger); font-size: 12.5px; margin-top: 8px; }
+
+/* —— 种植布局画板（详情页，只读） —— */
+.board-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.board-tab {
+  font-size: 13px; padding: 4px 14px; border-radius: 999px; border: 1.5px solid var(--wood);
+  background: transparent; color: var(--wood); cursor: pointer;
+}
+.board-tab.on { background: var(--wood); color: var(--parchment); }
+.board-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; max-width: 640px; }
+.b-cell {
+  position: relative; aspect-ratio: 1; border-radius: 5px;
+  background: #9ccb6e; border: 1px solid rgba(0, 0, 0, .08); overflow: hidden;
+}
+.b-cell.alt { background: #8abd5f; }
+.b-cell img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
+.b-cell .b-text {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #3d5a1e; font-weight: 600;
+}
+.b-cell .b-mode {
+  position: absolute; left: 1px; top: 1px; font-size: 9px; line-height: 1;
+  padding: 1px 3px; border-radius: 3px; color: #fff;
+}
+.b-cell .b-mode.once { background: var(--zombie); }
+.b-cell .b-mode.loop { background: var(--lawn-deep); }
+.b-cell .b-seq { position: absolute; right: 2px; bottom: 1px; font-size: 9px; color: rgba(0, 0, 0, .55); font-weight: 700; }
+.b-cell .b-stack {
+  position: absolute; right: 1px; top: 1px; font-size: 9px; line-height: 1;
+  padding: 1px 3px; border-radius: 3px; background: rgba(0, 0, 0, .45); color: #fff;
+}
+
+/* —— 投稿页：拖拽上传 + 装扮标注 —— */
+.dropzone {
+  border: 2px dashed var(--wood-light); border-radius: 10px;
+  background: var(--parchment-in); padding: 34px 16px; text-align: center;
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.dropzone:hover, .dropzone.dragover { border-color: var(--lawn); background: #f2ecd4; }
+.dropzone .dz-icon { font-size: 34px; }
+.dropzone .dz-main { font-size: 15px; font-weight: 600; color: var(--wood); margin-top: 8px; }
+.dropzone .dz-sub { font-size: 12.5px; color: var(--ink-muted); margin-top: 4px; }
+.dropzone input[type="file"] { display: none; }
+.file-chip {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 10px;
+  background: #fff; border: 1.5px solid var(--wood-light); border-radius: 999px;
+  padding: 5px 12px; font-size: 13px; color: var(--ink);
+}
+.file-chip button {
+  border: 0; background: none; color: var(--danger); cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 0 2px;
+}
+
+.costume-head {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
+}
+.costume-progress { font-size: 13px; color: var(--ink-muted); }
+.costume-progress b { color: var(--wood); }
+.costume-progress.done b { color: var(--lawn-deep); }
+.costume-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.costume-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--parchment-in); border: 1px solid var(--wood-light);
+  border-radius: 8px; padding: 6px 8px;
+}
+.costume-item.unset { border-color: var(--danger); background: #fbeae7; }
+.costume-item img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
+.costume-item .c-name { flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.costume-item .c-btns { display: flex; border: 1px solid var(--wood-light); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+.costume-item .c-btns button {
+  border: 0; background: #fff; color: var(--ink-muted); font-size: 12px;
+  padding: 4px 10px; cursor: pointer;
+}
+.costume-item .c-btns button.on-yes { background: var(--sun); color: #4a2f12; font-weight: 700; }
+.costume-item .c-btns button.on-no { background: var(--lawn); color: #fff; font-weight: 700; }
 
 .artifact-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .artifact-row img { width: 44px; height: 44px; object-fit: contain; }

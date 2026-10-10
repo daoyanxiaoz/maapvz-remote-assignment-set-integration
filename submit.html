@@ -31,12 +31,37 @@
 
   <div class="form-card">
     <h2>上传作业集</h2>
-    <p class="hint">把编辑器导出的作业集 JSON 粘贴到下面，先在本地校验一遍，再去 GitHub 投稿。提交后机器人会再校验一次并自动开 PR，维护者审核合并后即可上站。</p>
+    <p class="hint">把编辑器导出的作业集 JSON <b>文件拖进来</b>，站点会本地解析并校验；
+      然后给里面每棵植物标注要不要装扮（必填），最后一键打开 GitHub 投稿页——
+      正文已经预填好，你只需把刚才那份 .json 文件<b>拖进投稿页的「作业集 JSON」一节</b>
+      （GitHub 会自动上传成附件），机器人会下载附件校验并自动开 PR，维护者审核合并后即可上站。</p>
 
     <div class="field">
-      <label for="json-input">作业集 JSON</label>
-      <textarea id="json-input" class="code-input" spellcheck="false"
-        placeholder='{"code": "...", "name": "...", "tables": [...], ...}'></textarea>
+      <label>作业集 JSON 文件</label>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button"
+           aria-label="拖入或点击选择作业集 JSON 文件">
+        <div class="dz-icon">🌱</div>
+        <div class="dz-main">把 .json 文件拖到这里，或点击选择文件</div>
+        <div class="dz-sub">只在你的浏览器里本地解析，不会上传到任何地方</div>
+        <input type="file" id="file-input" accept=".json,application/json">
+      </div>
+      <div id="file-chip" class="file-chip" hidden>
+        <span id="file-name"></span>
+        <button id="file-remove" type="button" title="移除文件">✕</button>
+      </div>
+    </div>
+
+    <div id="parse-result" class="check-result" hidden></div>
+
+    <div id="costume-panel" class="field" hidden>
+      <label>装扮标注 <span class="opt">（必填：每棵植物都要标，一颗不落）</span></label>
+      <div class="costume-head">
+        <span class="costume-progress" id="costume-progress"></span>
+        <button id="costume-all-no" class="btn" type="button"
+                style="padding:4px 12px;font-size:12.5px">全部标「不需要」</button>
+      </div>
+      <div class="costume-list" id="costume-list"></div>
+      <p class="step-note">需要装扮的点「需要」（会标黄），其余点「不需要」。标注结果会写进投稿，决定详情页的「需装扮」徽标和主页筛选。</p>
     </div>
 
     <div class="field">
@@ -54,7 +79,7 @@
       <textarea id="note-input" rows="3"></textarea>
     </div>
 
-    <button id="validate-btn" class="btn primary" type="button">校验</button>
+    <button id="validate-btn" class="btn primary" type="button">生成投稿</button>
 
     <div id="check-result" class="check-result" hidden></div>
   </div>
@@ -69,12 +94,11 @@
     </div>
     <p id="quick-note" class="step-note"></p>
 
-    <p style="margin:18px 0 6px;font-weight:600;font-size:14px">方式二：手动粘贴</p>
+    <p style="margin:18px 0 6px;font-weight:600;font-size:14px">方式二：备用</p>
     <div class="step-actions">
-      <button id="copy-body" class="btn" type="button">复制投稿正文</button>
-      <a id="manual-submit" class="btn" href="#" target="_blank" rel="noopener">打开投稿页（已预填标题）</a>
+      <button id="copy-and-open" class="btn" type="button">复制正文并打开投稿页</button>
     </div>
-    <p class="step-note">点「复制投稿正文」→ 打开投稿页 → 把正文粘进描述框 → 提交。</p>
+    <p class="step-note">正文里不含 JSON 本体——打开投稿页后，把刚才那份 .json 文件<b>拖进「作业集 JSON」那一节</b>（GitHub 会自动上传成附件链接），再提交。</p>
   </div>
 
 </main>
@@ -96,9 +120,17 @@
   var REPO = "https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration";
   var MAX_BYTES = 2 * 1024 * 1024;
   var CODE_RE = /^[A-Za-z0-9_\-]{1,64}$/;   // 与服务端同一套白名单
-  var QUICK_URL_LIMIT = 7500;               // 一键投稿 URL 长度上限，超了走手动粘贴
 
-  var elInput = document.getElementById("json-input");
+  var elDrop = document.getElementById("dropzone");
+  var elFile = document.getElementById("file-input");
+  var elFileChip = document.getElementById("file-chip");
+  var elFileName = document.getElementById("file-name");
+  var elFileRemove = document.getElementById("file-remove");
+  var elParseResult = document.getElementById("parse-result");
+  var elCostumePanel = document.getElementById("costume-panel");
+  var elCostumeList = document.getElementById("costume-list");
+  var elCostumeProgress = document.getElementById("costume-progress");
+  var elCostumeAllNo = document.getElementById("costume-all-no");
   var elAuthor = document.getElementById("author-input");
   var elDesc = document.getElementById("desc-input");
   var elNote = document.getElementById("note-input");
@@ -107,12 +139,18 @@
   var elPanel = document.getElementById("submit-panel");
   var elQuick = document.getElementById("quick-submit");
   var elQuickNote = document.getElementById("quick-note");
-  var elCopyBody = document.getElementById("copy-body");
-  var elManual = document.getElementById("manual-submit");
   var elToast = document.getElementById("toast");
   var toastTimer = null;
   var knownCodes = {};   // index.json 里的 code，用于本地查撞车
+  var PLANT_EN = {};     // 植物中文名 → 英文文件名（标注列表的小图标）
   var lastBody = "";
+  var manualUrl = REPO + "/issues/new"; // 方式二打开的投稿页（带标题预填）
+
+  // 当前解析状态
+  var jobData = null;        // 解析成功的作业集对象
+  var jobJsonText = "";      // 原文（投稿用）
+  var jobPlants = [];        // 全量植物名（保序去重）
+  var marks = {};            // 植物名 → true(需要)/false(不需要)；未标注 = 不存在
 
   function showToast(text) {
     elToast.textContent = text;
@@ -146,22 +184,56 @@
     })
     .catch(function () {});
 
-  function stripCodeFence(t) {
-    t = t.trim();
-    if (t.indexOf("```") === 0) {
-      var lines = t.split("\n");
-      if (lines.length && lines[0].trim().indexOf("```") === 0) lines = lines.slice(1);
-      if (lines.length && lines[lines.length - 1].trim().indexOf("```") === 0) lines = lines.slice(0, -1);
-      t = lines.join("\n").trim();
+  // 植物数据库（标注列表图标 + 名字核对）
+  var KNOWN_PLANTS = null; // null = 没加载到，跳过该项检查
+  fetch("data/plants.json", { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (list) {
+      if (Array.isArray(list)) {
+        KNOWN_PLANTS = {};
+        list.forEach(function (p) {
+          if (p && p.name) { KNOWN_PLANTS[p.name] = true; if (p.en) PLANT_EN[p.name] = p.en; }
+        });
+      }
+    })
+    .catch(function () {});
+
+  // 作业集全量植物名（与 tools/issue_to_pr.py 的 collect_plants 同一套口径）：
+  // lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 里 type=plant 的格子
+  function collectPlants(data) {
+    var names = [], seen = {};
+    function add(n) {
+      if (typeof n === "string" && n && !seen[n]) { seen[n] = true; names.push(n); }
     }
-    return t;
+    (data.tables || []).forEach(function (t) {
+      if (!t || typeof t !== "object") return;
+      ["lineup", "boss_lineup"].forEach(function (k) {
+        var lu = t[k];
+        if (lu && Array.isArray(lu.plants)) lu.plants.forEach(add);
+      });
+      ["boardEarly", "boardLate"].forEach(function (bk) {
+        var board = t[bk];
+        if (!Array.isArray(board)) return;
+        board.forEach(function (row) {
+          if (!Array.isArray(row)) return;
+          row.forEach(function (cell) {
+            var entries = cell && Array.isArray(cell.value) ? cell.value : [];
+            entries.forEach(function (ent) {
+              if (ent && ent.type === "plant") {
+                add(ent.label || (ent.plant && ent.plant.name) || "");
+              }
+            });
+          });
+        });
+      });
+    });
+    return names;
   }
 
   // 与 tools/issue_to_pr.py 同一套校验规则
-  function validate(raw) {
+  function validate(text) {
     var errors = [];
-    var text = stripCodeFence(raw);
-    if (!text) return { errors: ["作业集 JSON 为空，请完整粘贴编辑器导出的内容。"] };
+    if (!text) return { errors: ["文件是空的。"] };
 
     var data;
     try { data = JSON.parse(text); }
@@ -198,22 +270,11 @@
     return { errors: errors, data: data };
   }
 
-  function field(label, value) {
-    return "### " + label + "\n\n" + (value || "_No response_") + "\n";
-  }
-
-  function buildBody(jsonText, author, desc, note) {
-    return field("作业集 JSON", "```json\n" + jsonText + "\n```") + "\n" +
-           field("作者昵称", author) + "\n" +
-           field("一句话简介", desc) + "\n" +
-           field("补充说明（适用世界/关卡范围/注意事项）", note);
-  }
-
-  function showResult(ok, htmlBuilder) {
-    elResult.hidden = false;
-    elResult.className = "check-result " + (ok ? "ok" : "fail");
-    elResult.innerHTML = "";
-    htmlBuilder(elResult);
+  function showResult(box, ok, htmlBuilder) {
+    box.hidden = false;
+    box.className = "check-result " + (ok ? "ok" : "fail");
+    box.innerHTML = "";
+    htmlBuilder(box);
   }
 
   function appendText(parent, tag, text) {
@@ -223,17 +284,68 @@
     return e;
   }
 
-  elBtn.addEventListener("click", function () {
-    var raw = elInput.value;
-    var author = elAuthor.value.trim();
-    var desc = elDesc.value.trim();
-    var note = elNote.value.trim();
-    var res = validate(raw);
+  // —— 文件拖入 / 选择 ——
+  elDrop.addEventListener("click", function () { elFile.click(); });
+  elDrop.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); elFile.click(); }
+  });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    elDrop.addEventListener(ev, function (e) {
+      e.preventDefault(); e.stopPropagation();
+      elDrop.classList.add("dragover");
+    });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    elDrop.addEventListener(ev, function (e) {
+      e.preventDefault(); e.stopPropagation();
+      elDrop.classList.remove("dragover");
+    });
+  });
+  elDrop.addEventListener("drop", function (e) {
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+  elFile.addEventListener("change", function () {
+    if (elFile.files && elFile.files[0]) readFile(elFile.files[0]);
+    elFile.value = ""; // 允许重复选同一个文件
+  });
 
+  function readFile(f) {
+    if (f.size > MAX_BYTES) {
+      showToast("文件超过 2MB 上限");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      elFileName.textContent = f.name + "（" + Math.round(f.size / 1024) + "KB）";
+      elFileChip.hidden = false;
+      parseAndRender(String(reader.result || ""));
+    };
+    reader.onerror = function () { showToast("文件读取失败"); };
+    reader.readAsText(f, "utf-8");
+  }
+
+  elFileRemove.addEventListener("click", resetAll);
+
+  function resetAll() {
+    jobData = null; jobJsonText = ""; jobPlants = []; marks = {};
+    elFileChip.hidden = true;
+    elParseResult.hidden = true;
+    elCostumePanel.hidden = true;
+    elResult.hidden = true;
+    elPanel.hidden = true;
+  }
+
+  // —— 解析 → 校验 → 生成装扮标注清单 ——
+  function parseAndRender(text) {
+    elPanel.hidden = true;
+    elResult.hidden = true;
+    var res = validate(text);
     if (res.errors.length) {
-      elPanel.hidden = true;
-      showResult(false, function (box) {
-        appendText(box, "div", "❌ 校验未通过，请修改：");
+      jobData = null; jobPlants = []; marks = {};
+      elCostumePanel.hidden = true;
+      showResult(elParseResult, false, function (box) {
+        appendText(box, "div", "❌ 这份作业集有问题：");
         var ul = document.createElement("ul");
         res.errors.forEach(function (err) {
           var li = document.createElement("li");
@@ -245,43 +357,196 @@
       return;
     }
 
-    var data = res.data;
-    var jsonText = stripCodeFence(raw);
-    lastBody = buildBody(jsonText, author, desc, note);
+    jobData = res.data;
+    jobJsonText = text;
+    jobPlants = collectPlants(jobData);
+    marks = {};
 
-    showResult(true, function (box) {
+    if (KNOWN_PLANTS) {
+      var unknown = jobPlants.filter(function (p) { return !KNOWN_PLANTS[p]; });
+      if (unknown.length) {
+        jobData = null;
+        elCostumePanel.hidden = true;
+        showResult(elParseResult, false, function (box) {
+          appendText(box, "div", "❌ 作业集里有植物数据库之外的名字（请核对与编辑器里的名字一致）：");
+          appendText(box, "div", unknown.join("、"));
+        });
+        return;
+      }
+    }
+
+    showResult(elParseResult, true, function (box) {
+      appendText(box, "div", "✅ 解析成功！");
+      var s = document.createElement("div");
+      s.className = "summary";
+      s.textContent = "名称：" + jobData.name.trim() + "　code：" + jobData.code +
+        "　策略表 " + jobData.tables.length + " 张　植物 " + jobPlants.length + " 种";
+      box.appendChild(s);
+      if (!jobPlants.length) {
+        appendText(box, "div", "（编队换阵型作业集，没有植物需要标注装扮）");
+      }
+    });
+
+    if (jobPlants.length) {
+      renderCostumePanel();
+    } else {
+      elCostumePanel.hidden = true; // 无植物 → 无需标注
+    }
+  }
+
+  // —— 装扮标注面板 ——
+  function markCount() {
+    return jobPlants.filter(function (p) { return p in marks; }).length;
+  }
+
+  function refreshProgress() {
+    var n = markCount(), total = jobPlants.length;
+    elCostumeProgress.classList.toggle("done", n === total);
+    elCostumeProgress.innerHTML = "";
+    var b = document.createElement("b");
+    b.textContent = n === total ? "✅ 已全部标注" : ("已标注 " + n + " / " + total);
+    elCostumeProgress.appendChild(b);
+    if (n !== total) {
+      elCostumeProgress.appendChild(document.createTextNode("　红框是还没标的"));
+    }
+  }
+
+  function renderCostumePanel() {
+    elCostumePanel.hidden = false;
+    elCostumeList.innerHTML = "";
+    jobPlants.forEach(function (p) {
+      var item = document.createElement("div");
+      item.className = "costume-item unset";
+      item.setAttribute("data-plant", p);
+
+      var en = PLANT_EN[p];
+      if (en) {
+        var img = document.createElement("img");
+        img.src = "img/plants/" + en + ".webp";
+        img.alt = "";
+        img.onerror = function () { this.remove(); };
+        item.appendChild(img);
+      }
+      var nameEl = document.createElement("span");
+      nameEl.className = "c-name";
+      nameEl.textContent = p;
+      nameEl.title = p;
+      item.appendChild(nameEl);
+
+      var btns = document.createElement("div");
+      btns.className = "c-btns";
+      [["yes", "需要"], ["no", "不需要"]].forEach(function (cfg) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = cfg[1];
+        b.addEventListener("click", function () {
+          marks[p] = (cfg[0] === "yes");
+          item.classList.remove("unset");
+          btns.querySelectorAll("button").forEach(function (x) {
+            x.classList.remove("on-yes", "on-no");
+          });
+          b.classList.add(cfg[0] === "yes" ? "on-yes" : "on-no");
+          refreshProgress();
+        });
+        btns.appendChild(b);
+      });
+      item.appendChild(btns);
+      elCostumeList.appendChild(item);
+    });
+    refreshProgress();
+    elCostumePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  elCostumeAllNo.addEventListener("click", function () {
+    jobPlants.forEach(function (p) { marks[p] = false; });
+    elCostumeList.querySelectorAll(".costume-item").forEach(function (item) {
+      item.classList.remove("unset");
+      var bs = item.querySelectorAll(".c-btns button");
+      bs[0].classList.remove("on-yes");
+      bs[1].classList.add("on-no");
+    });
+    refreshProgress();
+    showToast("已全部标为「不需要」，把要装扮的逐棵改成「需要」");
+  });
+
+  function field(label, value) {
+    return "### " + label + "\n\n" + (value || "_No response_") + "\n";
+  }
+
+  // 投稿用的正文：JSON 本体不进正文（装不下也没必要），投稿人把 .json 文件
+  // 拖进 Issue 的「作业集 JSON」一节，GitHub 会自动上传成附件链接，
+  // 机器人（tools/issue_to_pr.py）再下载校验。
+  function costumeLines() {
+    return jobPlants.map(function (p) {
+      return p + ":" + (marks[p] ? "需要" : "不需要");
+    }).join("\n");
+  }
+
+  function buildBody(costumes, author, desc, note) {
+    return field("作业集 JSON",
+                 "👉 把刚才那份 .json 文件拖到这一行（GitHub 会自动上传成附件链接）") + "\n" +
+           field("装扮标注", costumes) + "\n" +
+           field("作者昵称", author) + "\n" +
+           field("一句话简介", desc) + "\n" +
+           field("补充说明（适用世界/关卡范围/注意事项）", note);
+  }
+
+  elBtn.addEventListener("click", function () {
+    if (!jobData) {
+      showToast("先拖入作业集 JSON 文件");
+      return;
+    }
+    // 装扮标注必须标全
+    var unmarked = jobPlants.filter(function (p) { return !(p in marks); });
+    if (unmarked.length) {
+      elPanel.hidden = true;
+      showResult(elResult, false, function (box) {
+        appendText(box, "div", "❌ 还有 " + unmarked.length + " 棵植物没标注装扮：");
+        appendText(box, "div", unmarked.join("、"));
+      });
+      elCostumePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
+    var author = elAuthor.value.trim();
+    var desc = elDesc.value.trim();
+    var note = elNote.value.trim();
+    lastBody = buildBody(costumeLines(), author, desc, note);
+
+    showResult(elResult, true, function (box) {
       appendText(box, "div", "✅ 本地校验通过！");
       var s = document.createElement("div");
       s.className = "summary";
-      s.textContent = "名称：" + data.name.trim() + "　code：" + data.code +
-        "　策略表 " + data.tables.length + " 张";
+      var need = jobPlants.filter(function (p) { return marks[p]; });
+      s.textContent = "名称：" + jobData.name.trim() + "　code：" + jobData.code +
+        "　策略表 " + jobData.tables.length + " 张　植物 " + jobPlants.length +
+        " 种（需装扮 " + need.length + " 种）";
       box.appendChild(s);
     });
 
-    // 投稿链接：标题带「投稿」前缀，服务端机器人靠它识别
-    var title = "投稿：" + data.name.trim() + "（" + data.code + "）";
+    // 投稿链接：标题带「投稿」前缀，服务端机器人靠它识别。
+    // 正文只有标注和说明（JSON 走附件），体积小，一键投稿永远可用。
+    var title = "投稿：" + jobData.name.trim() + "（" + jobData.code + "）";
     var quickUrl = REPO + "/issues/new?labels=" + encodeURIComponent("投稿") +
       "&title=" + encodeURIComponent(title) +
       "&body=" + encodeURIComponent(lastBody);
-    elManual.href = REPO + "/issues/new?title=" + encodeURIComponent(title);
+    manualUrl = REPO + "/issues/new?title=" + encodeURIComponent(title);
 
-    if (quickUrl.length <= QUICK_URL_LIMIT) {
-      elQuick.removeAttribute("disabled");
-      elQuick.href = quickUrl;
-      elQuickNote.textContent = "会打开 GitHub 新建 Issue 页面，标题和正文已填好，登录后直接提交即可。";
-    } else {
-      // 内容太大塞不进 URL，只能走手动粘贴
-      elQuick.setAttribute("disabled", "");
-      elQuick.removeAttribute("href");
-      elQuickNote.textContent = "这份作业集比较大，URL 预填放不下，请用方式二手动粘贴。";
-    }
+    elQuick.href = quickUrl;
+    elQuickNote.innerHTML = "";
+    appendText(elQuickNote, "span", "会打开 GitHub 新建 Issue 页面，标题正文已填好。打开后还有一步：");
+    var b = document.createElement("b");
+    b.textContent = "把刚才那份 .json 文件拖进「作业集 JSON」那一节";
+    elQuickNote.appendChild(b);
+    appendText(elQuickNote, "span", "（会变成附件链接），然后提交。机器人会下载附件自动校验。");
     elPanel.hidden = false;
     elPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
-  elCopyBody.addEventListener("click", function () {
-    if (!lastBody) { showToast("请先校验通过"); return; }
-    copyText(lastBody, "投稿正文已复制，去投稿页粘贴吧");
+  document.getElementById("copy-and-open").addEventListener("click", function () {
+    if (!lastBody) { showToast("请先生成投稿"); return; }
+    copyText(lastBody, "正文已复制，在打开的页面里粘贴即可");
+    window.open(manualUrl, "_blank", "noopener");
   });
 })();
 </script>

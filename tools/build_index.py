@@ -53,6 +53,44 @@ def git_last_commit_time(path):
     return now_iso()
 
 
+def collect_plants(jobset):
+    """作业集全量植物名（保序去重）：
+    lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 中 type=plant 的格子。
+    与 tools/issue_to_pr.py 的 collect_plants 同一口径。"""
+    names = []
+    seen = set()
+
+    def add(n):
+        if isinstance(n, str) and n and n not in seen:
+            seen.add(n)
+            names.append(n)
+
+    for t in jobset.get("tables") or []:
+        if not isinstance(t, dict):
+            continue
+        for key in ("lineup", "boss_lineup"):
+            lu = t.get(key)
+            if isinstance(lu, dict):
+                for p in lu.get("plants") or []:
+                    add(p)
+        for bkey in ("boardEarly", "boardLate"):
+            board = t.get(bkey)
+            if not isinstance(board, list):
+                continue
+            for row in board:
+                if not isinstance(row, list):
+                    continue
+                for cell in row:
+                    entries = cell.get("value") if isinstance(cell, dict) else None
+                    if not isinstance(entries, list):
+                        continue
+                    for ent in entries:
+                        if isinstance(ent, dict) and ent.get("type") == "plant":
+                            plant = ent.get("plant") if isinstance(ent.get("plant"), dict) else {}
+                            add(ent.get("label") or plant.get("name"))
+    return names
+
+
 def build_entry(path, fname):
     """解析单个作业集文件，返回索引条目；失败抛异常由调用方捕获。"""
     data = load_json_tolerant(path)
@@ -137,7 +175,12 @@ def build_entry(path, fname):
             if supply:
                 entry["supply"] = supply
 
-    # 合并 sidecar 作者/简介（meta/<code>.json）
+    # 全量植物集合（阵容 ∪ boss 阵容 ∪ 棋盘格子，保序去重）——筛选和装扮统计用
+    all_plants = collect_plants(data)
+    if all_plants:
+        entry["plants"] = all_plants  # 覆盖上面的首表槽位（全量 ⊇ 槽位）
+
+    # 合并 sidecar 作者/简介/装扮标注（meta/<code>.json）
     if CODE_RE.match(code):
         meta_path = os.path.join(META_DIR, code + ".json")
         if os.path.isfile(meta_path):
@@ -148,6 +191,10 @@ def build_entry(path, fname):
                         entry["author"] = str(meta["author"])
                     if meta.get("desc"):
                         entry["desc"] = str(meta["desc"])
+                    # 装扮聚合：none=全不需要 / required=含需装扮（供主页筛选）
+                    pc = meta.get("plant_costumes")
+                    if isinstance(pc, dict) and pc:
+                        entry["costume"] = "required" if any(pc.values()) else "none"
             except Exception as e:
                 print(f"[warn] meta/{code}.json 解析失败，忽略 sidecar：{e}")
     return entry

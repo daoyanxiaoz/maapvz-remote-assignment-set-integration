@@ -41,12 +41,37 @@
 </div>
 
 <main>
+  <div class="filter-bar" id="filter-bar" hidden>
+    <div class="filter-group" id="f-worlds" hidden>
+      <span class="filter-label">世界</span>
+      <span id="world-chips"></span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">植物</span>
+      <div class="picker" id="plant-picker">
+        <button class="picker-toggle" id="plant-toggle" type="button">全部植物 ▾</button>
+        <div class="picker-panel" id="plant-panel" hidden>
+          <input id="plant-search" type="search" placeholder="搜索植物名…" autocomplete="off">
+          <div class="picker-list" id="plant-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">装扮</span>
+      <div class="tri" id="costume-tri">
+        <button type="button" data-v="all" class="on">全部</button>
+        <button type="button" data-v="none">全无需装扮</button>
+        <button type="button" data-v="required">含需装扮植物</button>
+      </div>
+    </div>
+  </div>
+
   <div id="state-loading" class="state">加载中…</div>
   <div id="state-error" class="state error" hidden>
     作业集清单加载失败 😢<br><br>
     <small id="error-detail"></small>
   </div>
-  <div id="state-empty" class="state" hidden>没有匹配的作业集，换个关键词试试？</div>
+  <div id="state-empty" class="state" hidden>没有匹配的作业集，换个关键词或筛选条件试试？</div>
   <div id="grid" class="grid"></div>
 </main>
 
@@ -75,6 +100,11 @@
   var PLANT_RARE = {};  // 植物中文名 → 稀有度 0~4（card_bg 底图）
   var toastTimer = null;
 
+  // 筛选状态
+  var fWorlds = {};     // 选中的世界
+  var fPlants = {};     // 选中的植物
+  var fCostume = "all"; // all | none | required
+
   // 世界 → 卡片顶部色带（worlds 空 → 不画）
   var WORLD_BAND = [
     ["埃及", "#d4a017"], ["海盗", "#2e86c1"], ["西部", "#b9770e"], ["未来", "#7b5aa6"],
@@ -93,7 +123,7 @@
         }
       }
     }
-    return null; // 空/未知 → 不画色带（卡片退回木棕顶边）
+    return null;
   }
 
   // 覆盖条配色：草坪绿系深浅轮换（按表序）
@@ -233,6 +263,7 @@
     return slot;
   }
 
+  // —— 卡片三要素：基础信息 + 覆盖预览条 + 阵容植物图标排 ——
   function buildCard(job) {
     var card = el("div", "card");
     var band = worldBand(job.worlds);
@@ -260,7 +291,10 @@
       card.appendChild(tags);
     }
 
-    // 阵容植物图标条；空阵容 = 编队换阵型作业集
+    // 关卡覆盖预览条
+    card.appendChild(buildCoverageBar(job.coverage, job.max_level));
+
+    // 阵容植物图标排（全量去重；空 = 编队换阵型）
     if (Array.isArray(job.plants) && job.plants.length) {
       var strip = el("div", "plant-strip");
       job.plants.forEach(function (p) { strip.appendChild(plantSlot(p)); });
@@ -269,47 +303,14 @@
       card.appendChild(el("span", "deck-note", "编队换阵"));
     }
 
-    // 关卡覆盖条
-    card.appendChild(buildCoverageBar(job.coverage, job.max_level));
-
-    // 摘要行 + 徽标
+    // 基础信息：作者 · 更新时间
     var meta = el("div", "meta");
-    var line1 = "表 " + (job.tables != null ? job.tables : "?") + " 张";
-    if (job.plants_max) line1 += " · " + job.plants_max + " 植物";
-    if (job.artifact) line1 += " · " + job.artifact;
-    meta.appendChild(el("span", null, line1));
-    var line2parts = [];
-    if (job.author) line2parts.push(job.author);
-    line2parts.push("更新于 " + formatTime(job.updated));
-    meta.appendChild(el("span", null, line2parts.join(" · ")));
+    var parts = [];
+    if (job.author) parts.push(job.author);
+    parts.push("更新于 " + formatTime(job.updated));
+    meta.appendChild(el("span", null, parts.join(" · ")));
     if (job.desc) meta.appendChild(el("span", "desc", job.desc));
     card.appendChild(meta);
-
-    // 特性徽标：收尾方式 / 自动选卡
-    var chips = [];
-    if (job.end_desc) chips.push(job.end_desc);
-    if (job.outer_pick === "auto") chips.push("自动选卡");
-    if (chips.length) {
-      var chipRow = el("div", "tags");
-      chips.forEach(function (c) { chipRow.appendChild(el("span", "tag purple", c)); });
-      card.appendChild(chipRow);
-    }
-
-    // 补给优先序（图标按顺序排）
-    if (Array.isArray(job.supply) && job.supply.length) {
-      var row = el("div", "supply-row");
-      row.appendChild(el("span", "supply-label", "补给"));
-      job.supply.forEach(function (s) {
-        var img = document.createElement("img");
-        img.src = "img/supply/" + encodeURIComponent(s.id) + ".png";
-        img.alt = String(s.name);
-        img.title = String(s.name);
-        img.loading = "lazy";
-        img.onerror = function () { this.remove(); };
-        row.appendChild(img);
-      });
-      card.appendChild(row);
-    }
 
     // 下载（阳光黄）+ 复制链接（图标按钮，放右侧）
     var actions = el("div", "actions");
@@ -325,9 +326,30 @@
     return card;
   }
 
+  // —— 三维筛选 ——
+  function passFilters(j) {
+    // 世界：选了才过滤；作业集 worlds 空则不命中任何世界筛选
+    var ws = Object.keys(fWorlds);
+    if (ws.length) {
+      var jw = Array.isArray(j.worlds) ? j.worlds : [];
+      if (!ws.some(function (w) { return jw.indexOf(w) !== -1; })) return false;
+    }
+    // 植物：选中的每棵都要在作业集全量植物里
+    var ps = Object.keys(fPlants);
+    if (ps.length) {
+      var jp = Array.isArray(j.plants) ? j.plants : [];
+      if (!ps.every(function (p) { return jp.indexOf(p) !== -1; })) return false;
+    }
+    // 装扮：三态
+    if (fCostume === "none" && j.costume !== "none") return false;
+    if (fCostume === "required" && j.costume !== "required") return false;
+    return true;
+  }
+
   function render() {
     var q = elSearch.value.trim().toLowerCase();
     var list = jobs.filter(function (j) {
+      if (!passFilters(j)) return false;
       if (!q) return true;
       var hay = [j.name, j.code, j.author, j.desc].filter(Boolean).join("\n").toLowerCase();
       return hay.indexOf(q) !== -1;
@@ -335,6 +357,96 @@
     grid.innerHTML = "";
     list.forEach(function (j) { grid.appendChild(buildCard(j)); });
     elEmpty.hidden = list.length !== 0;
+  }
+
+  function setupFilters() {
+    // 世界 chips：全集为空 → 整组隐藏
+    var worldSet = [];
+    jobs.forEach(function (j) {
+      (Array.isArray(j.worlds) ? j.worlds : []).forEach(function (w) {
+        if (worldSet.indexOf(w) === -1) worldSet.push(w);
+      });
+    });
+    if (worldSet.length) {
+      var box = document.getElementById("f-worlds");
+      var chips = document.getElementById("world-chips");
+      worldSet.forEach(function (w) {
+        var c = el("button", "f-chip", w);
+        c.type = "button";
+        c.addEventListener("click", function () {
+          if (fWorlds[w]) { delete fWorlds[w]; c.classList.remove("on"); }
+          else { fWorlds[w] = 1; c.classList.add("on"); }
+          render();
+        });
+        chips.appendChild(c);
+      });
+      box.hidden = false;
+    }
+
+    // 植物多选（可搜索）
+    var plantSet = [];
+    jobs.forEach(function (j) {
+      (Array.isArray(j.plants) ? j.plants : []).forEach(function (p) {
+        if (plantSet.indexOf(p) === -1) plantSet.push(p);
+      });
+    });
+    plantSet.sort();
+    var toggle = document.getElementById("plant-toggle");
+    var panel = document.getElementById("plant-panel");
+    var plist = document.getElementById("plant-list");
+    var psearch = document.getElementById("plant-search");
+
+    function refreshToggle() {
+      var n = Object.keys(fPlants).length;
+      toggle.textContent = n ? ("已选 " + n + " 种植物 ▾") : "全部植物 ▾";
+    }
+    function renderList() {
+      var q = psearch.value.trim();
+      plist.innerHTML = "";
+      plantSet.forEach(function (p) {
+        if (q && p.indexOf(q) === -1) return;
+        var item = el("div", "picker-item" + (fPlants[p] ? " on" : ""));
+        var en = PLANT_EN[p];
+        if (en) {
+          var img = document.createElement("img");
+          img.src = "img/plants/" + en + ".webp";
+          img.alt = "";
+          img.loading = "lazy";
+          img.onerror = function () { this.remove(); };
+          item.appendChild(img);
+        }
+        item.appendChild(el("span", null, p));
+        item.addEventListener("click", function () {
+          if (fPlants[p]) delete fPlants[p]; else fPlants[p] = 1;
+          item.classList.toggle("on");
+          refreshToggle();
+          render();
+        });
+        plist.appendChild(item);
+      });
+    }
+    toggle.addEventListener("click", function () {
+      panel.hidden = !panel.hidden;
+      if (!panel.hidden) { renderList(); psearch.focus(); }
+    });
+    psearch.addEventListener("input", renderList);
+    document.addEventListener("click", function (ev) {
+      var picker = document.getElementById("plant-picker");
+      if (!picker.contains(ev.target)) panel.hidden = true;
+    });
+
+    // 装扮三态
+    var tri = document.getElementById("costume-tri");
+    tri.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button");
+      if (!b) return;
+      fCostume = b.getAttribute("data-v");
+      tri.querySelectorAll("button").forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+      render();
+    });
+
+    document.getElementById("filter-bar").hidden = false;
   }
 
   elSearch.addEventListener("input", render);
@@ -362,6 +474,7 @@
         data.count != null ? data.count : jobs.length;
       document.getElementById("stat-updated").textContent = formatTime(data.updated);
       elLoading.hidden = true;
+      if (jobs.length) setupFilters();
       render();
     })
     .catch(function (err) {

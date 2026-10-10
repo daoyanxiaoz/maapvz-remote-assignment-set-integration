@@ -48,12 +48,19 @@
         <div class="tags" id="j-worlds" style="margin-bottom:8px"></div>
         <div class="hero-meta" id="j-meta"></div>
         <div class="hero-desc" id="j-desc" hidden></div>
-        <div id="j-coverage" style="margin:10px 0 2px;max-width:480px"></div>
         <div class="actions" style="display:flex;gap:8px">
           <a id="j-download" class="btn primary" href="#">下载 JSON</a>
           <button id="j-copy-link" class="btn" type="button">复制下载链接</button>
         </div>
       </div>
+    </div>
+
+    <div class="table-card" id="j-cov-card">
+      <h3>关卡覆盖（只读）</h3>
+      <div class="table-sub" id="j-cov-sub">谁覆盖哪一关一目了然；点表名高亮该表。交叠关归先出现的表。</div>
+      <div class="layer-list" id="j-layer-list"></div>
+      <div class="cov-board" id="j-cov-board"></div>
+      <div class="cov-warn" id="j-cov-warn" hidden></div>
     </div>
 
     <div id="j-tables"></div>
@@ -83,6 +90,7 @@
   var PLANT_EN = {};    // 植物中文名 → 英文文件名
   var PLANT_RARE = {};  // 植物中文名 → 稀有度 0~4
   var ART_EN = {};      // 神器中文名 → 英文文件名（兜底，优先用作业集自带的 artifact_en）
+  var COSTUMES = {};    // 植物中文名 → 是否需装扮（meta.plant_costumes ∪ plant_meta）
 
   // 世界关键词 → 世界立绘文件名（透明底）
   var WORLD_IMG = [
@@ -154,46 +162,205 @@
     document.getElementById("error-detail").textContent = msg;
   }
 
-  // 覆盖条：图层规则 = 先出现的表优先；levels 权威，空则 [from, to)
-  function buildCoverageBar(coverage, maxLevel) {
-    var bar = el("div", "cov-bar");
-    if (!Array.isArray(coverage) || !coverage.length) return bar;
-    var max = maxLevel || 149;
-    var owner = new Array(max + 1).fill(-1);
-    coverage.forEach(function (c, ti) {
-      if (Array.isArray(c.levels) && c.levels.length) {
-        c.levels.forEach(function (lv) {
-          lv = Math.round(Number(lv));
-          if (lv >= 1 && lv <= max && owner[lv] === -1) owner[lv] = ti;
-        });
-      } else if (typeof c.from === "number") {
-        var t = (typeof c.to === "number") ? Math.min(c.to - 1, max) : max;
-        for (var u = Math.max(1, Math.round(c.from)); u <= t; u++) {
-          if (owner[u] === -1) owner[u] = ti;
-        }
-      }
-    });
-    var u = 1;
-    while (u <= max) {
-      var o = owner[u], v = u;
-      while (v <= max && owner[v] === o) v++;
-      if (o !== -1) {
-        var seg = document.createElement("div");
-        seg.className = "cov-seg";
-        seg.style.left = ((u - 1) / max * 100) + "%";
-        seg.style.width = ((v - u) / max * 100) + "%";
-        seg.style.background = COV_SHADES[o % COV_SHADES.length];
-        var c = coverage[o];
-        seg.title = "表" + (o + 1) + "：" + c.from + "~" +
-                    (typeof c.to === "number" ? (c.to - 1) : "MAX") + " 关";
-        bar.appendChild(seg);
-      }
-      u = v;
+  // 表覆盖的显式关卡号数组：levels 优先，cover.picks 兜底
+  function tableLevels(t, max) {
+    var src = null;
+    if (Array.isArray(t.levels) && t.levels.length) src = t.levels;
+    else if (t.cover && Array.isArray(t.cover.picks) && t.cover.picks.length) src = t.cover.picks;
+    if (src) {
+      var out = [];
+      src.forEach(function (lv) {
+        lv = Math.round(Number(lv));
+        if (lv >= 1 && lv <= max && out.indexOf(lv) === -1) out.push(lv);
+      });
+      return out;
     }
-    return bar;
+    // 老的导出可能没有显式数组：退化为 [from, to) 区间（仅兜底）
+    if (typeof t.from_level === "number") {
+      var to = (typeof t.to_level === "number") ? Math.min(t.to_level - 1, max) : max;
+      var arr = [];
+      for (var u = Math.max(1, Math.round(t.from_level)); u <= to; u++) arr.push(u);
+      return arr;
+    }
+    return [];
   }
 
-  // 单个植物格子：稀有度底图 + 图标 + 名字 + 阶数角标 + 装扮标记（后两者有数据才显示）
+  // —— 关卡覆盖画板（只读）：图层栈 + 149 宫格 ——
+  function buildCoverageBoard(tables, maxLevel) {
+    var max = maxLevel || 149;
+    var owners = [];               // owners[lv] = [表idx, ...]（先出现的在前）
+    for (var i = 0; i <= max; i++) owners.push([]);
+    tables.forEach(function (t, ti) {
+      tableLevels(t, max).forEach(function (lv) {
+        if (owners[lv].indexOf(ti) === -1) owners[lv].push(ti);
+      });
+    });
+
+    var board = document.getElementById("j-cov-board");
+    var cells = [];
+    var uncovered = 0;
+    for (var lv = 1; lv <= max; lv++) {
+      var c = el("div", "lz-cell", String(lv));
+      var isBoss = lv % 5 === 0;
+      var own = owners[lv];
+      var tip = "第 " + lv + " 关";
+      if (isBoss) { c.classList.add("lz-boss"); tip += "（boss 关）"; }
+      if (own.length) {
+        var owner = own[0];  // 图层规则：先出现的表优先
+        c.style.background = COV_SHADES[owner % COV_SHADES.length];
+        c.style.color = "#fff";
+        var badge = el("span", "lz-badge", String(owner + 1));
+        badge.style.background = "rgba(0,0,0,.35)";
+        c.appendChild(badge);
+        if (own.length > 1) {
+          tip += "｜表" + own.map(function (t) { return t + 1; }).join("、") +
+                 " 都覆盖此关，实际用表" + (owner + 1);
+        } else {
+          tip += "｜表" + (owner + 1) + " 覆盖中";
+        }
+      } else {
+        c.classList.add("lz-uncovered");
+        tip += "｜无人覆盖";
+        uncovered++;
+      }
+      c.title = tip;
+      board.appendChild(c);
+      cells.push({ el: c, owners: own });
+    }
+    if (uncovered) {
+      var warn = document.getElementById("j-cov-warn");
+      warn.hidden = false;
+      warn.textContent = "⚠ 未覆盖 " + uncovered + " 关（红色格子）";
+    }
+
+    // 图层栈：点表名高亮该表格子
+    var list = document.getElementById("j-layer-list");
+    var active = -1;
+    tables.forEach(function (t, ti) {
+      var item = el("button", "layer-item");
+      item.type = "button";
+      var dot = el("span", "layer-dot");
+      dot.style.background = COV_SHADES[ti % COV_SHADES.length];
+      item.appendChild(dot);
+      var lv = t.from_level != null
+        ? (t.from_level + "~" + (typeof t.to_level === "number" ? t.to_level - 1 : "MAX"))
+        : "";
+      item.appendChild(el("span", null, "表" + (ti + 1) + (lv ? " · " + lv : "")));
+      item.addEventListener("click", function () {
+        active = (active === ti) ? -1 : ti;
+        list.querySelectorAll(".layer-item").forEach(function (x, xi) {
+          x.classList.toggle("on", xi === active);
+        });
+        cells.forEach(function (c) {
+          c.el.classList.toggle("lz-dim",
+            active !== -1 && c.owners.indexOf(active) === -1);
+        });
+      });
+      list.appendChild(item);
+    });
+  }
+
+  // —— 种植布局画板（只读）：5 行 × 9 列草坪，前期/后期切换 ——
+  function plantImgUrl(ent) {
+    // 格子里的 img 是相对编辑器根的路径（static/plant/xxx.webp）→ 改写为本仓库目录
+    var p = (ent.plant && ent.plant.img) || "";
+    if (!p) return null;
+    var seg = p.split("/").pop();
+    return seg ? "img/plants/" + seg : null;
+  }
+
+  var CELL_TYPE_TEXT = { feed: "豆", shovel: "铲" };
+
+  function boardCell(entries, alt) {
+    var c = el("div", "b-cell" + (alt ? " alt" : ""));
+    if (!entries || !entries.length) return c;
+    var first = entries[0];
+
+    if (first.type === "plant") {
+      var url = plantImgUrl(first);
+      var name = (first.plant && first.plant.name) || first.label || "";
+      if (url) {
+        var img = document.createElement("img");
+        img.src = url;
+        img.alt = String(name);
+        img.loading = "lazy";
+        img.onerror = function () {
+          this.remove();
+          c.appendChild(el("div", "b-text", String(name).slice(0, 3)));
+        };
+        c.appendChild(img);
+      } else {
+        c.appendChild(el("div", "b-text", String(name).slice(0, 3)));
+      }
+      // 模式角标（单=一次性 / 循=循环补种）与种植顺序号
+      if (first.mode === "once" || first.mode === "loop") {
+        var mb = el("span", "b-mode " + first.mode, first.mode === "once" ? "单" : "循");
+        mb.title = first.mode === "once" ? "只种一次" : "循环补种";
+        c.appendChild(mb);
+      }
+      if (first.seq != null) {
+        c.appendChild(el("span", "b-seq", String(first.seq)));
+      }
+      if (entries.length > 1) {
+        var st = el("span", "b-stack", "×" + entries.length);
+        st.title = "叠种 " + entries.length + " 棵";
+        c.appendChild(st);
+      }
+      var tip = String(name);
+      if (entries.length > 1) tip += " 等 " + entries.length + " 棵";
+      if (first.seq != null) tip += "｜种植顺序 " + first.seq;
+      c.title = tip;
+    } else {
+      // 非植物动作（喂豆 / 铲子等）：文字标识
+      var txt = CELL_TYPE_TEXT[first.type] || String(first.label || first.type || "").slice(0, 3);
+      c.appendChild(el("div", "b-text", txt));
+      c.title = String(first.label || first.type || "");
+      if (first.seq != null) c.appendChild(el("span", "b-seq", String(first.seq)));
+    }
+    return c;
+  }
+
+  function renderBoardGrid(container, board) {
+    container.innerHTML = "";
+    if (!Array.isArray(board)) return;
+    board.forEach(function (row, r) {
+      var cells = Array.isArray(row) ? row : [];
+      for (var c = 0; c < 9; c++) {
+        var cell = cells[c];
+        var entries = (cell && Array.isArray(cell.value)) ? cell.value : [];
+        container.appendChild(boardCell(entries, (r + c) % 2 === 1));
+      }
+    });
+  }
+
+  function buildBoardPanel(t) {
+    var hasE = Array.isArray(t.boardEarly) && t.boardEarly.length;
+    var hasL = Array.isArray(t.boardLate) && t.boardLate.length;
+    if (!hasE && !hasL) return null;
+
+    var wrap = el("div");
+    var tabs = el("div", "board-tabs");
+    var gridBox = el("div", "board-grid");
+    var btns = [];
+    function select(which) {
+      btns.forEach(function (b) { b.el.classList.toggle("on", b.which === which); });
+      renderBoardGrid(gridBox, which === "early" ? t.boardEarly : t.boardLate);
+    }
+    [["early", "前期", hasE], ["late", "后期", hasL]].forEach(function (cfg) {
+      if (!cfg[2]) return;
+      var b = el("button", "board-tab", cfg[1]);
+      b.type = "button";
+      b.addEventListener("click", function () { select(cfg[0]); });
+      tabs.appendChild(b);
+      btns.push({ el: b, which: cfg[0] });
+    });
+    wrap.appendChild(tabs);
+    wrap.appendChild(gridBox);
+    select(hasE ? "early" : "late");
+    return wrap;
+  }
+
+  // 单个植物格子：稀有度底图 + 图标 + 名字 + 阶数角标 + 需装扮徽标
   function plantCell(name, meta) {
     var cell = el("div", "plant-cell");
     var fig = el("div", "plant-fig");
@@ -229,12 +396,13 @@
         rb.title = tier + " 阶";
         cell.appendChild(rb);
       }
-      var costume = meta.costume || meta["装扮"];
-      if (costume) {
-        var cb = el("span", "costume-badge", "装");
-        cb.title = "带装扮";
-        cell.appendChild(cb);
-      }
+    }
+    // 需装扮徽标（阳光黄醒目色）：meta sidecar 的 plant_costumes ∪ plant_meta
+    var costume = (meta && (meta.costume || meta["装扮"])) || COSTUMES[name];
+    if (costume) {
+      var cb = el("span", "costume-badge", "需装扮");
+      cb.title = "这株植物需要装扮";
+      cell.appendChild(cb);
     }
     return cell;
   }
@@ -319,16 +487,7 @@
     return true;
   }
 
-  // 表的覆盖描述（喂给覆盖条）
-  function tableCov(t) {
-    var cov = {};
-    if (typeof t.from_level === "number") cov.from = t.from_level;
-    cov.to = (typeof t.to_level === "number") ? t.to_level : null;
-    if (Array.isArray(t.levels) && t.levels.length) cov.levels = t.levels;
-    return cov;
-  }
-
-  function buildTable(t, idx, plantMeta, maxLevel) {
+  function buildTable(t, idx, plantMeta) {
     var card = el("div", "table-card");
 
     var title = "表 " + (idx + 1);
@@ -336,9 +495,6 @@
     if (lv) title += " · " + lv;
     card.appendChild(el("h3", null, title));
     if (t.label) card.appendChild(el("div", "table-sub", String(t.label)));
-
-    // 本表覆盖条
-    card.appendChild(buildCoverageBar([tableCov(t)], maxLevel));
 
     // —— 阵容 ——
     card.appendChild(el("div", "sec-title", "阵容"));
@@ -361,6 +517,13 @@
         card.appendChild(el("div", "sec-title", "神器（boss 关）"));
         card.appendChild(artifactRow(String(bossArt), t.boss_artifact_en));
       }
+    }
+
+    // —— 种植布局画板（前期/后期，只读） ——
+    var boardPanel = buildBoardPanel(t);
+    if (boardPanel) {
+      card.appendChild(el("div", "sec-title", "种植布局（只读）"));
+      card.appendChild(boardPanel);
     }
 
     // —— boss 关阵容（与普通关不同时才单独展示） ——
@@ -407,6 +570,13 @@
   function render(job, sidecar) {
     document.title = (job.name || job.code) + " · MAAPVZ 作业集分享站";
 
+    // 装扮标注：meta sidecar 的 plant_costumes 汇入全局
+    if (sidecar && sidecar.plant_costumes && typeof sidecar.plant_costumes === "object") {
+      Object.keys(sidecar.plant_costumes).forEach(function (k) {
+        COSTUMES[k] = !!sidecar.plant_costumes[k];
+      });
+    }
+
     // —— 头部 ——
     document.getElementById("j-name").textContent = job.name || job.code;
     document.getElementById("j-code").textContent = job.code;
@@ -442,10 +612,9 @@
       d.hidden = false;
     }
 
-    // —— 总覆盖条（全部表叠在一起，图层规则） ——
+    // —— 关卡覆盖画板（全表图层叠放） ——
     var maxLevel = (typeof job.max_level === "number") ? job.max_level : 149;
-    document.getElementById("j-coverage").appendChild(
-      buildCoverageBar(tables.map(tableCov), maxLevel));
+    buildCoverageBoard(tables, maxLevel);
 
     // —— 策略表 ——
     var root = document.getElementById("j-tables");
@@ -453,7 +622,7 @@
     tables.forEach(function (t, i) {
       var tm = (t && t.plant_meta && typeof t.plant_meta === "object") ? t.plant_meta : {};
       var merged = Object.assign({}, globalMeta, tm); // 表级覆盖全局
-      root.appendChild(buildTable(t, i, merged, maxLevel));
+      root.appendChild(buildTable(t, i, merged));
     });
 
     elLoading.hidden = true;
