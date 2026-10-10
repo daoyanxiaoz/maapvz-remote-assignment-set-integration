@@ -26,6 +26,14 @@ body:
     validations:
       required: true
   - type: input
+    id: worlds
+    attributes:
+      label: 适用世界
+      description: 这份作业集能打哪些世界（必填，至少一个），顿号分隔
+      placeholder: "埃及、海盗"
+    validations:
+      required: true
+  - type: input
     id: author
     attributes:
       label: 作者昵称

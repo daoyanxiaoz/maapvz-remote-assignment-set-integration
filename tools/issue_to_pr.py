@@ -44,6 +44,11 @@ CODE_RE = re.compile(r"^[A-Za-z0-9_\-]{1,64}$")
 ATTACH_RE = re.compile(
     r"https://github\.com/user-attachments/files/\d+/[A-Za-z0-9._\-]+")
 
+# 19 个适用世界（与站点世界标签/立绘关键词同源），投稿必填至少一个
+KNOWN_WORLDS = ["埃及", "海盗", "西部", "功夫", "未来", "黑暗", "沙滩", "冰河", "天空",
+                "失落", "摇滚", "恐龙", "摩登", "蒸汽", "复兴", "平安", "童话",
+                "亚特兰蒂斯", "月球"]
+
 
 def download_attachment(url, max_bytes=MAX_BYTES):
     """下载 GitHub 附件（跟随重定向到官方对象存储）。返回 (文本, None) 或 (None, 错误)。"""
@@ -63,27 +68,42 @@ def download_attachment(url, max_bytes=MAX_BYTES):
 
 
 def resolve_json_field(raw):
-    """「作业集 JSON」栏两种形态都支持：
-    1) 直接粘贴的 JSON 文本（兼容旧流程）；
-    2) 拖文件生成的 GitHub 附件链接（新流程，正文其余文字忽略）。
+    """「作业集 JSON」栏三种形态都支持：
+    1) 直接粘贴的 JSON 文本；
+    2) 拖文件生成的 GitHub 附件链接；
+    3) 站点一键投稿生成的 deflate64: 压缩块（raw deflate + base64url）。
     返回 (JSON文本, None) 或 (None, 错误)。"""
     text = strip_code_fence(raw or "")
     if not text:
         return None, ("「作业集 JSON」一栏是空的。把编辑器导出的 .json 文件"
                       "**拖进那一栏**（GitHub 会自动上传成附件链接），或直接把 JSON 全文粘贴进去。")
-    # 先试直接解析
+    # 1) 先试直接解析
     try:
         json.loads(text)
         return text, None
     except json.JSONDecodeError:
         pass
-    # 再找附件链接
+    # 2) 附件链接
     m = ATTACH_RE.search(raw or "")
-    if not m:
-        return None, ("「作业集 JSON」里既没解析到 JSON，也没找到附件链接。\n"
-                      "把编辑器导出的 .json 文件**拖进那一栏**，等它变成 "
-                      "`https://github.com/user-attachments/files/...` 链接后再提交。")
-    return download_attachment(m.group(0))
+    if m:
+        return download_attachment(m.group(0))
+    # 3) deflate64 压缩块（一键投稿通道）
+    m2 = re.search(r"deflate64:([A-Za-z0-9_\-]+)", raw or "")
+    if m2:
+        import base64
+        import zlib
+        payload = m2.group(1)
+        try:
+            blob = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4))
+            text = zlib.decompressobj(-15).decompress(blob, MAX_BYTES + 1)
+            if len(text) > MAX_BYTES:
+                return None, "解压后的 JSON 超过 2MB 上限。"
+            return text.decode("utf-8"), None
+        except Exception as e:
+            return None, f"deflate64 压缩块解压失败：{e}"
+    return None, ("「作业集 JSON」里既没解析到 JSON，也没找到附件链接。\n"
+                  "把编辑器导出的 .json 文件**拖进那一栏**，等它变成 "
+                  "`https://github.com/user-attachments/files/...` 链接后再提交。")
 
 
 # ---------- Issue Form 解析 ----------
@@ -176,6 +196,20 @@ def validate_jobset(raw):
     tables = data["tables"]
     if not isinstance(tables, list) or not tables:
         return None, "`tables` 必须是非空数组（至少 1 张关卡段策略表）。"
+
+    # 强制选卡编队：编队序号（deck）只在投稿人本机有效，别人无法复现，一律拒绝
+    for i, t in enumerate(tables, 1):
+        if not isinstance(t, dict):
+            continue
+        lu = t.get("lineup") or {}
+        bl = t.get("boss_lineup") or {}
+        if isinstance(lu, dict) and lu.get("deck"):
+            return None, (f"表{i} 的阵容用了编队序号（编队{lu['deck']}）。"
+                          "编队序号只在你自己的游戏里有效，别人无法复现——"
+                          "请在编辑器里改成选卡编队（明确植物列表）再导出投稿。")
+        if isinstance(bl, dict) and bl.get("deck"):
+            return None, (f"表{i} 的 boss 关阵容用了编队序号（编队{bl['deck']}），"
+                          "请改成明确的植物列表再投稿。")
 
     size = len(json.dumps(data, ensure_ascii=False).encode("utf-8"))
     if size > MAX_BYTES:
@@ -286,6 +320,22 @@ def validate_costumes(raw_text, plants, known):
     return {p: ann[p] for p in plants}, None
 
 
+def parse_worlds(raw_text):
+    """解析「适用世界」栏：顿号/逗号/空白/换行分隔，必须在 19 个世界之内，至少一个。
+    返回 (世界列表, None) 或 (None, 错误)。"""
+    if not raw_text.strip():
+        return None, ("「适用世界」为空。请至少填一个这份作业集能打的世界"
+                      "（如：埃及、海盗），别的玩家需要靠它判断适不适用。")
+    parts = [p for p in re.split(r"[、，,/\s]+", raw_text) if p]
+    bad = [p for p in parts if p not in KNOWN_WORLDS]
+    if bad:
+        return None, ("「适用世界」里有不认识的名字："
+                      + "、".join(f"`{p}`" for p in bad[:10])
+                      + "\n可选项：" + "、".join(KNOWN_WORLDS))
+    # 按官方顺序去重
+    return [w for w in KNOWN_WORLDS if w in parts], None
+
+
 # ---------- 落盘规范化 ----------
 
 def strip_compiled(jobset):
@@ -339,6 +389,7 @@ def main():
     desc = clean_value(get_field(fields, "一句话简介", "desc"))
     note = clean_value(get_field(fields, "补充说明", "note"))
     raw_costumes = clean_value(get_field(fields, "装扮标注"))
+    raw_worlds = clean_value(get_field(fields, "适用世界"))
 
     # —— 1. 作业集 JSON 校验（支持附件链接 / 直接粘贴两种形态） ——
     json_text, err = resolve_json_field(raw_json_field)
@@ -365,6 +416,12 @@ def main():
     plant_costumes, err = validate_costumes(raw_costumes, plants, known)
     if err is not None:
         return fail_with_comment(err)
+
+    # —— 2.5 适用世界必填校验，写回作业集 worlds 字段（规范位置） ——
+    worlds, err = parse_worlds(raw_worlds)
+    if err is not None:
+        return fail_with_comment(err)
+    data["worlds"] = worlds
 
     # —— 3. 规范化落盘 ——
     stripped = strip_compiled(data)  # 剥预编译块

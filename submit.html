@@ -32,9 +32,8 @@
   <div class="form-card">
     <h2>上传作业集</h2>
     <p class="hint">把编辑器导出的作业集 JSON <b>文件拖进来</b>，站点会本地解析并校验；
-      然后给里面每棵植物标注要不要装扮（必填），最后一键打开 GitHub 投稿页——
-      正文已经预填好，你只需把刚才那份 .json 文件<b>拖进投稿页的「作业集 JSON」一节</b>
-      （GitHub 会自动上传成附件），机器人会下载附件校验并自动开 PR，维护者审核合并后即可上站。</p>
+      然后给每棵植物标注装扮、选好适用世界，点「生成投稿」→「复制正文并打开投稿页」，
+      在打开的 GitHub 页面里 <b>Ctrl+V 粘贴</b>提交即可。机器人会自动校验并开 PR，维护者审核合并后即可上站。</p>
 
     <div class="field">
       <label>作业集 JSON 文件</label>
@@ -65,6 +64,12 @@
     </div>
 
     <div class="field">
+      <label>适用世界 <span class="opt">（必填：这份作业集能打哪些世界，至少选一个）</span></label>
+      <div class="world-pick" id="world-pick"></div>
+      <p class="step-note">会显示在站点卡片和详情页上，也是主页世界筛选的依据。</p>
+    </div>
+
+    <div class="field">
       <label for="author-input">作者昵称 <span class="opt">（可选，显示在卡片上）</span></label>
       <input type="text" id="author-input" maxlength="50">
     </div>
@@ -86,19 +91,14 @@
 
   <div id="submit-panel" class="form-card" hidden>
     <h2>去投稿</h2>
-    <p class="hint">两种方式任选其一。内容不大时推荐方式一，一键搞定。</p>
-
-    <p style="margin:0 0 6px;font-weight:600;font-size:14px">方式一（推荐）：一键投稿</p>
+    <p class="hint" id="submit-hint"></p>
+    <div class="step-actions" id="quick-row" hidden>
+      <a id="quick-submit" class="btn primary" href="#" target="_blank" rel="noopener">一键打开 GitHub 投稿（全部预填）</a>
+    </div>
     <div class="step-actions">
-      <a id="quick-submit" class="btn primary" href="#" target="_blank" rel="noopener">打开 GitHub 投稿（已预填）</a>
+      <button id="copy-and-open" class="btn" type="button">复制正文并打开投稿页（备用）</button>
     </div>
     <p id="quick-note" class="step-note"></p>
-
-    <p style="margin:18px 0 6px;font-weight:600;font-size:14px">方式二：备用</p>
-    <div class="step-actions">
-      <button id="copy-and-open" class="btn" type="button">复制正文并打开投稿页</button>
-    </div>
-    <p class="step-note">正文里不含 JSON 本体——打开投稿页后，把刚才那份 .json 文件<b>拖进「作业集 JSON」那一节</b>（GitHub 会自动上传成附件链接），再提交。</p>
   </div>
 
 </main>
@@ -138,7 +138,9 @@
   var elResult = document.getElementById("check-result");
   var elPanel = document.getElementById("submit-panel");
   var elQuick = document.getElementById("quick-submit");
+  var elQuickRow = document.getElementById("quick-row");
   var elQuickNote = document.getElementById("quick-note");
+  var elSubmitHint = document.getElementById("submit-hint");
   var elToast = document.getElementById("toast");
   var toastTimer = null;
   var knownCodes = {};   // index.json 里的 code，用于本地查撞车
@@ -197,6 +199,39 @@
       }
     })
     .catch(function () {});
+
+  // 神器数据库（需求展示的图标）
+  var ART_EN = {};
+  fetch("data/artifacts.json", { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (list) {
+      if (Array.isArray(list)) {
+        list.forEach(function (a) { if (a && a.name && a.en) ART_EN[a.name] = a.en; });
+      }
+    })
+    .catch(function () {});
+
+  // 神器需求汇总：全表 artifact ∪ bossArtifact，记录出处
+  function collectArtifacts(data) {
+    var map = {}; // name -> { en, where: [] }
+    (data.tables || []).forEach(function (t, i) {
+      if (!t || typeof t !== "object") return;
+      function add(name, en, where) {
+        if (typeof name !== "string" || !name) return;
+        if (!map[name]) map[name] = { en: en || ART_EN[name] || null, where: [] };
+        if (map[name].where.indexOf(where) === -1) map[name].where.push(where);
+      }
+      add(t.artifact, t.artifact_en, "表" + (i + 1));
+      add(t.bossArtifact, t.boss_artifact_en, "表" + (i + 1) + "·boss");
+    });
+    return map;
+  }
+
+  // 19 个适用世界（与站点世界标签/立绘的关键词同源）
+  var WORLDS = ["埃及", "海盗", "西部", "功夫", "未来", "黑暗", "沙滩", "冰河", "天空",
+                "失落", "摇滚", "恐龙", "摩登", "蒸汽", "复兴", "平安", "童话",
+                "亚特兰蒂斯", "月球"];
+  var pickedWorlds = {};
 
   // 作业集全量植物名（与 tools/issue_to_pr.py 的 collect_plants 同一套口径）：
   // lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 里 type=plant 的格子
@@ -260,6 +295,21 @@
     }
     if (!Array.isArray(data.tables) || !data.tables.length) {
       errors.push("tables 必须是非空数组（至少 1 张关卡段策略表）。");
+    } else {
+      // 强制选卡编队：编队序号（deck）只在作者本机有效，别人无法复现，投稿一律拒绝
+      data.tables.forEach(function (t, i) {
+        if (!t || typeof t !== "object") return;
+        var lu = t.lineup || {};
+        var bl = t.boss_lineup || {};
+        if (lu.deck) {
+          errors.push("表" + (i + 1) + " 的阵容用了编队序号（编队" + lu.deck +
+            "）。编队序号只在你自己的游戏里有效，别人无法复现——请在编辑器里改成选卡编队（明确植物列表）再导出。");
+        }
+        if (bl.deck) {
+          errors.push("表" + (i + 1) + " 的 boss 关阵容用了编队序号（编队" + bl.deck +
+            "），请改成明确的植物列表。");
+        }
+      });
     }
 
     var size = new Blob([JSON.stringify(data)]).size;
@@ -268,6 +318,26 @@
     }
 
     return { errors: errors, data: data };
+  }
+
+  // —— 适用世界多选（初始化渲染） ——
+  (function renderWorldPick() {
+    var box = document.getElementById("world-pick");
+    WORLDS.forEach(function (w) {
+      var c = document.createElement("button");
+      c.type = "button";
+      c.className = "w-chip";
+      c.textContent = w;
+      c.addEventListener("click", function () {
+        if (pickedWorlds[w]) { delete pickedWorlds[w]; c.classList.remove("on"); }
+        else { pickedWorlds[w] = 1; c.classList.add("on"); }
+      });
+      box.appendChild(c);
+    });
+  })();
+
+  function pickedWorldList() {
+    return WORLDS.filter(function (w) { return pickedWorlds[w]; });
   }
 
   function showResult(box, ok, htmlBuilder) {
@@ -385,6 +455,41 @@
       if (!jobPlants.length) {
         appendText(box, "div", "（编队换阵型作业集，没有植物需要标注装扮）");
       }
+      // 神器需求汇总（含 boss 关神器）
+      var arts = collectArtifacts(jobData);
+      var names = Object.keys(arts);
+      var title = document.createElement("div");
+      title.style.marginTop = "8px";
+      title.style.fontWeight = "600";
+      title.textContent = names.length
+        ? "这份作业集需要的神器（请确认玩家能获取）："
+        : "这份作业集没有设置神器。";
+      box.appendChild(title);
+      if (names.length) {
+        var row = document.createElement("div");
+        row.className = "artifact-need";
+        names.forEach(function (n) {
+          var item = document.createElement("span");
+          item.className = "a-item";
+          var en = arts[n].en;
+          if (en) {
+            var img = document.createElement("img");
+            img.src = "img/artifacts/" + en + ".png";
+            img.alt = "";
+            img.onerror = function () { this.remove(); };
+            item.appendChild(img);
+          }
+          var nm = document.createElement("span");
+          nm.textContent = n;
+          item.appendChild(nm);
+          var wh = document.createElement("span");
+          wh.className = "a-where";
+          wh.textContent = arts[n].where.join("、");
+          item.appendChild(wh);
+          row.appendChild(item);
+        });
+        box.appendChild(row);
+      }
     });
 
     if (jobPlants.length) {
@@ -473,19 +578,44 @@
     return "### " + label + "\n\n" + (value || "_No response_") + "\n";
   }
 
-  // 投稿用的正文：JSON 本体不进正文（装不下也没必要），投稿人把 .json 文件
-  // 拖进 Issue 的「作业集 JSON」一节，GitHub 会自动上传成附件链接，
-  // 机器人（tools/issue_to_pr.py）再下载校验。
+  // 投稿正文两种模式：
+  // - 小文件：正文里直接带完整 JSON（剥掉 compiled 压缩单行），用户 Ctrl+V 即提交；
+  // - 超大文件（超 GitHub 正文上限）：JSON 栏放占位提示，用户把 .json 文件拖进去变附件链接。
+  // 机器人（tools/issue_to_pr.py）两种形态都能识别。
+  var ISSUE_BODY_LIMIT = 60000; // GitHub 正文上限 65536 字符，留余量
+  var QUICK_URL_LIMIT = 7500;   // 一键投稿 URL 长度上限
+
+  function submissionJsonText(data) {
+    var copy = JSON.parse(JSON.stringify(data));
+    (copy.tables || []).forEach(function (t) {
+      if (t && typeof t === "object") delete t.compiled;
+    });
+    return JSON.stringify(copy);
+  }
+
+  // raw deflate 压缩 + base64url（与机器人端 zlib.decompressobj(-15) + urlsafe_b64decode 对应）
+  // 浏览器不支持 CompressionStream 时返回 null（降级为复制粘贴）
+  function deflate64(text) {
+    if (typeof CompressionStream === "undefined") return Promise.resolve(null);
+    var stream = new Blob([text]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    return new Response(stream).arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf);
+      var bin = "";
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }).catch(function () { return null; });
+  }
+
   function costumeLines() {
     return jobPlants.map(function (p) {
       return p + ":" + (marks[p] ? "需要" : "不需要");
     }).join("\n");
   }
 
-  function buildBody(costumes, author, desc, note) {
-    return field("作业集 JSON",
-                 "👉 把刚才那份 .json 文件拖到这一行（GitHub 会自动上传成附件链接）") + "\n" +
+  function buildBody(jsonFieldContent, costumes, worlds, author, desc, note) {
+    return field("作业集 JSON", jsonFieldContent) + "\n" +
            field("装扮标注", costumes) + "\n" +
+           field("适用世界", worlds) + "\n" +
            field("作者昵称", author) + "\n" +
            field("一句话简介", desc) + "\n" +
            field("补充说明（适用世界/关卡范围/注意事项）", note);
@@ -507,11 +637,31 @@
       elCostumePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       return;
     }
+    // 适用世界必选（至少一个）
+    var worlds = pickedWorldList();
+    if (!worlds.length) {
+      elPanel.hidden = true;
+      showResult(elResult, false, function (box) {
+        appendText(box, "div", "❌ 请至少选择一个「适用世界」——这份作业集能打哪些世界，别的玩家需要知道。");
+      });
+      document.getElementById("world-pick").scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
 
     var author = elAuthor.value.trim();
     var desc = elDesc.value.trim();
     var note = elNote.value.trim();
-    lastBody = buildBody(costumeLines(), author, desc, note);
+    var worldsStr = worlds.join("、");
+    var costumeText = costumeLines();
+
+    // 备用通道的正文：小文件带完整 JSON（Ctrl+V 即提交）；超大文件切附件占位
+    var jsonText = submissionJsonText(jobData);
+    var fullBody = buildBody("```json\n" + jsonText + "\n```", costumeText, worldsStr, author, desc, note);
+    var attachMode = fullBody.length > ISSUE_BODY_LIMIT;
+    lastBody = attachMode
+      ? buildBody("👉 把刚才那份 .json 文件拖到这一行（GitHub 会自动上传成附件链接）",
+                  costumeText, worldsStr, author, desc, note)
+      : fullBody;
 
     showResult(elResult, true, function (box) {
       appendText(box, "div", "✅ 本地校验通过！");
@@ -520,29 +670,53 @@
       var need = jobPlants.filter(function (p) { return marks[p]; });
       s.textContent = "名称：" + jobData.name.trim() + "　code：" + jobData.code +
         "　策略表 " + jobData.tables.length + " 张　植物 " + jobPlants.length +
-        " 种（需装扮 " + need.length + " 种）";
+        " 种（需装扮 " + need.length + " 种）　适用世界：" + worldsStr;
       box.appendChild(s);
     });
 
-    // 投稿链接：标题带「投稿」前缀，服务端机器人靠它识别。
-    // 正文只有标注和说明（JSON 走附件），体积小，一键投稿永远可用。
+    // 投稿页链接（标题 + 「投稿」标签；正文要么 URL 预填，要么走剪贴板）
     var title = "投稿：" + jobData.name.trim() + "（" + jobData.code + "）";
-    var quickUrl = REPO + "/issues/new?labels=" + encodeURIComponent("投稿") +
-      "&title=" + encodeURIComponent(title) +
-      "&body=" + encodeURIComponent(lastBody);
-    manualUrl = REPO + "/issues/new?title=" + encodeURIComponent(title);
+    manualUrl = REPO + "/issues/new?labels=" + encodeURIComponent("投稿") +
+      "&title=" + encodeURIComponent(title);
 
-    elQuick.href = quickUrl;
+    // —— 一键投稿：JSON 压缩成 deflate64 塞 URL，装得下就全预填 ——
+    elQuickRow.hidden = true;
     elQuickNote.innerHTML = "";
-    appendText(elQuickNote, "span", "会打开 GitHub 新建 Issue 页面，标题正文已填好。打开后还有一步：");
-    var b = document.createElement("b");
-    b.textContent = "把刚才那份 .json 文件拖进「作业集 JSON」那一节";
-    elQuickNote.appendChild(b);
-    appendText(elQuickNote, "span", "（会变成附件链接），然后提交。机器人会下载附件自动校验。");
+    elSubmitHint.textContent = "正在压缩正文…";
+    elPanel.hidden = false;
+    elPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    var self = { costumeText: costumeText, worldsStr: worldsStr, author: author, desc: desc, note: note };
+    deflate64(jsonText).then(function (payload) {
+      if (!payload) {
+        elSubmitHint.textContent = "你的浏览器不支持压缩，用下面的备用方式：复制正文 → 打开投稿页 → Ctrl+V → 提交。";
+        return;
+      }
+      var body1 = buildBody("（deflate64 压缩格式，机器人会自动解压校验）\ndeflate64:" + payload,
+                            self.costumeText, self.worldsStr, self.author, self.desc, self.note);
+      var quickUrl = manualUrl + "&body=" + encodeURIComponent(body1);
+      if (quickUrl.length <= QUICK_URL_LIMIT) {
+        elQuick.href = quickUrl;
+        elQuickRow.hidden = false;
+        elSubmitHint.textContent = "点黄色按钮一键投稿：打开的页面标题正文全部预填好，直接提交即可。";
+      } else {
+        elSubmitHint.textContent = "这份作业集太大，一键链接装不下。用下面的备用方式：复制正文 → 打开投稿页 → Ctrl+V → 提交。";
+      }
+    });
+
+    if (attachMode) {
+      elQuickNote.innerHTML = "";
+      appendText(elQuickNote, "span",
+        "这份作业集正文超过 GitHub 单条上限：备用方式粘贴后，再");
+      var b = document.createElement("b");
+      b.textContent = "把刚才那份 .json 文件拖进「作业集 JSON」那一节";
+      elQuickNote.appendChild(b);
+      appendText(elQuickNote, "span", "（会变成附件链接）再提交。");
+    }
     elPanel.hidden = false;
     elPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
+  // 备用：复制正文 + 打开投稿页
   document.getElementById("copy-and-open").addEventListener("click", function () {
     if (!lastBody) { showToast("请先生成投稿"); return; }
     copyText(lastBody, "正文已复制，在打开的页面里粘贴即可");

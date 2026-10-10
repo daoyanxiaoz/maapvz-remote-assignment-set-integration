@@ -421,6 +421,23 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
 .costume-item .c-btns button.on-yes { background: var(--sun); color: #4a2f12; font-weight: 700; }
 .costume-item .c-btns button.on-no { background: var(--lawn); color: #fff; font-weight: 700; }
 
+/* 投稿页：适用世界多选 + 神器需求展示 */
+.world-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+.w-chip {
+  font-size: 12.5px; padding: 4px 12px; border-radius: 999px; cursor: pointer;
+  background: #fff; color: var(--ink); border: 1.5px solid var(--wood-light);
+}
+.w-chip:hover { border-color: var(--lawn); }
+.w-chip.on { background: var(--lawn); border-color: var(--lawn); color: #fff; font-weight: 600; }
+.artifact-need { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.artifact-need .a-item {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--parchment-in); border: 1px solid var(--wood-light);
+  border-radius: 8px; padding: 5px 10px; font-size: 13px;
+}
+.artifact-need .a-item img { width: 26px; height: 26px; object-fit: contain; }
+.artifact-need .a-item .a-where { font-size: 11.5px; color: var(--ink-muted); }
+
 .artifact-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .artifact-row img { width: 44px; height: 44px; object-fit: contain; }
 .artifact-row .art-name { font-size: 14px; font-weight: 600; color: var(--wood); }
