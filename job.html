@@ -421,7 +421,7 @@
     var artEn = en || ART_EN[name] || null;
     if (artEn) {
       var img = document.createElement("img");
-      img.src = "img/artifacts/" + artEn + ".png";
+      img.src = "img/artifacts/" + artEn + ".webp";
       img.alt = name;
       img.loading = "lazy";
       img.onerror = function () { this.remove(); };

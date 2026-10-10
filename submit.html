@@ -64,7 +64,7 @@
     </div>
 
     <div class="field">
-      <label>适用世界 <span class="opt">（必填：这份作业集能打哪些世界，至少选一个）</span></label>
+      <label><span id="world-pick-label">适用世界</span> <span class="opt" id="world-pick-hint">（必填：这份作业集能打哪些世界，至少选一个）</span></label>
       <div class="world-pick" id="world-pick"></div>
       <p class="step-note">会显示在站点卡片和详情页上，也是主页世界筛选的依据。</p>
     </div>
@@ -323,14 +323,32 @@
   // —— 适用世界多选（初始化渲染） ——
   (function renderWorldPick() {
     var box = document.getElementById("world-pick");
+    var hint = document.getElementById("world-pick-hint");
+    function refreshHint() {
+      var n = pickedWorldList().length;
+      hint.textContent = n
+        ? ("（已选 " + n + " 个：" + pickedWorldList().join("、") + "）")
+        : "（必填：这份作业集能打哪些世界，至少选一个）";
+    }
     WORLDS.forEach(function (w) {
       var c = document.createElement("button");
       c.type = "button";
       c.className = "w-chip";
       c.textContent = w;
+      c.setAttribute("aria-pressed", "false");
       c.addEventListener("click", function () {
-        if (pickedWorlds[w]) { delete pickedWorlds[w]; c.classList.remove("on"); }
-        else { pickedWorlds[w] = 1; c.classList.add("on"); }
+        if (pickedWorlds[w]) {
+          delete pickedWorlds[w];
+          c.classList.remove("on");
+          c.textContent = w;
+          c.setAttribute("aria-pressed", "false");
+        } else {
+          pickedWorlds[w] = 1;
+          c.classList.add("on");
+          c.textContent = "✓ " + w;
+          c.setAttribute("aria-pressed", "true");
+        }
+        refreshHint();
       });
       box.appendChild(c);
     });
@@ -474,7 +492,7 @@
           var en = arts[n].en;
           if (en) {
             var img = document.createElement("img");
-            img.src = "img/artifacts/" + en + ".png";
+            img.src = "img/artifacts/" + en + ".webp";
             img.alt = "";
             img.onerror = function () { this.remove(); };
             item.appendChild(img);
