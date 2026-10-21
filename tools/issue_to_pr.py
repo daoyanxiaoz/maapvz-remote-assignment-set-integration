@@ -222,7 +222,8 @@ def validate_jobset(raw):
 
 def collect_plants(jobset):
     """作业集全量植物名（保序去重）：
-    lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 中 type=plant 的格子。"""
+    lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 中 type=plant 的格子
+    ∪ 局外选卡 outer_pick.plants（与编辑器备注聚合口径一致）。"""
     names = []
     seen = set()
 
@@ -254,7 +255,21 @@ def collect_plants(jobset):
                         if isinstance(ent, dict) and ent.get("type") == "plant":
                             plant = ent.get("plant") if isinstance(ent.get("plant"), dict) else {}
                             add(ent.get("label") or plant.get("name"))
+    outer = jobset.get("outer_pick")
+    if isinstance(outer, dict):
+        for p in outer.get("plants") or []:
+            add(p)
     return names
+
+
+def costumes_from_notes(jobset, plants):
+    """新版编辑器导出的 plant_notes：{植物名: {tier, pendant, costume:true}}。
+    作者已在编辑器里标过装扮（缺省 = 不需要），直接从它派生标注，不再要求表单栏。
+    返回 (plant_costumes, 是否已派生)。"""
+    notes = jobset.get("plant_notes")
+    if not isinstance(notes, dict) or not notes:
+        return None, False
+    return {p: bool((notes.get(p) or {}).get("costume")) for p in plants}, True
 
 
 def load_known_plants():
@@ -410,12 +425,14 @@ def main():
             "请换一个 `code`（比如加上你的昵称或日期后缀）后**直接编辑本 Issue**；"
             "如果你就是原作者、想更新这套作业集，请联系维护者处理。")
 
-    # —— 2. 装扮标注强校验 ——
+    # —— 2. 装扮标注强校验（作业集带 plant_notes 时直接派生，表单栏可留空） ——
     plants = collect_plants(data)
     known = load_known_plants()
-    plant_costumes, err = validate_costumes(raw_costumes, plants, known)
-    if err is not None:
-        return fail_with_comment(err)
+    plant_costumes, derived = costumes_from_notes(data, plants)
+    if not derived:
+        plant_costumes, err = validate_costumes(raw_costumes, plants, known)
+        if err is not None:
+            return fail_with_comment(err)
 
     # —— 2.5 适用世界必填校验，写回作业集 worlds 字段（规范位置） ——
     worlds, err = parse_worlds(raw_worlds)
@@ -442,6 +459,14 @@ def main():
     worlds = data.get("worlds")
     worlds_str = "、".join(str(w) for w in worlds) if isinstance(worlds, list) and worlds else "未填写"
     need_costume = [p for p, v in plant_costumes.items() if v]
+    notes = data.get("plant_notes")
+    notes = notes if isinstance(notes, dict) else {}
+    tiered = [f"{p}（{int(notes[p]['tier'])}阶）" for p in plants
+              if isinstance(notes.get(p), dict)
+              and isinstance(notes[p].get("tier"), (int, float))
+              and 1 <= notes[p]["tier"] <= 5]
+    pendants = [f"{p}（{notes[p]['pendant']}）" for p in plants
+                if isinstance(notes.get(p), dict) and notes[p].get("pendant")]
     lines = [
         "## 投稿校验通过 ✅",
         "",
@@ -451,7 +476,10 @@ def main():
         f"- 阵容植物：{len(plants)} 种",
         f"- 需装扮植物：{len(need_costume)} 种"
         + ("（" + "、".join(need_costume[:8]) + ("…" if len(need_costume) > 8 else "") + "）"
-           if need_costume else ""),
+           if need_costume else "")
+        + ("，来自编辑器 plant_notes" if derived else ""),
+        f"- 阶数要求：{'、'.join(tiered) if tiered else '任意阶'}",
+        f"- 挂件要求：{'、'.join(pendants) if pendants else '无'}",
         f"- 适用世界：{worlds_str}",
         f"- 已剥掉 compiled 预编译块 {stripped} 个，JSON 已规范化（UTF-8 无 BOM / 缩进 2）",
         f"- 落盘后大小：约 {size_kb}KB",

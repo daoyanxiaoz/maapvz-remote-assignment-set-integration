@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上传作业集 · MAAPVZ 作业集分享站</title>
-<link rel="icon" href="img/plants/sunflower.webp">
+<link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="index.html">
-      <img src="img/plants/sunflower.webp" alt="向日葵"
+      <img src="img/logo.png" alt="MAAPVZ"
            onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
       <span id="title-emoji" hidden>🌻</span>
       MAAPVZ 作业集分享站
@@ -150,7 +150,7 @@
 
   // 当前解析状态
   var jobData = null;        // 解析成功的作业集对象
-  var jobJsonText = "";      // 原文（投稿用）
+  var jobNotes = {};         // 作业集 plant_notes（阶数/挂件/装扮，新版编辑器导出）  var jobJsonText = "";      // 原文（投稿用）
   var jobPlants = [];        // 全量植物名（保序去重）
   var marks = {};            // 植物名 → true(需要)/false(不需要)；未标注 = 不存在
 
@@ -234,7 +234,7 @@
   var pickedWorlds = {};
 
   // 作业集全量植物名（与 tools/issue_to_pr.py 的 collect_plants 同一套口径）：
-  // lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 里 type=plant 的格子
+  // lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 里 type=plant 的格子 ∪ 局外选卡
   function collectPlants(data) {
     var names = [], seen = {};
     function add(n) {
@@ -262,6 +262,9 @@
         });
       });
     });
+    if (data.outer_pick && Array.isArray(data.outer_pick.plants)) {
+      data.outer_pick.plants.forEach(add);
+    }
     return names;
   }
 
@@ -449,6 +452,14 @@
     jobJsonText = text;
     jobPlants = collectPlants(jobData);
     marks = {};
+    // 新版编辑器导出带 plant_notes（阶数/挂件/装扮标注）：作者已标过就预填，
+    // 这里只需确认/修正；没标过的植物 = 不需要装扮（编辑器语义：缺省即任意）
+    jobNotes = (jobData.plant_notes && typeof jobData.plant_notes === "object") ? jobData.plant_notes : {};
+    if (Object.keys(jobNotes).length) {
+      jobPlants.forEach(function (p) {
+        marks[p] = !!(jobNotes[p] && jobNotes[p].costume);
+      });
+    }
 
     if (KNOWN_PLANTS) {
       var unknown = jobPlants.filter(function (p) { return !KNOWN_PLANTS[p]; });
@@ -555,6 +566,21 @@
       nameEl.textContent = p;
       nameEl.title = p;
       item.appendChild(nameEl);
+      // plant_notes 附加信息：阶数/挂件（编辑器里标过的，这里只读展示）
+      var note = jobNotes[p];
+      if (note) {
+        var bits = [];
+        var tier = Number(note.tier);
+        if (tier >= 1 && tier <= 5) bits.push(tier + " 阶");
+        if (note.pendant) bits.push("挂件 " + note.pendant);
+        if (bits.length) {
+          var nb = document.createElement("span");
+          nb.className = "c-note";
+          nb.textContent = bits.join(" · ");
+          nb.title = "作者在编辑器里标注的植物备注";
+          item.appendChild(nb);
+        }
+      }
 
       var btns = document.createElement("div");
       btns.className = "c-btns";
@@ -574,6 +600,13 @@
         btns.appendChild(b);
       });
       item.appendChild(btns);
+      // plant_notes 预填的回显（作者只需确认/修正）
+      if (p in marks) {
+        item.classList.remove("unset");
+        var pre = btns.querySelectorAll("button");
+        if (marks[p]) pre[0].classList.add("on-yes");
+        else pre[1].classList.add("on-no");
+      }
       elCostumeList.appendChild(item);
     });
     refreshProgress();

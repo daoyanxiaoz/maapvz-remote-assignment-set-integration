@@ -88,6 +88,10 @@ def collect_plants(jobset):
                         if isinstance(ent, dict) and ent.get("type") == "plant":
                             plant = ent.get("plant") if isinstance(ent.get("plant"), dict) else {}
                             add(ent.get("label") or plant.get("name"))
+    outer = jobset.get("outer_pick")
+    if isinstance(outer, dict):
+        for p in outer.get("plants") or []:
+            add(p)
     return names
 
 
@@ -197,6 +201,13 @@ def build_entry(path, fname):
                         entry["costume"] = "required" if any(pc.values()) else "none"
             except Exception as e:
                 print(f"[warn] meta/{code}.json 解析失败，忽略 sidecar：{e}")
+    # 作业集内 plant_notes 的装扮标注也参与聚合（新版编辑器导出）
+    notes = data.get("plant_notes")
+    if isinstance(notes, dict) and "costume" not in entry:
+        if any(isinstance(v, dict) and v.get("costume") for v in notes.values()):
+            entry["costume"] = "required"
+        elif notes:
+            entry["costume"] = "none"
     return entry
 
 

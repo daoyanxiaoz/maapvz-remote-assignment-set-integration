@@ -274,6 +274,12 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
   font-size: 10px; line-height: 1; color: #4a2f12; background: var(--sun); font-weight: 700;
   border-radius: 4px; padding: 2px 4px;
 }
+/* 挂件徽标：左上金圈（与编辑器备注弹窗同款语义） */
+.plant-cell .pendant-badge {
+  position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+  border-radius: 50%; background: rgba(212, 160, 23, .92); padding: 1.5px;
+  border: 1px solid #a8791a; object-fit: contain;
+}
 
 /* —— 主页三维筛选栏 —— */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
@@ -375,6 +381,11 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
   position: absolute; right: 1px; top: 1px; font-size: 9px; line-height: 1;
   padding: 1px 3px; border-radius: 3px; background: rgba(0, 0, 0, .45); color: #fff;
 }
+.b-cell .b-tier { position: absolute; left: 1px; bottom: 1px; width: 13px; height: 13px; }
+.b-cell .b-pendant {
+  position: absolute; left: 15px; bottom: 1px; width: 11px; height: 11px;
+  border-radius: 50%; background: rgba(212, 160, 23, .92); padding: 1px; object-fit: contain;
+}
 
 /* —— 投稿页：拖拽上传 + 装扮标注 —— */
 .dropzone {
@@ -413,6 +424,7 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
 .costume-item.unset { border-color: var(--danger); background: #fbeae7; }
 .costume-item img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
 .costume-item .c-name { flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.costume-item .c-note { font-size: 11px; color: var(--zombie); flex-shrink: 0; }
 .costume-item .c-btns { display: flex; border: 1px solid var(--wood-light); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
 .costume-item .c-btns button {
   border: 0; background: #fff; color: var(--ink-muted); font-size: 12px;

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>作业集详情 · MAAPVZ 作业集分享站</title>
-<link rel="icon" href="img/plants/sunflower.webp">
+<link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="index.html">
-      <img src="img/plants/sunflower.webp" alt="向日葵"
+      <img src="img/logo.png" alt="MAAPVZ"
            onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
       <span id="title-emoji" hidden>🌻</span>
       MAAPVZ 作业集分享站
@@ -91,6 +91,7 @@
   var PLANT_RARE = {};  // 植物中文名 → 稀有度 0~4
   var ART_EN = {};      // 神器中文名 → 英文文件名（兜底，优先用作业集自带的 artifact_en）
   var COSTUMES = {};    // 植物中文名 → 是否需装扮（meta.plant_costumes ∪ plant_meta）
+  var PENDANT_IMG = {}; // 挂件中文名 → 图标文件名（data/pendants.json）
 
   // 世界关键词 → 世界立绘文件名（透明底）
   var WORLD_IMG = [
@@ -271,7 +272,7 @@
 
   var CELL_TYPE_TEXT = { feed: "豆", shovel: "铲" };
 
-  function boardCell(entries, alt) {
+  function boardCell(entries, alt, notes) {
     var c = el("div", "b-cell" + (alt ? " alt" : ""));
     if (!entries || !entries.length) return c;
     var first = entries[0];
@@ -306,9 +307,33 @@
         st.title = "叠种 " + entries.length + " 棵";
         c.appendChild(st);
       }
+      // 阶数 / 挂件角标（plant_notes）
+      var note = notes && notes[name];
+      var tipBits = [];
+      if (note) {
+        var tier = Number(note.tier);
+        if (tier >= 1 && tier <= 5) {
+          var tb = document.createElement("img");
+          tb.className = "b-tier";
+          tb.src = "img/rank/IMAGE_UI_CARDS_ALMANAC_RANK_" + tier + ".png";
+          tb.alt = tier + " 阶";
+          c.appendChild(tb);
+          tipBits.push(tier + " 阶");
+        }
+        if (note.pendant && PENDANT_IMG[note.pendant]) {
+          var pd = document.createElement("img");
+          pd.className = "b-pendant";
+          pd.src = "img/items/" + PENDANT_IMG[note.pendant];
+          pd.alt = String(note.pendant);
+          c.appendChild(pd);
+          tipBits.push("挂件 " + note.pendant);
+        }
+        if (note.costume) tipBits.push("需装扮");
+      }
       var tip = String(name);
       if (entries.length > 1) tip += " 等 " + entries.length + " 棵";
       if (first.seq != null) tip += "｜种植顺序 " + first.seq;
+      if (tipBits.length) tip += "｜" + tipBits.join(" · ");
       c.title = tip;
     } else {
       // 非植物动作（喂豆 / 铲子等）：文字标识
@@ -320,7 +345,7 @@
     return c;
   }
 
-  function renderBoardGrid(container, board) {
+  function renderBoardGrid(container, board, notes) {
     container.innerHTML = "";
     if (!Array.isArray(board)) return;
     board.forEach(function (row, r) {
@@ -328,12 +353,12 @@
       for (var c = 0; c < 9; c++) {
         var cell = cells[c];
         var entries = (cell && Array.isArray(cell.value)) ? cell.value : [];
-        container.appendChild(boardCell(entries, (r + c) % 2 === 1));
+        container.appendChild(boardCell(entries, (r + c) % 2 === 1, notes));
       }
     });
   }
 
-  function buildBoardPanel(t) {
+  function buildBoardPanel(t, notes) {
     var hasE = Array.isArray(t.boardEarly) && t.boardEarly.length;
     var hasL = Array.isArray(t.boardLate) && t.boardLate.length;
     if (!hasE && !hasL) return null;
@@ -344,7 +369,7 @@
     var btns = [];
     function select(which) {
       btns.forEach(function (b) { b.el.classList.toggle("on", b.which === which); });
-      renderBoardGrid(gridBox, which === "early" ? t.boardEarly : t.boardLate);
+      renderBoardGrid(gridBox, which === "early" ? t.boardEarly : t.boardLate, notes);
     }
     [["early", "前期", hasE], ["late", "后期", hasL]].forEach(function (cfg) {
       if (!cfg[2]) return;
@@ -395,6 +420,23 @@
         rb.alt = tier + " 阶";
         rb.title = tier + " 阶";
         cell.appendChild(rb);
+      }
+      // 挂件徽标：左上金圈（plant_notes.pendant）
+      if (meta.pendant) {
+        var pName = String(meta.pendant);
+        if (PENDANT_IMG[pName]) {
+          var pb = document.createElement("img");
+          pb.className = "pendant-badge";
+          pb.src = "img/items/" + PENDANT_IMG[pName];
+          pb.alt = pName;
+          pb.title = "挂件：" + pName;
+          cell.appendChild(pb);
+        } else {
+          var pt = el("span", "pendant-badge", "挂");
+          pt.title = "挂件：" + pName;
+          pt.style.cssText = "font-size:10px;line-height:15px;text-align:center;color:#4a2f12;display:block";
+          cell.appendChild(pt);
+        }
       }
     }
     // 需装扮徽标（阳光黄醒目色）：meta sidecar 的 plant_costumes ∪ plant_meta
@@ -520,7 +562,7 @@
     }
 
     // —— 种植布局画板（前期/后期，只读） ——
-    var boardPanel = buildBoardPanel(t);
+    var boardPanel = buildBoardPanel(t, plantMeta);
     if (boardPanel) {
       card.appendChild(el("div", "sec-title", "种植布局（只读）"));
       card.appendChild(boardPanel);
@@ -618,10 +660,14 @@
 
     // —— 策略表 ——
     var root = document.getElementById("j-tables");
-    var globalMeta = (job.plant_meta && typeof job.plant_meta === "object") ? job.plant_meta : {};
+    // 植物阶数/装扮：新版编辑器导出在 plant_notes，旧兼容 plant_meta；表级覆盖全局
+    var globalMeta = Object.assign({},
+      (job.plant_meta && typeof job.plant_meta === "object") ? job.plant_meta : {},
+      (job.plant_notes && typeof job.plant_notes === "object") ? job.plant_notes : {});
     tables.forEach(function (t, i) {
       var tm = (t && t.plant_meta && typeof t.plant_meta === "object") ? t.plant_meta : {};
-      var merged = Object.assign({}, globalMeta, tm); // 表级覆盖全局
+      var tn = (t && t.plant_notes && typeof t.plant_notes === "object") ? t.plant_notes : {};
+      var merged = Object.assign({}, globalMeta, tm, tn);
       root.appendChild(buildTable(t, i, merged));
     });
 
@@ -647,7 +693,8 @@
     fetch("jobs/" + encodeURIComponent(code) + ".json", { cache: "no-store" }),
     fetch("data/plants.json", { cache: "no-store" }),
     fetch("data/artifacts.json", { cache: "no-store" }),
-    fetch("meta/" + encodeURIComponent(code) + ".json", { cache: "no-store" })
+    fetch("meta/" + encodeURIComponent(code) + ".json", { cache: "no-store" }),
+    fetch("data/pendants.json", { cache: "no-store" })
   ])
     .then(function (rs) {
       if (!rs[0].ok) throw new Error("作业集不存在（HTTP " + rs[0].status + "）");
@@ -655,7 +702,8 @@
         rs[0].json(),
         rs[1].ok ? rs[1].json() : [],
         rs[2].ok ? rs[2].json() : [],
-        rs[3].ok ? rs[3].json() : null
+        rs[3].ok ? rs[3].json() : null,
+        rs[4].ok ? rs[4].json() : []
       ]);
     })
     .then(function (rs) {
@@ -667,6 +715,7 @@
         }
       });
       (Array.isArray(rs[2]) ? rs[2] : []).forEach(function (a) { if (a && a.name && a.en) ART_EN[a.name] = a.en; });
+      (Array.isArray(rs[4]) ? rs[4] : []).forEach(function (pd) { if (pd && pd.name && pd.img) PENDANT_IMG[pd.name] = pd.img; });
       if (!job || typeof job !== "object" || Array.isArray(job)) throw new Error("作业集格式不对");
       render(job, rs[3]);
     })
