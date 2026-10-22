@@ -56,6 +56,8 @@ def git_last_commit_time(path):
 def collect_plants(jobset):
     """作业集全量植物名（保序去重）：
     lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 中 type=plant 的格子。
+    （不含 outer_pick.plants —— 那是局外选卡候选池，auto 模式能灌 80 个，
+      不是真实阵容。）
     与 tools/issue_to_pr.py 的 collect_plants 同一口径。"""
     names = []
     seen = set()
@@ -88,10 +90,6 @@ def collect_plants(jobset):
                         if isinstance(ent, dict) and ent.get("type") == "plant":
                             plant = ent.get("plant") if isinstance(ent.get("plant"), dict) else {}
                             add(ent.get("label") or plant.get("name"))
-    outer = jobset.get("outer_pick")
-    if isinstance(outer, dict):
-        for p in outer.get("plants") or []:
-            add(p)
     return names
 
 
