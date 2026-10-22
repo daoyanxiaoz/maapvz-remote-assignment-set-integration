@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-22T15:44:44Z",
+  "updated": "2026-10-22T16:12:05Z",
   "count": 2,
   "jobs": [
     {
@@ -8,7 +8,7 @@
       "worlds": [],
       "tables": 3,
       "file": "jobs/5-3.json",
-      "updated": "2026-10-22T15:44:44Z",
+      "updated": "2026-10-22T16:05:35Z",
       "size": 99759,
       "max_level": 149,
       "coverage": [
@@ -232,7 +232,7 @@
       ],
       "tables": 2,
       "file": "jobs/pvz_20261019_143143.json",
-      "updated": "2026-10-21T18:24:07Z",
+      "updated": "2026-10-22T16:05:35Z",
       "size": 100583,
       "max_level": 149,
       "coverage": [
