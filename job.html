@@ -20,7 +20,6 @@
     </a>
     <nav>
       <a class="nav-link active" href="index.html">首页</a>
-      <a class="nav-link" href="submit.html">上传作业集</a>
       <a class="nav-link" href="about.html">关于</a>
       <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -261,130 +260,6 @@
     });
   }
 
-  // —— 种植布局画板（只读）：5 行 × 9 列草坪，前期/后期切换 ——
-  function plantImgUrl(ent) {
-    // 格子里的 img 是相对编辑器根的路径（static/plant/xxx.webp）→ 改写为本仓库目录
-    var p = (ent.plant && ent.plant.img) || "";
-    if (!p) return null;
-    var seg = p.split("/").pop();
-    return seg ? "img/plants/" + seg : null;
-  }
-
-  var CELL_TYPE_TEXT = { feed: "豆", shovel: "铲" };
-
-  function boardCell(entries, alt, notes) {
-    var c = el("div", "b-cell" + (alt ? " alt" : ""));
-    if (!entries || !entries.length) return c;
-    var first = entries[0];
-
-    if (first.type === "plant") {
-      var url = plantImgUrl(first);
-      var name = (first.plant && first.plant.name) || first.label || "";
-      if (url) {
-        var img = document.createElement("img");
-        img.src = url;
-        img.alt = String(name);
-        img.loading = "lazy";
-        img.onerror = function () {
-          this.remove();
-          c.appendChild(el("div", "b-text", String(name).slice(0, 3)));
-        };
-        c.appendChild(img);
-      } else {
-        c.appendChild(el("div", "b-text", String(name).slice(0, 3)));
-      }
-      // 模式角标（单=一次性 / 循=循环补种）与种植顺序号
-      if (first.mode === "once" || first.mode === "loop") {
-        var mb = el("span", "b-mode " + first.mode, first.mode === "once" ? "单" : "循");
-        mb.title = first.mode === "once" ? "只种一次" : "循环补种";
-        c.appendChild(mb);
-      }
-      if (first.seq != null) {
-        c.appendChild(el("span", "b-seq", String(first.seq)));
-      }
-      if (entries.length > 1) {
-        var st = el("span", "b-stack", "×" + entries.length);
-        st.title = "叠种 " + entries.length + " 棵";
-        c.appendChild(st);
-      }
-      // 阶数 / 挂件角标（plant_notes）
-      var note = notes && notes[name];
-      var tipBits = [];
-      if (note) {
-        var tier = Number(note.tier);
-        if (tier >= 1 && tier <= 5) {
-          var tb = document.createElement("img");
-          tb.className = "b-tier";
-          tb.src = "img/rank/IMAGE_UI_CARDS_ALMANAC_RANK_" + tier + ".png";
-          tb.alt = tier + " 阶";
-          c.appendChild(tb);
-          tipBits.push(tier + " 阶");
-        }
-        if (note.pendant && PENDANT_IMG[note.pendant]) {
-          var pd = document.createElement("img");
-          pd.className = "b-pendant";
-          pd.src = "img/items/" + PENDANT_IMG[note.pendant];
-          pd.alt = String(note.pendant);
-          c.appendChild(pd);
-          tipBits.push("挂件 " + note.pendant);
-        }
-        if (note.costume) tipBits.push("需装扮");
-      }
-      var tip = String(name);
-      if (entries.length > 1) tip += " 等 " + entries.length + " 棵";
-      if (first.seq != null) tip += "｜种植顺序 " + first.seq;
-      if (tipBits.length) tip += "｜" + tipBits.join(" · ");
-      c.title = tip;
-    } else {
-      // 非植物动作（喂豆 / 铲子等）：文字标识
-      var txt = CELL_TYPE_TEXT[first.type] || String(first.label || first.type || "").slice(0, 3);
-      c.appendChild(el("div", "b-text", txt));
-      c.title = String(first.label || first.type || "");
-      if (first.seq != null) c.appendChild(el("span", "b-seq", String(first.seq)));
-    }
-    return c;
-  }
-
-  function renderBoardGrid(container, board, notes) {
-    container.innerHTML = "";
-    if (!Array.isArray(board)) return;
-    board.forEach(function (row, r) {
-      var cells = Array.isArray(row) ? row : [];
-      for (var c = 0; c < 9; c++) {
-        var cell = cells[c];
-        var entries = (cell && Array.isArray(cell.value)) ? cell.value : [];
-        container.appendChild(boardCell(entries, (r + c) % 2 === 1, notes));
-      }
-    });
-  }
-
-  function buildBoardPanel(t, notes) {
-    var hasE = Array.isArray(t.boardEarly) && t.boardEarly.length;
-    var hasL = Array.isArray(t.boardLate) && t.boardLate.length;
-    if (!hasE && !hasL) return null;
-
-    var wrap = el("div");
-    var tabs = el("div", "board-tabs");
-    var gridBox = el("div", "board-grid");
-    var btns = [];
-    function select(which) {
-      btns.forEach(function (b) { b.el.classList.toggle("on", b.which === which); });
-      renderBoardGrid(gridBox, which === "early" ? t.boardEarly : t.boardLate, notes);
-    }
-    [["early", "前期", hasE], ["late", "后期", hasL]].forEach(function (cfg) {
-      if (!cfg[2]) return;
-      var b = el("button", "board-tab", cfg[1]);
-      b.type = "button";
-      b.addEventListener("click", function () { select(cfg[0]); });
-      tabs.appendChild(b);
-      btns.push({ el: b, which: cfg[0] });
-    });
-    wrap.appendChild(tabs);
-    wrap.appendChild(gridBox);
-    select(hasE ? "early" : "late");
-    return wrap;
-  }
-
   // 单个植物格子：稀有度底图 + 图标 + 名字 + 阶数角标 + 需装扮徽标
   function plantCell(name, meta) {
     var cell = el("div", "plant-cell");
@@ -561,13 +436,6 @@
       }
     }
 
-    // —— 种植布局画板（前期/后期，只读） ——
-    var boardPanel = buildBoardPanel(t, plantMeta);
-    if (boardPanel) {
-      card.appendChild(el("div", "sec-title", "种植布局（只读）"));
-      card.appendChild(boardPanel);
-    }
-
     // —— boss 关阵容（与普通关不同时才单独展示） ——
     var bl = (t.boss_lineup && typeof t.boss_lineup === "object") ? t.boss_lineup : {};
     var bossPlants = Array.isArray(bl.plants) ? bl.plants.filter(Boolean) : [];
@@ -624,7 +492,9 @@
     document.getElementById("j-code").textContent = job.code;
     var dl = document.getElementById("j-download");
     dl.href = "jobs/" + encodeURIComponent(job.code) + ".json";
-    dl.setAttribute("download", job.code + ".json");
+    // 下载文件名用作业集原名（中文名），剥掉文件系统非法字符
+    var dlName = String(job.name || job.code).replace(/[\\/:*?"<>|]/g, "").trim();
+    dl.setAttribute("download", (dlName || job.code) + ".json");
 
     var art = worldArt(job.worlds);
     if (art) {

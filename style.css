@@ -352,41 +352,6 @@ main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; }
 .lz-cell.lz-dim { opacity: .18; }
 .cov-warn { color: var(--danger); font-size: 12.5px; margin-top: 8px; }
 
-/* —— 种植布局画板（详情页，只读） —— */
-.board-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
-.board-tab {
-  font-size: 13px; padding: 4px 14px; border-radius: 999px; border: 1.5px solid var(--wood);
-  background: transparent; color: var(--wood); cursor: pointer;
-}
-.board-tab.on { background: var(--wood); color: var(--parchment); }
-.board-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; max-width: 640px; }
-.b-cell {
-  position: relative; aspect-ratio: 1; border-radius: 5px;
-  background: #9ccb6e; border: 1px solid rgba(0, 0, 0, .08); overflow: hidden;
-}
-.b-cell.alt { background: #8abd5f; }
-.b-cell img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
-.b-cell .b-text {
-  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: #3d5a1e; font-weight: 600;
-}
-.b-cell .b-mode {
-  position: absolute; left: 1px; top: 1px; font-size: 9px; line-height: 1;
-  padding: 1px 3px; border-radius: 3px; color: #fff;
-}
-.b-cell .b-mode.once { background: var(--zombie); }
-.b-cell .b-mode.loop { background: var(--lawn-deep); }
-.b-cell .b-seq { position: absolute; right: 2px; bottom: 1px; font-size: 9px; color: rgba(0, 0, 0, .55); font-weight: 700; }
-.b-cell .b-stack {
-  position: absolute; right: 1px; top: 1px; font-size: 9px; line-height: 1;
-  padding: 1px 3px; border-radius: 3px; background: rgba(0, 0, 0, .45); color: #fff;
-}
-.b-cell .b-tier { position: absolute; left: 1px; bottom: 1px; width: 13px; height: 13px; }
-.b-cell .b-pendant {
-  position: absolute; left: 15px; bottom: 1px; width: 11px; height: 11px;
-  border-radius: 50%; background: rgba(212, 160, 23, .92); padding: 1px; object-fit: contain;
-}
-
 /* —— 投稿页：拖拽上传 + 装扮标注 —— */
 .dropzone {
   border: 2px dashed var(--wood-light); border-radius: 10px;
