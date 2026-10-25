@@ -7,11 +7,8 @@
   "sub_worlds": [
     "黑暗时代",
     "未来世界",
-    "功夫世界",
     "狂野西部",
-    "海盗港湾",
-    "神秘埃及",
-    "冰河世界"
+    "神秘埃及"
   ],
   "plant_notes": {
     "毁灭菇": {
@@ -21,6 +18,9 @@
     },
     "粉丝心叶兰": {
       "costume": true
+    },
+    "超级机枪射手": {
+      "tier": 4
     }
   },
   "everyN": 10,
@@ -442,19 +442,19 @@
           ],
           [
             {
+              "col": 6,
               "id": "card8",
               "label": "黄金蓓蕾",
-              "type": "plant",
               "mode": "once",
-              "col": 6,
-              "row": 3,
-              "seq": 4,
+              "ord": 121,
               "plant": {
-                "name": "黄金蓓蕾",
                 "img": "static/plant/goldbloom.webp",
+                "name": "黄金蓓蕾",
                 "rare": 0
               },
-              "ord": 121
+              "row": 3,
+              "seq": 4,
+              "type": "plant"
             }
           ],
           [],
@@ -547,29 +547,29 @@
           ],
           [
             {
+              "col": 6,
               "id": "feed",
               "label": "喂豆",
-              "type": "feed",
               "mode": "once",
-              "col": 6,
+              "ord": 119,
               "row": 4,
               "seq": 6,
-              "ord": 119
+              "type": "feed"
             },
             {
+              "col": 6,
               "id": "card3",
               "label": "守卫菇",
-              "type": "plant",
               "mode": "once",
-              "col": 6,
-              "row": 4,
-              "seq": 6,
+              "ord": 120,
               "plant": {
-                "name": "守卫菇",
                 "img": "static/plant/guardshroom.webp",
+                "name": "守卫菇",
                 "rare": 4
               },
-              "ord": 120
+              "row": 4,
+              "seq": 6,
+              "type": "plant"
             }
           ],
           [],
@@ -615,34 +615,34 @@
           ],
           [
             {
+              "col": 5,
               "id": "card1",
               "label": "球果训练家",
-              "type": "plant",
               "mode": "once",
-              "col": 5,
+              "ord": 122,
+              "plant": {
+                "img": "static/plant/animnuts.webp",
+                "name": "球果训练家",
+                "rare": 4
+              },
               "row": 5,
               "seq": 1,
-              "plant": {
-                "name": "球果训练家",
-                "img": "static/plant/animnuts.webp",
-                "rare": 4
-              },
-              "ord": 122
+              "type": "plant"
             },
             {
+              "col": 5,
               "id": "card4",
               "label": "瓷砖萝卜",
-              "type": "plant",
               "mode": "once",
-              "col": 5,
-              "row": 5,
-              "seq": 12,
+              "ord": 123,
               "plant": {
-                "name": "瓷砖萝卜",
                 "img": "static/plant/powerplant.webp",
+                "name": "瓷砖萝卜",
                 "rare": 4
               },
-              "ord": 123
+              "row": 5,
+              "seq": 12,
+              "type": "plant"
             }
           ],
           [
@@ -1389,18 +1389,10 @@
           "to": -1,
           "picked": [
             0,
-            1
+            1,
+            2,
+            3
           ]
-        },
-        {
-          "key": "card7",
-          "from": 3,
-          "to": 4
-        },
-        {
-          "key": "card7",
-          "from": 2,
-          "to": 3
         },
         {
           "key": "card8",
@@ -1448,7 +1440,7 @@
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20,
+          "times": 40,
           "comboMs": 1,
           "comboWatch": false
         },
@@ -1489,18 +1481,13 @@
           "key": "feed",
           "from": 0,
           "to": 1
-        },
-        {
-          "key": "card4",
-          "from": 1,
-          "to": 2
         }
       ],
       "loopOrder": [
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20
+          "times": 30
         }
       ],
       "endOrder": [
@@ -1552,77 +1539,67 @@
       },
       "bossSlotOrder": [
         {
-          "key": "feed",
           "from": 0,
+          "key": "feed",
           "to": 1
         },
         {
-          "key": "shovel",
           "from": 1,
+          "key": "shovel",
           "to": 2
         },
         {
-          "key": "shovel",
           "from": 0,
+          "key": "shovel",
           "to": 1
         },
         {
-          "key": "card6",
           "from": -1,
-          "to": -1,
+          "key": "card6",
           "picked": [
             0,
             1
-          ]
+          ],
+          "to": -1
         },
         {
+          "from": 0,
           "key": "card5",
-          "from": 0,
           "to": 1
         },
         {
-          "key": "card8",
-          "from": 0,
-          "to": 1
+          "ga": "speed",
+          "key": "ga:speed"
         },
         {
-          "key": "ga:speed",
-          "ga": "speed"
-        },
-        {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4000
         },
         {
-          "key": "feed",
           "from": 1,
+          "key": "feed",
           "to": 2
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 2,
+          "key": "feed",
           "to": 3
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 3,
+          "key": "feed",
           "to": 4
-        },
-        {
-          "key": "ga:wait",
-          "ga": "wait",
-          "ms": 4500
         }
       ],
       "bossLoopOrder": [],
@@ -1839,19 +1816,19 @@
           ],
           [
             {
+              "col": 5,
               "id": "card8",
               "label": "铜钱草鼓手",
-              "type": "plant",
               "mode": "once",
-              "col": 5,
-              "row": 2,
-              "seq": 4,
+              "ord": 218,
               "plant": {
-                "name": "铜钱草鼓手",
                 "img": "static/plant/hydrocotyledrummer.webp",
+                "name": "铜钱草鼓手",
                 "rare": 3
               },
-              "ord": 218
+              "row": 2,
+              "seq": 4,
+              "type": "plant"
             }
           ],
           [],
@@ -2132,41 +2109,41 @@
           [],
           [
             {
+              "col": 4,
               "id": "shovel",
               "label": "铲子",
-              "type": "shovel",
               "mode": "once",
-              "col": 4,
+              "ord": 220,
               "row": 5,
               "seq": 16,
-              "ord": 220
+              "type": "shovel"
             },
             {
+              "col": 4,
               "id": "card6",
               "label": "能量花",
-              "type": "plant",
               "mode": "once",
-              "col": 4,
-              "row": 5,
-              "seq": 6,
+              "ord": 221,
               "plant": {
-                "name": "能量花",
                 "img": "static/plant/powerlily.webp",
+                "name": "能量花",
                 "rare": 2
               },
-              "ord": 221
+              "row": 5,
+              "seq": 6,
+              "type": "plant"
             }
           ],
           [
             {
+              "col": 5,
               "id": "feed",
               "label": "喂豆",
-              "type": "feed",
               "mode": "once",
-              "col": 5,
+              "ord": 219,
               "row": 5,
               "seq": 17,
-              "ord": 219
+              "type": "feed"
             }
           ],
           [
@@ -2324,19 +2301,9 @@
               "id": "feed",
               "label": "喂豆",
               "mode": "once",
-              "ord": 37,
+              "ord": 39,
               "row": 4,
-              "seq": 2,
-              "type": "feed"
-            },
-            {
-              "col": 5,
-              "id": "feed",
-              "label": "喂豆",
-              "mode": "once",
-              "ord": 38,
-              "row": 4,
-              "seq": 3,
+              "seq": 4,
               "type": "feed"
             }
           ],
@@ -2376,7 +2343,18 @@
               "type": "shovel"
             }
           ],
-          [],
+          [
+            {
+              "col": 5,
+              "id": "feed",
+              "label": "喂豆",
+              "mode": "once",
+              "ord": 38,
+              "row": 5,
+              "seq": 3,
+              "type": "feed"
+            }
+          ],
           [],
           [],
           [],
@@ -2601,27 +2579,9 @@
             "mode": "once",
             "cells": [
               "格子9_2",
-              "格子9_3"
-            ]
-          },
-          {
-            "key": "card7",
-            "slot": 7,
-            "type": "plant",
-            "label": "黄金蓓蕾",
-            "mode": "once",
-            "cells": [
+              "格子9_3",
+              "格子9_4",
               "格子9_5"
-            ]
-          },
-          {
-            "key": "card7",
-            "slot": 7,
-            "type": "plant",
-            "label": "黄金蓓蕾",
-            "mode": "once",
-            "cells": [
-              "格子9_4"
             ]
           },
           {
@@ -2712,7 +2672,7 @@
             "label": "点波",
             "mode": "once",
             "cells": [],
-            "times": 20,
+            "times": 40,
             "comboMs": 1,
             "comboWatch": false
           },
@@ -2798,7 +2758,7 @@
             "label": "点波",
             "mode": "loop",
             "cells": [],
-            "times": 20
+            "times": 30
           }
         ],
         "end_chain": [
@@ -3028,18 +2988,18 @@
           },
           {
             "slot": 7,
-            "order": 1,
+            "order": 3,
             "type": "plant",
             "label": "黄金蓓蕾",
-            "cell": "格子9_5",
+            "cell": "格子9_4",
             "mode": "once"
           },
           {
             "slot": 7,
-            "order": 1,
+            "order": 4,
             "type": "plant",
             "label": "黄金蓓蕾",
-            "cell": "格子9_4",
+            "cell": "格子9_5",
             "mode": "once"
           },
           {
@@ -3144,7 +3104,7 @@
           "格子5_4",
           "格子5_4",
           "格子5_4",
-          "格子5_4"
+          "格子5_5"
         ],
         "shovel": [
           "格子4_3",
@@ -3249,7 +3209,7 @@
             "label": "喂豆",
             "mode": "once",
             "cells": [
-              "格子5_4"
+              "格子5_5"
             ]
           },
           {
@@ -3271,16 +3231,6 @@
             "cells": [
               "格子5_4"
             ]
-          },
-          {
-            "key": "ga:wait",
-            "slot": null,
-            "type": "action",
-            "action": "wait",
-            "label": "等待",
-            "mode": "once",
-            "cells": [],
-            "ms": 4500
           }
         ],
         "loop_chain": [],
@@ -3322,7 +3272,7 @@
             "order": 1,
             "type": "feed",
             "label": "喂豆",
-            "cell": "格子5_4",
+            "cell": "格子5_5",
             "mode": "once"
           },
           {
@@ -3540,18 +3490,22 @@
         },
         {
           "key": "card6",
-          "from": 0,
-          "to": 1
-        },
-        {
-          "key": "card1",
-          "from": 3,
-          "to": 4
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1
+          ]
         },
         {
           "key": "card5",
           "from": 1,
           "to": 2
+        },
+        {
+          "key": "card1",
+          "from": 3,
+          "to": 4
         },
         {
           "key": "card1",
@@ -3569,28 +3523,15 @@
           "to": -1,
           "picked": [
             0,
-            1
+            1,
+            2,
+            3
           ]
-        },
-        {
-          "key": "card7",
-          "from": 3,
-          "to": 4
-        },
-        {
-          "key": "card7",
-          "from": 2,
-          "to": 3
         },
         {
           "key": "card1",
           "from": 0,
           "to": 1
-        },
-        {
-          "key": "card6",
-          "from": 1,
-          "to": 2
         },
         {
           "key": "card1",
@@ -3608,12 +3549,13 @@
         },
         {
           "key": "feed",
-          "from": -1,
-          "to": -1,
-          "picked": [
-            2,
-            3
-          ]
+          "from": 1,
+          "to": 2
+        },
+        {
+          "key": "feed",
+          "from": 3,
+          "to": 4
         },
         {
           "key": "ga:wait",
@@ -3623,7 +3565,7 @@
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20,
+          "times": 40,
           "comboMs": 1,
           "comboWatch": false
         },
@@ -3647,8 +3589,8 @@
         },
         {
           "key": "feed",
-          "from": 1,
-          "to": 2
+          "from": 2,
+          "to": 3
         },
         {
           "key": "ga:wait",
@@ -3670,7 +3612,7 @@
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20
+          "times": 30
         }
       ],
       "endOrder": [
@@ -3722,77 +3664,67 @@
       },
       "bossSlotOrder": [
         {
-          "key": "feed",
           "from": 0,
+          "key": "feed",
           "to": 1
         },
         {
-          "key": "shovel",
           "from": 1,
+          "key": "shovel",
           "to": 2
         },
         {
-          "key": "shovel",
           "from": 0,
+          "key": "shovel",
           "to": 1
         },
         {
-          "key": "card6",
           "from": -1,
-          "to": -1,
+          "key": "card6",
           "picked": [
             0,
             1
-          ]
+          ],
+          "to": -1
         },
         {
+          "from": 0,
           "key": "card5",
-          "from": 0,
           "to": 1
         },
         {
-          "key": "card8",
-          "from": 0,
-          "to": 1
+          "ga": "speed",
+          "key": "ga:speed"
         },
         {
-          "key": "ga:speed",
-          "ga": "speed"
-        },
-        {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4000
         },
         {
-          "key": "feed",
           "from": 1,
+          "key": "feed",
           "to": 2
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 2,
+          "key": "feed",
           "to": 3
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 3,
+          "key": "feed",
           "to": 4
-        },
-        {
-          "key": "ga:wait",
-          "ga": "wait",
-          "ms": 4500
         }
       ],
       "bossLoopOrder": [],
@@ -4235,14 +4167,14 @@
           ],
           [
             {
+              "col": 5,
               "id": "feed",
               "label": "喂豆",
-              "type": "feed",
               "mode": "once",
-              "col": 5,
+              "ord": 218,
               "row": 5,
               "seq": 17,
-              "ord": 218
+              "type": "feed"
             }
           ],
           [],
@@ -4384,19 +4316,9 @@
               "id": "feed",
               "label": "喂豆",
               "mode": "once",
-              "ord": 37,
+              "ord": 39,
               "row": 4,
-              "seq": 2,
-              "type": "feed"
-            },
-            {
-              "col": 5,
-              "id": "feed",
-              "label": "喂豆",
-              "mode": "once",
-              "ord": 38,
-              "row": 4,
-              "seq": 3,
+              "seq": 4,
               "type": "feed"
             }
           ],
@@ -4436,7 +4358,18 @@
               "type": "shovel"
             }
           ],
-          [],
+          [
+            {
+              "col": 5,
+              "id": "feed",
+              "label": "喂豆",
+              "mode": "once",
+              "ord": 38,
+              "row": 5,
+              "seq": 3,
+              "type": "feed"
+            }
+          ],
           [],
           [],
           [],
@@ -4523,17 +4456,8 @@
             "label": "能量花",
             "mode": "once",
             "cells": [
-              "格子4_3"
-            ]
-          },
-          {
-            "key": "card1",
-            "slot": 1,
-            "type": "plant",
-            "label": "瓷砖萝卜",
-            "mode": "once",
-            "cells": [
-              "格子4_2"
+              "格子4_3",
+              "格子4_5"
             ]
           },
           {
@@ -4544,6 +4468,16 @@
             "mode": "once",
             "cells": [
               "格子4_1"
+            ]
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "瓷砖萝卜",
+            "mode": "once",
+            "cells": [
+              "格子4_2"
             ]
           },
           {
@@ -4574,27 +4508,9 @@
             "mode": "once",
             "cells": [
               "格子9_2",
-              "格子9_3"
-            ]
-          },
-          {
-            "key": "card7",
-            "slot": 7,
-            "type": "plant",
-            "label": "黄金蓓蕾",
-            "mode": "once",
-            "cells": [
+              "格子9_3",
+              "格子9_4",
               "格子9_5"
-            ]
-          },
-          {
-            "key": "card7",
-            "slot": 7,
-            "type": "plant",
-            "label": "黄金蓓蕾",
-            "mode": "once",
-            "cells": [
-              "格子9_4"
             ]
           },
           {
@@ -4605,16 +4521,6 @@
             "mode": "once",
             "cells": [
               "格子1_1"
-            ]
-          },
-          {
-            "key": "card6",
-            "slot": 6,
-            "type": "plant",
-            "label": "能量花",
-            "mode": "once",
-            "cells": [
-              "格子4_5"
             ]
           },
           {
@@ -4653,7 +4559,16 @@
             "label": "喂豆",
             "mode": "once",
             "cells": [
-              "格子5_3",
+              "格子5_3"
+            ]
+          },
+          {
+            "key": "feed",
+            "slot": null,
+            "type": "feed",
+            "label": "喂豆",
+            "mode": "once",
+            "cells": [
               "格子5_5"
             ]
           },
@@ -4675,7 +4590,7 @@
             "label": "点波",
             "mode": "once",
             "cells": [],
-            "times": 20,
+            "times": 40,
             "comboMs": 1,
             "comboWatch": false
           },
@@ -4761,7 +4676,7 @@
             "label": "点波",
             "mode": "loop",
             "cells": [],
-            "times": 20
+            "times": 30
           }
         ],
         "end_chain": [
@@ -4894,11 +4809,11 @@
             "mode": "once"
           },
           {
-            "slot": 1,
-            "order": 1,
+            "slot": 6,
+            "order": 2,
             "type": "plant",
-            "label": "瓷砖萝卜",
-            "cell": "格子4_2",
+            "label": "能量花",
+            "cell": "格子4_5",
             "mode": "once"
           },
           {
@@ -4907,6 +4822,14 @@
             "type": "plant",
             "label": "毁灭菇",
             "cell": "格子4_1",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "瓷砖萝卜",
+            "cell": "格子4_2",
             "mode": "once"
           },
           {
@@ -4943,18 +4866,18 @@
           },
           {
             "slot": 7,
-            "order": 1,
+            "order": 3,
             "type": "plant",
             "label": "黄金蓓蕾",
-            "cell": "格子9_5",
+            "cell": "格子9_4",
             "mode": "once"
           },
           {
             "slot": 7,
-            "order": 1,
+            "order": 4,
             "type": "plant",
             "label": "黄金蓓蕾",
-            "cell": "格子9_4",
+            "cell": "格子9_5",
             "mode": "once"
           },
           {
@@ -4963,14 +4886,6 @@
             "type": "plant",
             "label": "瓷砖萝卜",
             "cell": "格子1_1",
-            "mode": "once"
-          },
-          {
-            "slot": 6,
-            "order": 1,
-            "type": "plant",
-            "label": "能量花",
-            "cell": "格子4_5",
             "mode": "once"
           },
           {
@@ -4999,7 +4914,7 @@
           },
           {
             "slot": null,
-            "order": 2,
+            "order": 1,
             "type": "feed",
             "label": "喂豆",
             "cell": "格子5_5",
@@ -5051,7 +4966,7 @@
           "格子5_4",
           "格子5_4",
           "格子5_4",
-          "格子5_4"
+          "格子5_5"
         ],
         "shovel": [
           "格子4_3",
@@ -5156,7 +5071,7 @@
             "label": "喂豆",
             "mode": "once",
             "cells": [
-              "格子5_4"
+              "格子5_5"
             ]
           },
           {
@@ -5178,16 +5093,6 @@
             "cells": [
               "格子5_4"
             ]
-          },
-          {
-            "key": "ga:wait",
-            "slot": null,
-            "type": "action",
-            "action": "wait",
-            "label": "等待",
-            "mode": "once",
-            "cells": [],
-            "ms": 4500
           }
         ],
         "loop_chain": [],
@@ -5218,7 +5123,7 @@
           },
           {
             "slot": 6,
-            "order": 1,
+            "order": 2,
             "type": "plant",
             "label": "能量花",
             "cell": "格子4_5",
@@ -5234,7 +5139,7 @@
           },
           {
             "slot": null,
-            "order": 2,
+            "order": 1,
             "type": "feed",
             "label": "喂豆",
             "cell": "格子5_4",
@@ -5245,7 +5150,7 @@
             "order": 1,
             "type": "feed",
             "label": "喂豆",
-            "cell": "格子5_4",
+            "cell": "格子5_5",
             "mode": "once"
           },
           {
@@ -5569,12 +5474,13 @@
         },
         {
           "key": "feed",
-          "from": -1,
-          "to": -1,
-          "picked": [
-            2,
-            3
-          ]
+          "from": 1,
+          "to": 2
+        },
+        {
+          "key": "feed",
+          "from": 3,
+          "to": 4
         },
         {
           "key": "ga:wait",
@@ -5584,7 +5490,7 @@
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20,
+          "times": 40,
           "comboMs": 1,
           "comboWatch": false
         },
@@ -5608,8 +5514,8 @@
         },
         {
           "key": "feed",
-          "from": 1,
-          "to": 2
+          "from": 2,
+          "to": 3
         },
         {
           "key": "ga:wait",
@@ -5625,18 +5531,13 @@
           "key": "feed",
           "from": 0,
           "to": 1
-        },
-        {
-          "key": "feed",
-          "from": 4,
-          "to": 5
         }
       ],
       "loopOrder": [
         {
           "key": "ga:wave",
           "ga": "wave",
-          "times": 20
+          "times": 30
         }
       ],
       "endOrder": [
@@ -5688,65 +5589,65 @@
       },
       "bossSlotOrder": [
         {
+          "from": 0,
           "key": "feed",
-          "from": 0,
           "to": 1
         },
         {
+          "from": -1,
           "key": "shovel",
-          "from": -1,
-          "to": -1,
           "picked": [
             0,
             1
-          ]
+          ],
+          "to": -1
         },
         {
+          "from": -1,
           "key": "card6",
-          "from": -1,
-          "to": -1,
           "picked": [
             0,
             1
-          ]
+          ],
+          "to": -1
         },
         {
-          "key": "card5",
           "from": 0,
+          "key": "card5",
           "to": 1
         },
         {
-          "key": "ga:speed",
-          "ga": "speed"
+          "ga": "speed",
+          "key": "ga:speed"
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4000
         },
         {
-          "key": "feed",
           "from": 1,
+          "key": "feed",
           "to": 2
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 2,
+          "key": "feed",
           "to": 3
         },
         {
-          "key": "ga:wait",
           "ga": "wait",
+          "key": "ga:wait",
           "ms": 4500
         },
         {
-          "key": "feed",
           "from": 3,
+          "key": "feed",
           "to": 4
         }
       ],
@@ -6011,14 +5912,14 @@
           ],
           [
             {
+              "col": 5,
               "id": "feed",
               "label": "喂豆",
-              "type": "feed",
               "mode": "once",
-              "col": 5,
+              "ord": 123,
               "row": 5,
               "seq": 10,
-              "ord": 123
+              "type": "feed"
             }
           ],
           [],
@@ -6134,19 +6035,9 @@
               "id": "feed",
               "label": "喂豆",
               "mode": "once",
-              "ord": 52,
+              "ord": 54,
               "row": 4,
-              "seq": 2,
-              "type": "feed"
-            },
-            {
-              "col": 5,
-              "id": "feed",
-              "label": "喂豆",
-              "mode": "once",
-              "ord": 53,
-              "row": 4,
-              "seq": 3,
+              "seq": 4,
               "type": "feed"
             }
           ],
@@ -6186,7 +6077,18 @@
               "type": "plant"
             }
           ],
-          [],
+          [
+            {
+              "col": 5,
+              "id": "feed",
+              "label": "喂豆",
+              "mode": "once",
+              "ord": 53,
+              "row": 5,
+              "seq": 3,
+              "type": "feed"
+            }
+          ],
           [],
           [],
           [],
@@ -6275,7 +6177,16 @@
             "label": "喂豆",
             "mode": "once",
             "cells": [
-              "格子5_3",
+              "格子5_3"
+            ]
+          },
+          {
+            "key": "feed",
+            "slot": null,
+            "type": "feed",
+            "label": "喂豆",
+            "mode": "once",
+            "cells": [
               "格子5_5"
             ]
           },
@@ -6297,7 +6208,7 @@
             "label": "点波",
             "mode": "once",
             "cells": [],
-            "times": 20,
+            "times": 40,
             "comboMs": 1,
             "comboWatch": false
           },
@@ -6383,7 +6294,7 @@
             "label": "点波",
             "mode": "loop",
             "cells": [],
-            "times": 20
+            "times": 30
           }
         ],
         "end_chain": [
@@ -6509,7 +6420,7 @@
           },
           {
             "slot": null,
-            "order": 2,
+            "order": 1,
             "type": "feed",
             "label": "喂豆",
             "cell": "格子5_5",
@@ -6561,7 +6472,7 @@
           "格子5_4",
           "格子5_4",
           "格子5_4",
-          "格子5_4"
+          "格子5_5"
         ],
         "shovel": [
           "格子4_3",
@@ -6657,7 +6568,7 @@
             "label": "喂豆",
             "mode": "once",
             "cells": [
-              "格子5_4"
+              "格子5_5"
             ]
           },
           {
@@ -6725,7 +6636,7 @@
           },
           {
             "slot": null,
-            "order": 2,
+            "order": 1,
             "type": "feed",
             "label": "喂豆",
             "cell": "格子5_4",
@@ -6736,7 +6647,7 @@
             "order": 1,
             "type": "feed",
             "label": "喂豆",
-            "cell": "格子5_4",
+            "cell": "格子5_5",
             "mode": "once"
           },
           {
