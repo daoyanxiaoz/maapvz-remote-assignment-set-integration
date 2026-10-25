@@ -325,11 +325,17 @@
 
   // —— 三维筛选 ——
   function passFilters(j) {
-    // 世界：选了才过滤；作业集 worlds 空则不命中任何世界筛选
+    // 世界：选了才过滤；「无」命中 worlds 为空的作业集
     var ws = Object.keys(fWorlds);
     if (ws.length) {
       var jw = Array.isArray(j.worlds) ? j.worlds : [];
-      if (!ws.some(function (w) { return jw.indexOf(w) !== -1; })) return false;
+      var hit = ws.some(function (w) {
+        if (w === "__none__") return jw.length === 0;
+        return jw.some(function (jw1) {
+          return jw1 === w || jw1.indexOf(w) !== -1 || w.indexOf(jw1) !== -1;
+        });
+      });
+      if (!hit) return false;
     }
     // 植物：选中的每棵都要在作业集全量植物里
     var ps = Object.keys(fPlants);
@@ -357,28 +363,25 @@
   }
 
   function setupFilters() {
-    // 世界 chips：全集为空 → 整组隐藏
-    var worldSet = [];
-    jobs.forEach(function (j) {
-      (Array.isArray(j.worlds) ? j.worlds : []).forEach(function (w) {
-        if (worldSet.indexOf(w) === -1) worldSet.push(w);
+    // 世界 chips：固定 16 世界（官方全名）+ 末尾「无」（命中未标世界的作业集），点击多选。
+    // 匹配做包含兼容：作业集存简称「失落」能命中 chip「失落之城」，反之亦然。
+    var WORLDS = ["神秘埃及","海盗港湾","狂野西部","功夫世界","未来世界","黑暗时代",
+                  "巨浪沙滩","冰河世界","天空之城","失落之城","摇滚年代","恐龙危机",
+                  "摩登世界","蒸汽时代","复兴时代","童话世界"];
+    var box = document.getElementById("f-worlds");
+    var chips = document.getElementById("world-chips");
+    WORLDS.concat(["无"]).forEach(function (w) {
+      var key = w === "无" ? "__none__" : w;
+      var c = el("button", "f-chip", w);
+      c.type = "button";
+      c.addEventListener("click", function () {
+        if (fWorlds[key]) { delete fWorlds[key]; c.classList.remove("on"); }
+        else { fWorlds[key] = 1; c.classList.add("on"); }
+        render();
       });
+      chips.appendChild(c);
     });
-    if (worldSet.length) {
-      var box = document.getElementById("f-worlds");
-      var chips = document.getElementById("world-chips");
-      worldSet.forEach(function (w) {
-        var c = el("button", "f-chip", w);
-        c.type = "button";
-        c.addEventListener("click", function () {
-          if (fWorlds[w]) { delete fWorlds[w]; c.classList.remove("on"); }
-          else { fWorlds[w] = 1; c.classList.add("on"); }
-          render();
-        });
-        chips.appendChild(c);
-      });
-      box.hidden = false;
-    }
+    box.hidden = false;
 
     // 植物多选（可搜索）
     var plantSet = [];

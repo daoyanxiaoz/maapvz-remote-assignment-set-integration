@@ -54,6 +54,12 @@
       </div>
     </div>
 
+    <div class="table-card" id="j-ov-card">
+      <h3>总览 · 全部所需配置</h3>
+      <div class="table-sub">各表并集：这套作业集总共要准备这些东西；点下方覆盖图层的表名可只看单表配置</div>
+      <div id="j-ov-detail"></div>
+    </div>
+
     <div class="table-card" id="j-cov-card">
       <h3>关卡覆盖（只读）</h3>
       <div class="table-sub" id="j-cov-sub">谁覆盖哪一关一目了然；点表名高亮该表。交叠关归先出现的表。</div>
@@ -185,8 +191,113 @@
     return [];
   }
 
+  // 神器字段兼容：字符串（旧）或 {name/名称, tier/阶数, en}（新，神器可配阶数）
+  function artInfo(a, enFallback) {
+    if (!a) return null;
+    if (typeof a === "string") return { name: a, en: enFallback || null, tier: null };
+    if (typeof a === "object") {
+      var nm = a.name || a["名称"] || a["神器"];
+      if (!nm) return null;
+      var tier = Number(a.tier != null ? a.tier : a["阶数"]);
+      return {
+        name: String(nm),
+        en: a.en || a.artifact_en || enFallback || null,
+        tier: (tier >= 1 && tier <= 5) ? tier : null
+      };
+    }
+    return null;
+  }
+
+  // 挂件字段兼容：字符串（旧）或 {name/名称/挂件, tier/阶数}（新，挂件可配阶数）
+  function pendInfo(p) {
+    if (!p) return null;
+    if (typeof p === "string") return { name: p, tier: null };
+    if (typeof p === "object") {
+      var nm = p.name || p["名称"] || p["挂件"];
+      if (!nm) return null;
+      var tier = Number(p.tier != null ? p.tier : p["阶数"]);
+      return { name: String(nm), tier: (tier >= 1 && tier <= 5) ? tier : null };
+    }
+    return null;
+  }
+
+  // 全表植物并集（口径与首页一致）：lineup ∪ boss_lineup ∪ 画板格子（不含局外选卡候选池）
+  function unionPlants(tables) {
+    var plants = [], seen = {};
+    function addP(p) { if (p && !seen[p]) { seen[p] = 1; plants.push(String(p)); } }
+    tables.forEach(function (t) {
+      ["lineup", "boss_lineup"].forEach(function (k) {
+        var lu = t[k];
+        if (lu && Array.isArray(lu.plants)) lu.plants.forEach(addP);
+      });
+      ["boardEarly", "boardLate"].forEach(function (bk) {
+        var b = t[bk];
+        if (!Array.isArray(b)) return;
+        b.forEach(function (row) {
+          if (!Array.isArray(row)) return;
+          row.forEach(function (cell) {
+            var v = cell && cell.value;
+            if (!Array.isArray(v)) return;
+            v.forEach(function (e) {
+              if (e && e.type === "plant") addP(e.label || (e.plant && e.plant.name));
+            });
+          });
+        });
+      });
+    });
+    return plants;
+  }
+
+  // 全表神器并集（去重按名称，保留阶数信息）
+  function unionArtifacts(tables) {
+    var out = [], seen = {};
+    tables.forEach(function (t) {
+      [artInfo(t.artifact, t.artifact_en), artInfo(t.bossArtifact, t.boss_artifact_en)]
+        .forEach(function (ai) {
+          if (ai && !seen[ai.name]) { seen[ai.name] = 1; out.push(ai); }
+        });
+    });
+    return out;
+  }
+
+  // 全表补给并集（按 id 去重）
+  function unionSupplies(tables) {
+    var out = [], seen = {};
+    tables.forEach(function (t) {
+      if (!Array.isArray(t.supplyPicks)) return;
+      t.supplyPicks.forEach(function (s) {
+        if (s && s.id && !seen[s.id]) { seen[s.id] = 1; out.push(s); }
+      });
+    });
+    return out;
+  }
+
+  // —— 总览：全部所需配置（各表并集，图标明细） ——
+  function buildOverview(job, tables, unionMeta) {
+    var plants = unionPlants(tables);
+    var arts = unionArtifacts(tables);
+    var sups = unionSupplies(tables);
+
+    var detail = document.getElementById("j-ov-detail");
+    if (plants.length) {
+      detail.appendChild(el("div", "sec-title", "全部植物（" + plants.length + "）"));
+      detail.appendChild(plantGrid(plants, unionMeta));
+    }
+    if (arts.length) {
+      detail.appendChild(el("div", "sec-title", "全部神器（" + arts.length + "）"));
+      var artWrap = el("div", "ov-arts");
+      arts.forEach(function (ai) { artWrap.appendChild(artifactRow(ai)); });
+      detail.appendChild(artWrap);
+    }
+    if (sups.length) {
+      detail.appendChild(el("div", "sec-title", "全部补给（" + sups.length + "）"));
+      detail.appendChild(supplyRow(sups));
+    }
+  }
+
   // —— 关卡覆盖画板（只读）：图层栈 + 149 宫格 ——
-  function buildCoverageBoard(tables, maxLevel) {
+  //   onActive(ti)：点表名时回调（ti=-1 表示取消选择），用于下面阵容区只显示该表
+  function buildCoverageBoard(tables, maxLevel, onActive) {
     var max = maxLevel || 149;
     var owners = [];               // owners[lv] = [表idx, ...]（先出现的在前）
     for (var i = 0; i <= max; i++) owners.push([]);
@@ -255,6 +366,7 @@
           c.el.classList.toggle("lz-dim",
             active !== -1 && c.owners.indexOf(active) === -1);
         });
+        if (typeof onActive === "function") onActive(active);
       });
       list.appendChild(item);
     });
@@ -296,21 +408,27 @@
         rb.title = tier + " 阶";
         cell.appendChild(rb);
       }
-      // 挂件徽标：左上金圈（plant_notes.pendant）
-      if (meta.pendant) {
-        var pName = String(meta.pendant);
-        if (PENDANT_IMG[pName]) {
+      // 挂件徽标：左上金圈（plant_notes.pendant，支持字符串或 {name,tier}）
+      var pd2 = pendInfo(meta.pendant);
+      if (pd2) {
+        var pTip = "挂件：" + pd2.name + (pd2.tier ? " · " + pd2.tier + " 阶" : "");
+        if (PENDANT_IMG[pd2.name]) {
           var pb = document.createElement("img");
           pb.className = "pendant-badge";
-          pb.src = "img/items/" + PENDANT_IMG[pName];
-          pb.alt = pName;
-          pb.title = "挂件：" + pName;
+          pb.src = "img/items/" + PENDANT_IMG[pd2.name];
+          pb.alt = pd2.name;
+          pb.title = pTip;
           cell.appendChild(pb);
         } else {
           var pt = el("span", "pendant-badge", "挂");
-          pt.title = "挂件：" + pName;
+          pt.title = pTip;
           pt.style.cssText = "font-size:10px;line-height:15px;text-align:center;color:#4a2f12;display:block";
           cell.appendChild(pt);
+        }
+        if (pd2.tier) {
+          var ptp = el("span", "pendant-tier", pd2.tier + "阶");
+          ptp.title = pTip;
+          cell.appendChild(ptp);
         }
       }
     }
@@ -332,20 +450,21 @@
     return grid;
   }
 
-  // 神器行：图标 + 名称
-  function artifactRow(name, en) {
+  // 神器行：图标 + 名称（+ 阶数，若作业集带了 tier）
+  function artifactRow(info) {
     var row = el("div", "artifact-row");
-    var artEn = en || ART_EN[name] || null;
+    var artEn = info.en || ART_EN[info.name] || null;
     if (artEn) {
       var img = document.createElement("img");
       img.src = "img/artifacts/" + artEn + ".webp";
-      img.alt = name;
+      img.alt = info.name;
       img.loading = "lazy";
       img.onerror = function () { this.remove(); };
       row.appendChild(img);
     }
     var txt = el("div");
-    txt.appendChild(el("div", "art-name", name));
+    txt.appendChild(el("div", "art-name", info.name));
+    if (info.tier) txt.appendChild(el("div", "art-tier", info.tier + " 阶"));
     row.appendChild(txt);
     return row;
   }
@@ -426,13 +545,14 @@
     }
 
     // —— 神器 ——
-    if (t.artifact) {
+    var aInfo = artInfo(t.artifact, t.artifact_en);
+    if (aInfo) {
       card.appendChild(el("div", "sec-title", "神器"));
-      card.appendChild(artifactRow(String(t.artifact), t.artifact_en));
-      var bossArt = t.bossArtifact;
-      if (bossArt && bossArt !== t.artifact) {
+      card.appendChild(artifactRow(aInfo));
+      var bInfo = artInfo(t.bossArtifact, t.boss_artifact_en);
+      if (bInfo && bInfo.name !== aInfo.name) {
         card.appendChild(el("div", "sec-title", "神器（boss 关）"));
-        card.appendChild(artifactRow(String(bossArt), t.boss_artifact_en));
+        card.appendChild(artifactRow(bInfo));
       }
     }
 
@@ -524,21 +644,36 @@
       d.hidden = false;
     }
 
-    // —— 关卡覆盖画板（全表图层叠放） ——
-    var maxLevel = (typeof job.max_level === "number") ? job.max_level : 149;
-    buildCoverageBoard(tables, maxLevel);
-
-    // —— 策略表 ——
-    var root = document.getElementById("j-tables");
-    // 植物阶数/装扮：新版编辑器导出在 plant_notes，旧兼容 plant_meta；表级覆盖全局
+    // —— 总览 + 关卡覆盖画板（全表图层叠放） ——
+    // 植物阶数/挂件/装扮：新版编辑器导出在 plant_notes，旧兼容 plant_meta；表级覆盖全局
     var globalMeta = Object.assign({},
       (job.plant_meta && typeof job.plant_meta === "object") ? job.plant_meta : {},
       (job.plant_notes && typeof job.plant_notes === "object") ? job.plant_notes : {});
+    var unionMeta = Object.assign({}, globalMeta);
+    tables.forEach(function (t) {
+      Object.assign(unionMeta,
+        (t && t.plant_meta && typeof t.plant_meta === "object") ? t.plant_meta : {},
+        (t && t.plant_notes && typeof t.plant_notes === "object") ? t.plant_notes : {});
+    });
+    buildOverview(job, tables, unionMeta);
+
+    // —— 策略表（先建卡片，覆盖画板点表名时只显示对应那张） ——
+    var root = document.getElementById("j-tables");
+    var tableCards = [];
     tables.forEach(function (t, i) {
       var tm = (t && t.plant_meta && typeof t.plant_meta === "object") ? t.plant_meta : {};
       var tn = (t && t.plant_notes && typeof t.plant_notes === "object") ? t.plant_notes : {};
       var merged = Object.assign({}, globalMeta, tm, tn);
-      root.appendChild(buildTable(t, i, merged));
+      var cardEl = buildTable(t, i, merged);
+      tableCards.push(cardEl);
+      root.appendChild(cardEl);
+    });
+
+    var maxLevel = (typeof job.max_level === "number") ? job.max_level : 149;
+    buildCoverageBoard(tables, maxLevel, function (active) {
+      tableCards.forEach(function (c, i) {
+        c.style.display = (active === -1 || i === active) ? "" : "none";
+      });
     });
 
     elLoading.hidden = true;
