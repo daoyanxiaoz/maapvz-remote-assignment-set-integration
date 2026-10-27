@@ -208,15 +208,18 @@
     return null;
   }
 
-  // 挂件字段兼容：字符串（旧）或 {name/名称/挂件, tier/阶数}（新，挂件可配阶数）
-  function pendInfo(p) {
+  // 挂件字段兼容：字符串（旧）或 {name/名称/挂件, tier/阶数}（对象），
+  // 阶数也可能放在平级键 pendantTier / 挂件阶数（编辑器 2026-10-27 起）
+  function pendInfo(p, tierFallback) {
     if (!p) return null;
-    if (typeof p === "string") return { name: p, tier: null };
+    var fb = Number(tierFallback);
+    fb = (fb >= 1 && fb <= 5) ? fb : null;
+    if (typeof p === "string") return { name: p, tier: fb };
     if (typeof p === "object") {
       var nm = p.name || p["名称"] || p["挂件"];
       if (!nm) return null;
       var tier = Number(p.tier != null ? p.tier : p["阶数"]);
-      return { name: String(nm), tier: (tier >= 1 && tier <= 5) ? tier : null };
+      return { name: String(nm), tier: (tier >= 1 && tier <= 5) ? tier : fb };
     }
     return null;
   }
@@ -248,11 +251,19 @@
     return plants;
   }
 
-  // 全表神器并集（去重按名称，保留阶数信息）
+  // 全表神器并集（去重按名称，保留阶数信息；认 artifactTier 平级键）
   function unionArtifacts(tables) {
     var out = [], seen = {};
+    function tierOf(t, info, flatKey, cnKey) {
+      if (info && info.tier == null) {
+        var n = Number(t[flatKey] != null ? t[flatKey] : t[cnKey]);
+        if (n >= 1 && n <= 5) info.tier = n;
+      }
+      return info;
+    }
     tables.forEach(function (t) {
-      [artInfo(t.artifact, t.artifact_en), artInfo(t.bossArtifact, t.boss_artifact_en)]
+      [tierOf(t, artInfo(t.artifact, t.artifact_en), "artifactTier", "神器阶数"),
+       tierOf(t, artInfo(t.bossArtifact, t.boss_artifact_en), "boss_artifact_tier", "boss神器阶数")]
         .forEach(function (ai) {
           if (ai && !seen[ai.name]) { seen[ai.name] = 1; out.push(ai); }
         });
@@ -409,7 +420,8 @@
         cell.appendChild(rb);
       }
       // 挂件徽标：左上金圈（plant_notes.pendant，支持字符串或 {name,tier}）
-      var pd2 = pendInfo(meta.pendant);
+      var pd2 = pendInfo(meta.pendant,
+        meta.pendantTier != null ? meta.pendantTier : meta["挂件阶数"]);
       if (pd2) {
         var pTip = "挂件：" + pd2.name + (pd2.tier ? " · " + pd2.tier + " 阶" : "");
         if (PENDANT_IMG[pd2.name]) {
@@ -544,13 +556,21 @@
       card.appendChild(el("span", "deck-note", "编队换阵"));
     }
 
-    // —— 神器 ——
+    // —— 神器（artifactTier/boss_artifact_tier 平级键也认） ——
     var aInfo = artInfo(t.artifact, t.artifact_en);
+    if (aInfo && aInfo.tier == null) {
+      var at = Number(t.artifactTier != null ? t.artifactTier : t["神器阶数"]);
+      if (at >= 1 && at <= 5) aInfo.tier = at;
+    }
     if (aInfo) {
       card.appendChild(el("div", "sec-title", "神器"));
       card.appendChild(artifactRow(aInfo));
       var bInfo = artInfo(t.bossArtifact, t.boss_artifact_en);
-      if (bInfo && bInfo.name !== aInfo.name) {
+      if (bInfo && bInfo.tier == null) {
+        var bt = Number(t.boss_artifact_tier != null ? t.boss_artifact_tier : t["boss神器阶数"]);
+        if (bt >= 1 && bt <= 5) bInfo.tier = bt;
+      }
+      if (bInfo && (bInfo.name !== aInfo.name || bInfo.tier !== aInfo.tier)) {
         card.appendChild(el("div", "sec-title", "神器（boss 关）"));
         card.appendChild(artifactRow(bInfo));
       }
