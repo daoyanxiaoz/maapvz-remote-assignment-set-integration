@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T14:53:27Z",
+  "updated": "2026-10-30T14:55:44Z",
   "count": 10,
   "jobs": [
     {
@@ -26,7 +26,7 @@
       "world_primary": "摇滚年代",
       "tables": 2,
       "file": "jobs/pvz_20261026_213157.json",
-      "updated": "2026-10-30T14:53:27Z",
+      "updated": "2026-10-30T14:55:25Z",
       "size": 88573,
       "max_level": 149,
       "coverage": [
@@ -275,7 +275,7 @@
       "world_primary": "摇滚年代",
       "tables": 1,
       "file": "jobs/pvz_20261030_145912.json",
-      "updated": "2026-10-30T14:53:27Z",
+      "updated": "2026-10-30T14:55:25Z",
       "size": 65677,
       "tags": [
         "微氪"
@@ -512,7 +512,7 @@
       "world_primary": "摇滚年代",
       "tables": 3,
       "file": "jobs/pvz_20261030_223059.json",
-      "updated": "2026-10-30T14:53:27Z",
+      "updated": "2026-10-30T14:55:25Z",
       "size": 174978,
       "max_level": 149,
       "coverage": [
