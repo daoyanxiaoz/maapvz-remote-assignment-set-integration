@@ -63,6 +63,15 @@
         <button type="button" data-v="required">含需装扮植物</button>
       </div>
     </div>
+    <div class="filter-group" id="f-tags" hidden>
+      <span class="filter-label">标签</span>
+      <div class="picker" id="tag-picker">
+        <button class="picker-toggle" id="tag-toggle" type="button">全部标签 ▾</button>
+        <div class="picker-panel" id="tag-panel" hidden>
+          <div class="picker-list" id="tag-list"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="state-loading" class="state">加载中…</div>
@@ -100,6 +109,7 @@
   // 筛选状态
   var fWorlds = {};     // 选中的世界
   var fPlants = {};     // 选中的植物
+  var fTags = {};       // 选中的标签
   var fCostume = "all"; // all | none | required
 
   // 世界 → 卡片顶部色带（worlds 空 → 不画）
@@ -108,7 +118,7 @@
     ["功夫", "#c0392b"], ["黑暗", "#5d4a8a"], ["沙滩", "#e67e22"], ["冰河", "#5dade2"],
     ["天空", "#7c95e8"], ["失落", "#b7950b"], ["摇滚", "#af4c8f"], ["恐龙", "#1e8449"],
     ["摩登", "#707b7c"], ["蒸汽", "#9c640c"], ["复兴", "#8e44ad"], ["平安", "#cd6155"],
-    ["童话", "#ec87b8"], ["亚特兰蒂斯", "#148f77"], ["月球", "#2e4053"]
+    ["童话", "#ec87b8"], ["亚特兰蒂斯", "#148f77"], ["地宫", "#8c6239"], ["月球", "#2e4053"]
   ];
 
   function worldBand(worlds) {
@@ -281,12 +291,23 @@
     }));
     card.appendChild(codeRow);
 
-    // 世界标签（worlds 空 → 整条不渲染）
+    // 世界标签（主世界正常色、副世界淡化）；标签不铺在卡片上，改用筛选器多选
+    var tagRow = el("div", "tags");
     if (Array.isArray(job.worlds) && job.worlds.length) {
-      var tags = el("div", "tags");
-      job.worlds.forEach(function (w) { tags.appendChild(el("span", "tag", String(w))); });
-      card.appendChild(tags);
+      var shownW = job.worlds.slice(0, 4);
+      shownW.forEach(function (w) {
+        var isSub = job.world_primary && String(w) !== String(job.world_primary);
+        var wTag = el("span", isSub ? "tag tag-sub" : "tag", String(w));
+        if (isSub) wTag.title = "副世界（这套方案也能用在这些世界）";
+        tagRow.appendChild(wTag);
+      });
+      if (job.worlds.length > shownW.length) {
+        var moreW = el("span", "tag tag-more", "+" + (job.worlds.length - shownW.length));
+        moreW.title = job.worlds.join("、");
+        tagRow.appendChild(moreW);
+      }
     }
+    if (tagRow.childNodes.length) card.appendChild(tagRow);
 
     // 关卡覆盖预览条
     card.appendChild(buildCoverageBar(job.coverage, job.max_level));
@@ -343,6 +364,12 @@
       var jp = Array.isArray(j.plants) ? j.plants : [];
       if (!ps.every(function (p) { return jp.indexOf(p) !== -1; })) return false;
     }
+    // 标签：选中的标签命中任意一个即可
+    var ts = Object.keys(fTags);
+    if (ts.length) {
+      var jt = Array.isArray(j.tags) ? j.tags : [];
+      if (!ts.some(function (t) { return jt.indexOf(t) !== -1; })) return false;
+    }
     // 装扮：三态
     if (fCostume === "none" && j.costume !== "none") return false;
     if (fCostume === "required" && j.costume !== "required") return false;
@@ -354,7 +381,10 @@
     var list = jobs.filter(function (j) {
       if (!passFilters(j)) return false;
       if (!q) return true;
-      var hay = [j.name, j.code, j.author, j.desc].filter(Boolean).join("\n").toLowerCase();
+      var hay = [j.name, j.code, j.author, j.desc,
+                 (Array.isArray(j.tags) ? j.tags.join(" ") : ""),
+                 (Array.isArray(j.worlds) ? j.worlds.join(" ") : "")]
+        .filter(Boolean).join("\n").toLowerCase();
       return hay.indexOf(q) !== -1;
     });
     grid.innerHTML = "";
@@ -363,11 +393,11 @@
   }
 
   function setupFilters() {
-    // 世界 chips：固定 16 世界（官方全名）+ 末尾「无」（命中未标世界的作业集），点击多选。
+    // 世界 chips：固定 17 世界（官方全名）+ 末尾「无」（命中未标世界的作业集），点击多选。
     // 匹配做包含兼容：作业集存简称「失落」能命中 chip「失落之城」，反之亦然。
     var WORLDS = ["神秘埃及","海盗港湾","狂野西部","功夫世界","未来世界","黑暗时代",
                   "巨浪沙滩","冰河世界","天空之城","失落之城","摇滚年代","恐龙危机",
-                  "摩登世界","蒸汽时代","复兴时代","童话世界"];
+                  "摩登世界","蒸汽时代","复兴时代","童话世界","地宫世界"];
     var box = document.getElementById("f-worlds");
     var chips = document.getElementById("world-chips");
     WORLDS.concat(["无"]).forEach(function (w) {
@@ -382,6 +412,52 @@
       chips.appendChild(c);
     });
     box.hidden = false;
+
+    // 标签多选（下拉，紫色勾选；作业集多了也不会把卡片撑难看）
+    var tagSet = [];
+    jobs.forEach(function (j) {
+      if (!Array.isArray(j.tags)) return;
+      j.tags.forEach(function (t) {
+        if (t && tagSet.indexOf(t) === -1) tagSet.push(String(t));
+      });
+    });
+    if (tagSet.length) {
+      tagSet.sort();
+      var tagBoxFilter = document.getElementById("f-tags");
+      var tagToggle = document.getElementById("tag-toggle");
+      var tagPanel = document.getElementById("tag-panel");
+      var tagList = document.getElementById("tag-list");
+
+      function refreshTagToggle() {
+        var picked = Object.keys(fTags);
+        if (!picked.length) {
+          tagToggle.textContent = "全部标签 ▾";
+        } else if (picked.length <= 2) {
+          tagToggle.textContent = picked.join("、") + " ▾";
+        } else {
+          tagToggle.textContent = "已选 " + picked.length + " 个标签 ▾";
+        }
+      }
+      tagSet.forEach(function (t) {
+        var item = el("div", "picker-item" + (fTags[t] ? " on" : ""));
+        item.appendChild(el("span", null, t));
+        item.addEventListener("click", function () {
+          if (fTags[t]) delete fTags[t]; else fTags[t] = 1;
+          item.classList.toggle("on");
+          refreshTagToggle();
+          render();
+        });
+        tagList.appendChild(item);
+      });
+      tagToggle.addEventListener("click", function () {
+        tagPanel.hidden = !tagPanel.hidden;
+      });
+      document.addEventListener("click", function (ev) {
+        var picker = document.getElementById("tag-picker");
+        if (picker && !picker.contains(ev.target)) tagPanel.hidden = true;
+      });
+      tagBoxFilter.hidden = false;
+    }
 
     // 植物多选（可搜索）
     var plantSet = [];

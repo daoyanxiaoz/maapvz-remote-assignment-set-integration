@@ -104,17 +104,56 @@ def build_entry(path, fname):
         code = os.path.splitext(fname)[0]  # 缺 code 时用文件名兜底
 
     tables = data.get("tables")
-    worlds = data.get("worlds")
+
+    # 世界：兼容三代格式 ——
+    #   旧 worlds: ["失落"]          新 world: "摇滚年代" + sub_worlds: ["神秘埃及", ...]
+    # 语义去重：「失落」与「失落之城」视为同一个世界，留更全的名字
+    worlds = []
+
+    def add_w(x):
+        s = str(x).strip() if x is not None else ""
+        if not s:
+            return
+        for i, e in enumerate(worlds):
+            if e == s:
+                return
+            if e in s or s in e:
+                if len(s) > len(e):
+                    worlds[i] = s
+                return
+        worlds.append(s)
+
+    raw_worlds = data.get("worlds")
+    if isinstance(raw_worlds, list):
+        for x in raw_worlds:
+            add_w(x)
+    primary = data.get("world")
+    if isinstance(primary, str):
+        add_w(primary)
+    subs = data.get("sub_worlds")
+    if isinstance(subs, list):
+        for x in subs:
+            add_w(x)
 
     entry = {
         "code": code,
         "name": data.get("name") or code,
-        "worlds": [str(w) for w in worlds] if isinstance(worlds, list) else [],
+        "worlds": worlds,
+        "world_primary": primary.strip() if isinstance(primary, str) and primary.strip() else None,
         "tables": len(tables) if isinstance(tables, list) else 0,
         "file": "jobs/" + fname,
         "updated": git_last_commit_time(path),
         "size": os.path.getsize(path),
     }
+    if not entry["world_primary"] and worlds:
+        entry["world_primary"] = worlds[0]
+
+    # 标签（编辑器 tags 字段，纯展示 + 搜索命中）
+    tags = data.get("tags")
+    if isinstance(tags, list):
+        tl = [str(t).strip() for t in tags if isinstance(t, (str, int, float)) and str(t).strip()]
+        if tl:
+            entry["tags"] = tl
     if isinstance(data.get("max_level"), (int, float)):
         entry["max_level"] = data["max_level"]
 

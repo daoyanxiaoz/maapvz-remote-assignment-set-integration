@@ -97,6 +97,7 @@
   var ART_EN = {};      // 神器中文名 → 英文文件名（兜底，优先用作业集自带的 artifact_en）
   var COSTUMES = {};    // 植物中文名 → 是否需装扮（meta.plant_costumes ∪ plant_meta）
   var PENDANT_IMG = {}; // 挂件中文名 → 图标文件名（data/pendants.json）
+  var ART_NOTES = {};   // 神器中文名 → {tier}（作业集 artifact_notes）
 
   // 世界关键词 → 世界立绘文件名（透明底）
   var WORLD_IMG = [
@@ -104,9 +105,31 @@
     ["未来", "future"], ["黑暗", "dark"], ["沙滩", "beach"], ["冰河", "iceage"],
     ["天空", "skycity"], ["失落", "lostcity"], ["摇滚", "eighties"], ["恐龙", "dino"],
     ["摩登", "modern"], ["蒸汽", "steam"], ["复兴", "renai"], ["平安", "heian"],
-    ["童话", "tale"], ["亚特兰蒂斯", "atlantis"], ["月球", "moon"]
+    ["童话", "tale"], ["亚特兰蒂斯", "atlantis"], ["地宫", "mausoleum"], ["月球", "moon"]
   ];
   var COV_SHADES = ["#5da130", "#86bd50", "#4a8527", "#a5d176", "#3c7023", "#6fb03e"];
+
+  // 世界统一口径：旧 worlds 数组 + 新 world（主世界全名）/ sub_worlds（副世界列表）
+  // 语义去重：「失落」与「失落之城」视为同一个世界，留更全的名字
+  function jobWorlds(job) {
+    var out = [];
+    function add(x) {
+      var s = (x == null) ? "" : String(x).trim();
+      if (!s) return;
+      for (var i = 0; i < out.length; i++) {
+        if (out[i] === s) return;
+        if (out[i].indexOf(s) !== -1 || s.indexOf(out[i]) !== -1) {
+          if (s.length > out[i].length) out[i] = s;
+          return;
+        }
+      }
+      out.push(s);
+    }
+    if (Array.isArray(job.worlds)) job.worlds.forEach(add);
+    if (typeof job.world === "string") add(job.world);
+    if (Array.isArray(job.sub_worlds)) job.sub_worlds.forEach(add);
+    return out;
+  }
 
   function worldArt(worlds) {
     if (Array.isArray(worlds)) {
@@ -259,6 +282,7 @@
         var n = Number(t[flatKey] != null ? t[flatKey] : t[cnKey]);
         if (n >= 1 && n <= 5) info.tier = n;
       }
+      if (info && info.tier == null && ART_NOTES[info.name]) info.tier = ART_NOTES[info.name].tier;
       return info;
     }
     tables.forEach(function (t) {
@@ -556,20 +580,22 @@
       card.appendChild(el("span", "deck-note", "编队换阵"));
     }
 
-    // —— 神器（artifactTier/boss_artifact_tier 平级键也认） ——
-    var aInfo = artInfo(t.artifact, t.artifact_en);
-    if (aInfo && aInfo.tier == null) {
-      var at = Number(t.artifactTier != null ? t.artifactTier : t["神器阶数"]);
-      if (at >= 1 && at <= 5) aInfo.tier = at;
+    // —— 神器（artifactTier/boss_artifact_tier 平级键、artifact_notes 表都认） ——
+    function applyArtTier(info, flatKey, cnKey) {
+      if (!info) return info;
+      if (info.tier == null) {
+        var n = Number(t[flatKey] != null ? t[flatKey] : t[cnKey]);
+        if (n >= 1 && n <= 5) info.tier = n;
+      }
+      if (info.tier == null && ART_NOTES[info.name]) info.tier = ART_NOTES[info.name].tier;
+      return info;
     }
+    var aInfo = applyArtTier(artInfo(t.artifact, t.artifact_en), "artifactTier", "神器阶数");
     if (aInfo) {
       card.appendChild(el("div", "sec-title", "神器"));
       card.appendChild(artifactRow(aInfo));
-      var bInfo = artInfo(t.bossArtifact, t.boss_artifact_en);
-      if (bInfo && bInfo.tier == null) {
-        var bt = Number(t.boss_artifact_tier != null ? t.boss_artifact_tier : t["boss神器阶数"]);
-        if (bt >= 1 && bt <= 5) bInfo.tier = bt;
-      }
+      var bInfo = applyArtTier(artInfo(t.bossArtifact, t.boss_artifact_en),
+        "boss_artifact_tier", "boss神器阶数");
       if (bInfo && (bInfo.name !== aInfo.name || bInfo.tier !== aInfo.tier)) {
         card.appendChild(el("div", "sec-title", "神器（boss 关）"));
         card.appendChild(artifactRow(bInfo));
@@ -636,7 +662,8 @@
     var dlName = String(job.name || job.code).replace(/[\\/:*?"<>|]/g, "").trim();
     dl.setAttribute("download", (dlName || job.code) + ".json");
 
-    var art = worldArt(job.worlds);
+    var worlds = jobWorlds(job);
+    var art = worldArt(worlds);
     if (art) {
       var wa = document.getElementById("j-world-art");
       wa.src = "img/worlds/" + art + ".png";
@@ -644,9 +671,50 @@
       wa.onerror = function () { this.hidden = true; };
     }
 
-    if (Array.isArray(job.worlds) && job.worlds.length) {
-      var tags = document.getElementById("j-worlds");
-      job.worlds.forEach(function (w) { tags.appendChild(el("span", "tag", String(w))); });
+    // 世界标签（主世界高亮，副世界淡化）+ 用户标签（紫色 #tag）
+    var tagBox = document.getElementById("j-worlds");
+    var primaryWorld = (typeof job.world === "string" && job.world.trim())
+      ? job.world.trim() : (worlds.length ? worlds[0] : null);
+    var subs = Array.isArray(job.sub_worlds)
+      ? job.sub_worlds.map(function (x) { return String(x).trim(); }).filter(Boolean) : [];
+
+    // 副世界标签多的时候先折叠：主世界 + 前 3 个副世界 + 「+N」展开
+    var SUB_SHOW = 3;
+    var subShown = 0;
+    var hiddenSubTags = [];
+    worlds.forEach(function (w) {
+      var isSub = subs.indexOf(w) !== -1 && w !== primaryWorld;
+      var wTag = el("span", isSub ? "tag tag-sub" : "tag", String(w));
+      if (isSub) {
+        wTag.title = "副世界（这套方案也能用在这些世界）";
+        subShown++;
+        if (subShown > SUB_SHOW) {
+          wTag.hidden = true;
+          hiddenSubTags.push(wTag);
+        }
+      }
+      tagBox.appendChild(wTag);
+    });
+    if (hiddenSubTags.length) {
+      var moreTag = el("span", "tag tag-more", "+" + hiddenSubTags.length + " 个世界");
+      moreTag.title = "展开全部副世界";
+      moreTag.style.cursor = "pointer";
+      var expanded = false;
+      moreTag.addEventListener("click", function () {
+        expanded = !expanded;
+        hiddenSubTags.forEach(function (t) { t.hidden = !expanded; });
+        moreTag.textContent = expanded
+          ? "收起副世界"
+          : ("+" + hiddenSubTags.length + " 个世界");
+      });
+      tagBox.appendChild(moreTag);
+    }
+
+    if (Array.isArray(job.tags)) {
+      job.tags.forEach(function (t) {
+        if (t == null || String(t).trim() === "") return;
+        tagBox.appendChild(el("span", "tag purple", "#" + String(t).trim()));
+      });
     }
 
     var metaBits = [];
@@ -675,6 +743,20 @@
         (t && t.plant_meta && typeof t.plant_meta === "object") ? t.plant_meta : {},
         (t && t.plant_notes && typeof t.plant_notes === "object") ? t.plant_notes : {});
     });
+
+    // 神器阶数表（编辑器 artifact_notes：{神器名: {tier}}），表级覆盖全局
+    ART_NOTES = {};
+    function mergeArtNotes(src) {
+      if (!src || typeof src !== "object") return;
+      Object.keys(src).forEach(function (k) {
+        var v = src[k];
+        var tier = (v && typeof v === "object") ? Number(v.tier != null ? v.tier : v["阶数"]) : Number(v);
+        if (k && tier >= 1 && tier <= 5) ART_NOTES[k] = { tier: tier };
+      });
+    }
+    mergeArtNotes(job.artifact_notes);
+    tables.forEach(function (t) { mergeArtNotes(t && t.artifact_notes); });
+
     buildOverview(job, tables, unionMeta);
 
     // —— 策略表（先建卡片，覆盖画板点表名时只显示对应那张） ——
