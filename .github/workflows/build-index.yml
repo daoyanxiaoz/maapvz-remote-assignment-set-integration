@@ -7,6 +7,8 @@ on:
       # 目录树就是数据源：jobs/ 下面任何变化都重建索引
       - "jobs/**"
       - "tools/**"
+      # index.json 是生成物：谁手改 / merge 出冲突痕迹，都让 Action 重新生成一遍
+      - "index.json"
   workflow_dispatch: # 允许手动触发兜底
 
 permissions:

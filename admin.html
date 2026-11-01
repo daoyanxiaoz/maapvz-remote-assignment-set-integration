@@ -83,6 +83,17 @@
       当前是「站点预览」模式：上传 / 改信息等写操作已全部关闭。<br>
       要改内容请关掉预览窗口，双击 <b>启动维护工具.bat</b>。
     </div>
+    <div class="table-card" id="audit-card">
+      <h3>仓库体检</h3>
+      <div class="table-sub">扫一遍 <code>jobs/</code>：空目录、同名/同 code 的重复作业集、版本目录名不是日期、目录名与作业集名称不一致。</div>
+      <div class="pub-actions">
+        <button class="btn" id="do-audit" type="button">重新体检</button>
+        <button class="btn" id="cleanup-empty" type="button">清理空目录</button>
+        <span class="adm-muted" id="audit-summary"></span>
+      </div>
+      <div id="audit-list" class="adm-log"></div>
+    </div>
+
     <div class="table-card">
       <h3>① 上传作业集</h3>
       <div class="adm-tip">
@@ -356,6 +367,30 @@
       orphans.forEach(function (j) { loose.appendChild(jobBlock(j)); });
       box.appendChild(loose);
     }
+
+    // 空阵型（只剩 _group.json）：站点阵型列表里看不到，但目录还在 → 这里列出来可删
+    var empties = (lastAuditIssues || []).filter(function (i) { return i.kind === "empty-group"; });
+    if (empties.length) {
+      var gc = el("div", "adm-group");
+      var gh = el("div", "adm-group-head");
+      gh.appendChild(el("span", "adm-group-name", "空阵型"));
+      gh.appendChild(el("span", "adm-muted", empties.length + " 个（里面没有作业集，站点上看不到）"));
+      gc.appendChild(gh);
+      empties.forEach(function (i) {
+        var gid = String(i.path || "").split("/").pop();
+        var row = el("div", "adm-ver");
+        row.appendChild(el("span", "adm-muted", gid));
+        var delBtn = el("button", "btn", "删除阵型");
+        delBtn.type = "button";
+        delBtn.addEventListener("click", function () {
+          if (!confirm("删除空阵型「" + gid + "」？（里面没有作业集，删了不影响任何文件）")) return;
+          api("delete_group", { group: gid, confirm: true }).then(afterOp);
+        });
+        row.appendChild(delBtn);
+        gc.appendChild(row);
+      });
+      box.appendChild(gc);
+    }
   }
 
   // 作业集目录名：优先用 index 里的 dir（jobs/[阵型/]作业集），拿不到再退回 id
@@ -375,8 +410,9 @@
 
     var rename = el("button", "btn", "重命名");
     rename.type = "button";
+    rename.title = "目录名和站点显示名一起改";
     rename.addEventListener("click", function () {
-      var to = prompt("作业集新目录名：", jobFolder(j));
+      var to = prompt("作业集新名字（目录名 + 站点显示名 + 各版本里的 name 一起改）：", j.name || jobFolder(j));
       if (!to) return;
       api("rename_job", { group: j.group, job: jobFolder(j), to: to }).then(afterOp);
     });
@@ -490,6 +526,37 @@
     log.classList.remove("err");
     log.textContent = "✅ " + (res.message || "完成") + "\n· 本地文件已改好，点右上角「首页预览」按 F5 就能看到效果";
     load();
+    runAudit();
+  }
+
+  // 仓库体检
+  var lastAuditIssues = [];
+  function runAudit() {
+    var list = $("audit-list");
+    if (!list) return;
+    $("audit-summary").textContent = "体检中…";
+    fetch("/api/audit", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        list.innerHTML = "";
+        if (!res || !res.ok) {
+          $("audit-summary").textContent = "体检接口不可用（预览模式？）";
+          return;
+        }
+        var issues = res.issues || [];
+        lastAuditIssues = issues;
+        $("audit-summary").textContent = issues.length
+          ? (res.error_count + " 个错误 / " + res.warn_count + " 个提醒")
+          : "没发现问题 ✓";
+        list.classList.toggle("err", res.error_count > 0);
+        issues.forEach(function (i) {
+          list.appendChild(el("div", null,
+            (i.level === "error" ? "✗ " : "! ") + i.path + " —— " + i.message));
+        });
+        // 空阵型只在体检结果里能看到 → 重新渲染列表，把它们显示成可删除的条目
+        if (issues.some(function (i) { return i.kind === "empty-group"; })) renderCatalog();
+      })
+      .catch(function () { $("audit-summary").textContent = "体检失败（服务没开？）"; });
   }
 
   // ---------- 上传 ----------
@@ -514,7 +581,13 @@
       rows.forEach(function (r) {
         if (r.error) { toast(r.file.name + "：" + r.error.message); return; }
         var name = String(r.data.name || r.file.name.replace(/\.(json|txt)$/i, "")).trim();
+        var key = r.file.name + "|" + name;
+        if (pending.some(function (x) { return x.key === key; })) {
+          toast(r.file.name + "：已经加过了");
+          return;
+        }
         pending.push({
+          key: key,
           filename: r.file.name,
           text: r.text,
           job: name,
@@ -580,11 +653,13 @@
       (res.written || []).forEach(function (w) {
         lines.push("· " + w.path + (w.changes && w.changes.length ? "（" + w.changes.join("；") + "）" : ""));
       });
+      (res.warnings || []).forEach(function (w) { lines.push("⚠ " + w); });
       log.textContent = lines.join("\n");
       pending = [];
       renderFiles();
       $("up-note").value = "";
       load();
+      runAudit();
     });
   }
 
@@ -610,10 +685,16 @@
   $("do-rebuild").addEventListener("click", function () {
     api("rebuild", {}).then(afterOp);
   });
-  $("do-reload").addEventListener("click", function () { load(); toast("已刷新"); });
+  $("do-reload").addEventListener("click", function () { load(); runAudit(); toast("已刷新"); });
+  $("do-audit").addEventListener("click", function () { runAudit(); toast("已重新体检"); });
+  $("cleanup-empty").addEventListener("click", function () {
+    if (!confirm("删掉 jobs/ 下所有空目录（删空的阵型 / 作业集留下的空壳）？不会动任何作业集文件。")) return;
+    api("cleanup_empty", {}).then(afterOp);
+  });
 
   $("up-date").value = today();
   load();
+  runAudit();
 
   // 预览模式（只读）下 /api 会 403：给个明显提示，免得以为是自己点错了
   fetch("/api/ping", { cache: "no-store" })

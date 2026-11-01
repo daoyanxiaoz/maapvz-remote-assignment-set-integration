@@ -84,11 +84,17 @@ def load_json_file(path):
 
 
 def dump_json_file(path, data, indent=2):
-    """统一落盘格式：UTF-8 无 BOM、LF、ensure_ascii=False。"""
+    """统一落盘格式：UTF-8 无 BOM、LF、ensure_ascii=False。
+
+    先写临时文件再 os.replace —— 就算同时开了维护工具 + 预览工具两个进程，
+    也不会出现「写一半被读到」的坏 JSON。
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         json.dump(data, f, ensure_ascii=False, indent=indent)
         f.write("\n")
+    os.replace(tmp, path)
 
 
 def write_text_file(path, text):
@@ -96,8 +102,10 @@ def write_text_file(path, text):
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     if not text.endswith("\n"):
         text += "\n"
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
+    os.replace(tmp, path)
 
 
 def sanitize_component(name, fallback="未命名"):
@@ -618,3 +626,122 @@ def list_groups():
                        "order": meta["order"], "icon": meta["icon"]})
     groups.sort(key=lambda g: (g["order"], g["id"]))
     return groups
+
+
+# ---------------------------------------------------------------- 体检 / 清理
+
+def _dir_has_files(path):
+    for dirpath, _dirnames, filenames in os.walk(path):
+        if any(not f.startswith(".") for f in filenames):
+            return True
+        if any(f in (".gitkeep",) for f in filenames):
+            continue
+    return False
+
+
+def audit_jobs():
+    """仓库体检：把「看起来能用、其实会坑人」的状态列出来。
+
+    返回 [{level, kind, path, message}]，level = "error" | "warn"。
+    """
+    issues = []
+
+    def add(level, kind, path, message):
+        issues.append({"level": level, "kind": kind,
+                       "path": rel_path(path), "message": message})
+
+    if not os.path.isdir(JOBS_DIR):
+        add("warn", "no-jobs-dir", JOBS_DIR, "还没有 jobs/ 目录")
+        return issues
+
+    # 1) jobs/ 顶层散落的文件（旧平铺结构残留，会被当成作业集）
+    for name in sorted(os.listdir(JOBS_DIR)):
+        full = os.path.join(JOBS_DIR, name)
+        if os.path.isfile(full) and not name.startswith("."):
+            add("warn", "loose-file", full,
+                "jobs/ 顶层散落的文件（旧平铺结构），建议整理进 <作业集>/<版本>/ 目录")
+
+    # 2) 空目录（阵型或作业集删空了，目录还留着）
+    for dirpath, dirnames, filenames in os.walk(JOBS_DIR):
+        if os.path.samefile(dirpath, JOBS_DIR):
+            continue
+        if not _dir_has_files(dirpath):
+            add("warn", "empty-dir", dirpath, "空目录：没有任何作业集文件，可以删掉")
+
+    recs = scan_jobs()
+
+    # 3) 版本目录名不像日期 → 扫描器会把它当作业集/阵型，容易错乱
+    for rec in recs:
+        for v in rec["versions"]:
+            if date_label_from(v["label"]) is None:
+                add("warn", "bad-version", os.path.join(ROOT, v["file"]),
+                    "版本目录名不是日期（%s），建议改成 2026-10-19 这种" % v["label"])
+
+    # 4) 重复 code（同一份作业集被复制成了两个；同一作业集的多个版本共用 code 是正常的）
+    by_code = {}
+    for rec in recs:
+        for v in rec["versions"]:
+            code = v["fields"].get("code")
+            if code:
+                by_code.setdefault(code, set()).add((rec["group"], rec["job"]))
+    for code, owners in by_code.items():
+        if len(owners) > 1:
+            first = sorted(owners)[0]
+            add("error", "dup-code", os.path.join(JOBS_DIR, first[1]),
+                "code「%s」出现在多个作业集里：%s" % (
+                    code, "；".join(sorted("%s → %s" % (g or "（不归入阵型）", j) for g, j in owners))))
+
+    # 5) 同名作业集（跨阵型重名，卡片上看起来像两个一样的）
+    by_name = {}
+    for rec in recs:
+        by_name.setdefault(rec["job"], []).append(rec["group"] or "（不归入阵型）")
+    for name, owners in by_name.items():
+        if len(owners) > 1:
+            add("warn", "dup-name", os.path.join(JOBS_DIR, name),
+                "同名作业集「%s」出现在：%s" % (name, "、".join(owners)))
+
+    # 6) 作业集目录名和作业集里写的 name 不一致（站点显示 name，目录名只是身份）
+    for rec in recs:
+        latest = rec["versions"][0]["fields"].get("name")
+        if latest and latest.strip() and latest.strip() != rec["job"]:
+            add("warn", "name-mismatch", os.path.join(JOBS_DIR, rec["job"]),
+                "目录名「%s」与作业集里写的名称「%s」不一致" % (rec["job"], latest.strip()))
+
+    # 7) 空阵型：只剩 _group.json、里面没有任何作业集（站点的阵型列表里看不到，只能在工具里删）
+    seen_groups = {rec["group"] for rec in recs if rec["group"]}
+    for name in sorted(os.listdir(JOBS_DIR)):
+        full = os.path.join(JOBS_DIR, name)
+        if not os.path.isdir(full) or name.startswith((".", "_")):
+            continue
+        if name in seen_groups:
+            continue
+        if os.path.isfile(os.path.join(full, "_group.json")):
+            add("warn", "empty-group", full, "空阵型：只剩 _group.json，里面没有作业集（可在工具里删掉）")
+
+    return issues
+
+
+def rel_path(path):
+    try:
+        return os.path.relpath(path, ROOT).replace(os.sep, "/")
+    except Exception:
+        return str(path)
+
+
+def clean_empty_dirs():
+    """删掉 jobs/ 下所有空目录（含空阵型、空作业集）。返回删除的路径列表。"""
+    removed = []
+    if not os.path.isdir(JOBS_DIR):
+        return removed
+    # 自底向上删，先删子目录
+    for dirpath, dirnames, _filenames in os.walk(JOBS_DIR, topdown=False):
+        if os.path.samefile(dirpath, JOBS_DIR):
+            continue
+        if _dir_has_files(dirpath):
+            continue
+        try:
+            os.rmdir(dirpath)
+            removed.append(rel_path(dirpath))
+        except OSError:
+            pass
+    return removed

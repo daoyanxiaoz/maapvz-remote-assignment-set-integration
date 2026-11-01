@@ -110,6 +110,18 @@ def api_upload(payload):
     note = payload.get("note")
 
     written = []
+    warnings = []
+    # 查重快照：同 code / 同名作业集（同阵型下追加版本是正常的，这里只提醒真正会「变成两个」的情况）
+    snapshot = joblib.scan_jobs()
+    name_owners = {}
+    code_owners = {}
+    for rec in snapshot:
+        name_owners.setdefault(rec["job"], set()).add(rec["group"])
+        for v in rec["versions"]:
+            c = v["fields"].get("code")
+            if c:
+                code_owners.setdefault(c, set()).add((rec["group"], rec["job"]))
+
     for it in items:
         item = {
             "mode": payload.get("mode") or "new",
@@ -125,11 +137,27 @@ def api_upload(payload):
             g, j, d, fname, text, auth, nt, changes = apply_inbox.decode_item(item)
         except Exception as e:
             raise ApiError("%s：%s" % (it.get("filename") or "文件", e))
+
+        other_groups = name_owners.get(j, set()) - {g}
+        if other_groups:
+            warnings.append("「%s」在阵型「%s」里已经有同名作业集（会变成两个）"
+                            % (j, "、".join(sorted(x or "（不归入阵型）" for x in other_groups))))
+        try:
+            code = joblib.job_fields(joblib.load_json_text(text)).get("code")
+        except Exception:
+            code = None
+        if code:
+            others = code_owners.get(code, set()) - {(g, j)}
+            if others:
+                warnings.append("code「%s」已存在于：%s" % (
+                    code, "、".join(sorted("%s/%s" % (a or "（不归入阵型）", b) for a, b in others))))
+
         target = joblib.place_version(g, j, d, fname, text, auth, nt)
         rel = os.path.relpath(target, ROOT).replace(os.sep, "/")
         written.append({"path": rel, "job": j, "changes": changes})
     msg = rebuild()
-    return {"ok": True, "written": written, "message": "已写入 %d 份 · %s" % (len(written), msg)}
+    return {"ok": True, "written": written, "warnings": warnings,
+            "message": "已写入 %d 份 · %s" % (len(written), msg)}
 
 
 def api_version_meta(payload):
@@ -154,30 +182,69 @@ def api_version_meta(payload):
     return {"ok": True, "message": rebuild()}
 
 
+def _set_job_name_in_versions(job_dir, new_name):
+    """重命名作业集时，把各版本 JSON 里的 name 一起改掉（站点标题用的就是它）。"""
+    changed = 0
+    for dirpath, _dirnames, filenames in os.walk(job_dir):
+        for fname in filenames:
+            if not fname.lower().endswith((".json", ".txt")):
+                continue
+            path = os.path.join(dirpath, fname)
+            try:
+                data = joblib.load_json_file(path)
+            except Exception:
+                continue
+            if not joblib.looks_like_job(data):
+                continue
+            if data.get("name") != new_name:
+                data["name"] = new_name
+                joblib.dump_json_file(path, data)
+                changed += 1
+    return changed
+
+
 def api_rename_job(payload):
     src = job_dir_of(payload.get("group"), payload.get("job"))
     name = joblib.sanitize_component(payload.get("to"), "")
     if not name:
         raise ApiError("新名字为空")
-    if name == os.path.basename(src):
+    old = os.path.basename(src)
+    if name == old:
         return {"ok": True, "message": "名字没变，无需重命名"}
     dst = os.path.join(os.path.dirname(src), name)
     if os.path.exists(dst):
         raise ApiError("同一位置已有同名作业集：%s" % name)
     os.rename(src, dst)
-    return {"ok": True, "message": "已重命名为 %s · %s" % (name, rebuild())}
+    fixed = _set_job_name_in_versions(dst, name)
+    return {"ok": True,
+            "message": "已重命名为 %s（同步改了 %d 个版本里的 name）· %s" % (name, fixed, rebuild())}
 
 
 def api_rename_group(payload):
     src = group_dir_of(payload.get("group"))
+    old = os.path.basename(src)
     name = joblib.sanitize_component(payload.get("to"), "")
     if not name:
-        raise ApiError("新分组名为空")
+        raise ApiError("新阵型名为空")
+    if name == old:
+        return {"ok": True, "message": "阵型名没变，无需重命名"}
     dst = os.path.join(joblib.JOBS_DIR, name)
     if os.path.exists(dst):
-        raise ApiError("同名分组已存在：%s" % name)
+        raise ApiError("同名阵型已存在：%s" % name)
+
+    # _group.json 的 name 是站点显示名：它正好等于旧目录名时一起改，免得改了目录站点还显示旧名
+    meta_path = os.path.join(src, "_group.json")
+    if os.path.isfile(meta_path):
+        try:
+            meta = joblib.load_json_file(meta_path)
+            if isinstance(meta, dict) and str(meta.get("name") or "").strip() in ("", old):
+                meta["name"] = name
+                joblib.dump_json_file(meta_path, meta)
+        except Exception as e:
+            print("[warn] _group.json 更新失败：%s" % e)
+
     os.rename(src, dst)
-    return {"ok": True, "message": "分组已重命名为 %s · %s" % (name, rebuild())}
+    return {"ok": True, "message": "阵型已重命名为 %s · %s" % (name, rebuild())}
 
 
 def api_move_job(payload):
@@ -278,6 +345,22 @@ def api_rebuild(payload):
     return {"ok": True, "message": rebuild()}
 
 
+def api_audit(payload=None):
+    issues = joblib.audit_jobs()
+    return {
+        "ok": True,
+        "issues": issues,
+        "error_count": sum(1 for i in issues if i.get("level") == "error"),
+        "warn_count": sum(1 for i in issues if i.get("level") != "error"),
+    }
+
+
+def api_cleanup_empty(payload):
+    removed = joblib.clean_empty_dirs()
+    msg = ("已清理 %d 个空目录：%s" % (len(removed), "、".join(removed))) if removed else "没有空目录需要清理"
+    return {"ok": True, "removed": removed, "message": msg + " · " + rebuild()}
+
+
 ROUTES = {
     "upload": api_upload,
     "version_meta": api_version_meta,
@@ -289,6 +372,8 @@ ROUTES = {
     "delete_version": api_delete_version,
     "set_group_meta": api_set_group_meta,
     "rebuild": api_rebuild,
+    "audit": api_audit,
+    "cleanup_empty": api_cleanup_empty,
 }
 
 
@@ -333,6 +418,8 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json({"ok": False, "error": "只允许本机访问"}, 403)
             if self.path.startswith("/api/ping"):
                 return self._json({"ok": True, "root": ROOT, "version": 1})
+            if self.path.startswith("/api/audit"):
+                return self._json(api_audit({}))
             return self._json({"ok": False, "error": "未知接口"}, 404)
         if self.path in ("/", ""):
             self.path = "/index.html" if self.preview else "/admin.html"
