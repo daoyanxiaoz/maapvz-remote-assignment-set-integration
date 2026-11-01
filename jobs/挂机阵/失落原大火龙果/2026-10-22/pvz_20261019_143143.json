@@ -19,8 +19,17 @@
   "everyN": 5,
   "swipeMs": 80,
   "outer_pick": {
-    "plants": [],
-    "mode": "confirm",
+    "plants": [
+      "暗物质火龙果",
+      "超级机枪射手",
+      "原始豌豆射手",
+      "芦荟医师",
+      "南瓜头",
+      "泡泡姬珊瑚",
+      "瓷砖萝卜",
+      "能量花"
+    ],
+    "mode": "auto",
     "order": []
   },
   "tables": [

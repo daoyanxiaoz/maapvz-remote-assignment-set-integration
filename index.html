@@ -20,6 +20,7 @@
     </a>
     <nav>
       <a class="nav-link active" href="index.html">首页</a>
+      <a class="nav-link" href="publish.html">上架作业集</a>
       <a class="nav-link" href="about.html">关于</a>
       <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -31,15 +32,28 @@
     <span class="desc">浏览、下载玩家分享的作业集，导入 MAAPVZ 编辑器即可使用</span>
     <div class="stats">
       <span class="badge">作业集 <b id="stat-count">-</b> 套</span>
+      <span class="badge">版本 <b id="stat-versions">-</b> 个</span>
       <span class="badge">索引更新 <b id="stat-updated">-</b></span>
     </div>
     <div class="search-box">
-      <input id="search" type="search" placeholder="搜索名称 / code / 作者 / 简介…" autocomplete="off">
+      <input id="search" type="search" placeholder="搜索名称 / code / 作者 / 阵型 / 标签…" autocomplete="off">
     </div>
   </div>
 </div>
 
 <main>
+  <div class="group-bar" id="group-bar" hidden>
+    <span class="filter-label">阵型</span>
+    <button class="group-chip on" id="group-all" type="button">全部（0）</button>
+    <div class="picker" id="group-picker">
+      <button class="group-chip picker-toggle" id="group-toggle" type="button">常见阵型 ▾</button>
+      <div class="picker-panel group-panel" id="group-panel" hidden>
+        <div class="picker-list group-list" id="group-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="group-desc" id="group-desc" hidden></div>
+
   <div class="filter-bar" id="filter-bar" hidden>
     <div class="filter-group" id="f-worlds" hidden>
       <span class="filter-label">世界</span>
@@ -61,15 +75,6 @@
         <button type="button" data-v="all" class="on">全部</button>
         <button type="button" data-v="none">全无需装扮</button>
         <button type="button" data-v="required">含需装扮植物</button>
-      </div>
-    </div>
-    <div class="filter-group" id="f-tags" hidden>
-      <span class="filter-label">标签</span>
-      <div class="picker" id="tag-picker">
-        <button class="picker-toggle" id="tag-toggle" type="button">全部标签 ▾</button>
-        <div class="picker-panel" id="tag-panel" hidden>
-          <div class="picker-list" id="tag-list"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -107,10 +112,11 @@
   var toastTimer = null;
 
   // 筛选状态
+  var fGroup = "";      // 选中的总分组（"" = 全部）
   var fWorlds = {};     // 选中的世界
   var fPlants = {};     // 选中的植物
-  var fTags = {};       // 选中的标签
   var fCostume = "all"; // all | none | required
+  var GROUPS = [];      // index.json 里的分组列表
 
   // 世界 → 卡片顶部色带（worlds 空 → 不画）
   var WORLD_BAND = [
@@ -195,8 +201,24 @@
     return b;
   }
 
-  function jobUrl(code) {
-    return "jobs/" + encodeURIComponent(code) + ".json";
+  // 仓库里的中文/空格路径：逐段 encodeURIComponent，保住 "/" 分隔
+  function encPath(p) {
+    return String(p || "").split("/").map(encodeURIComponent).join("/");
+  }
+
+  function detailUrl(job, versionLabel) {
+    var u = "job.html?id=" + encodeURIComponent(job.id);
+    if (versionLabel) u += "&v=" + encodeURIComponent(versionLabel);
+    return u;
+  }
+
+  function latestVersion(job) {
+    return (Array.isArray(job.versions) && job.versions.length) ? job.versions[0] : null;
+  }
+
+  function fileUrl(job) {
+    var v = latestVersion(job);
+    return v ? encPath(v.file) : "";
   }
 
   // 关卡覆盖条：图层规则 = 数组里先出现的表优先；levels 是权威覆盖，
@@ -276,36 +298,55 @@
     var band = worldBand(job.worlds);
     if (band) card.style.setProperty("--band", band);
 
-    // 名称 = 详情页链接
+    // 名称 = 详情页链接（作业集身份是「分组/名称」，不是 code）
     var nameDiv = el("div", "name");
-    var nameLink = el("a", null, job.name || job.code);
-    nameLink.href = "job.html?code=" + encodeURIComponent(job.code);
+    var nameLink = el("a", null, job.name || job.code || job.id);
+    nameLink.href = detailUrl(job);
     nameDiv.appendChild(nameLink);
     card.appendChild(nameDiv);
 
-    // code：名字下方小字 + 复制图标
+    // code：名字下方小字 + 复制图标（最新的那一版）
     var codeRow = el("div", "code-row");
-    codeRow.appendChild(el("span", "code-text", job.code));
-    codeRow.appendChild(iconBtn(SVG_COPY, "复制 code", function () {
-      copyText(job.code, "已复制 code");
-    }));
+    codeRow.appendChild(el("span", "code-text", job.code || "（无 code）"));
+    if (job.code) {
+      codeRow.appendChild(iconBtn(SVG_COPY, "复制 code", function () {
+        copyText(job.code, "已复制 code");
+      }));
+    }
     card.appendChild(codeRow);
 
-    // 世界标签（主世界正常色、副世界淡化）；标签不铺在卡片上，改用筛选器多选
+    // 阵型标签（有阵型才显示）+ 主世界 + 作业集标签（紫色 #标签）
     var tagRow = el("div", "tags");
-    if (Array.isArray(job.worlds) && job.worlds.length) {
-      var shownW = job.worlds.slice(0, 4);
-      shownW.forEach(function (w) {
-        var isSub = job.world_primary && String(w) !== String(job.world_primary);
-        var wTag = el("span", isSub ? "tag tag-sub" : "tag", String(w));
-        if (isSub) wTag.title = "副世界（这套方案也能用在这些世界）";
-        tagRow.appendChild(wTag);
-      });
-      if (job.worlds.length > shownW.length) {
-        var moreW = el("span", "tag tag-more", "+" + (job.worlds.length - shownW.length));
-        moreW.title = job.worlds.join("、");
-        tagRow.appendChild(moreW);
+    var groupLabel = String(job.group_name || job.group || "").trim();
+    if (job.group) {
+      var gTag = el("a", "tag tag-group", groupLabel || job.group);
+      gTag.href = "index.html?group=" + encodeURIComponent(job.group);
+      gTag.title = "只看「" + (groupLabel || job.group) + "」这个阵型的作业集";
+      tagRow.appendChild(gTag);
+    }
+    // 世界只显示主世界：副世界是「这套方案也能用」的兼容信息，详情页里看
+    var primaryWorld = String(job.world_primary ||
+      (Array.isArray(job.worlds) && job.worlds.length ? job.worlds[0] : "") || "").trim();
+    if (primaryWorld && primaryWorld !== groupLabel) {
+      var wTag = el("span", "tag", primaryWorld);
+      if (Array.isArray(job.worlds) && job.worlds.length > 1) {
+        wTag.title = "主世界（另有 " + (job.worlds.length - 1) + " 个副世界，详见详情页）";
       }
+      tagRow.appendChild(wTag);
+    }
+    if (Array.isArray(job.tags)) {
+      job.tags.forEach(function (t) {
+        var name = String(t == null ? "" : t).trim();
+        if (name) tagRow.appendChild(el("span", "tag purple", "#" + name));
+      });
+    }
+    // 版本数徽标：点开详情页看历史版本
+    var vCount = Array.isArray(job.versions) ? job.versions.length : 1;
+    if (vCount > 1) {
+      var vTag = el("a", "tag tag-ver", "v" + vCount);
+      vTag.href = detailUrl(job);
+      vTag.title = "共 " + vCount + " 个版本（点开看历史）";
+      tagRow.appendChild(vTag);
     }
     if (tagRow.childNodes.length) card.appendChild(tagRow);
 
@@ -321,31 +362,46 @@
       card.appendChild(el("span", "deck-note", "编队换阵"));
     }
 
-    // 基础信息：作者 · 更新时间
+    // 基础信息：作者（可多人）· 最新更新时间 · 版本数
     var meta = el("div", "meta");
     var parts = [];
-    if (job.author) parts.push(job.author);
+    var authors = Array.isArray(job.authors) && job.authors.length
+      ? job.authors.map(function (a) { return String(a == null ? "" : a).trim(); }).filter(Boolean)
+      : (job.author ? [String(job.author).trim()] : []);
+    parts.push("作者：" + (authors.length ? authors.join("、") : "未知"));
     parts.push("更新于 " + formatTime(job.updated));
+    if (vCount > 1) parts.push(vCount + " 个版本");
     meta.appendChild(el("span", null, parts.join(" · ")));
     if (job.desc) meta.appendChild(el("span", "desc", job.desc));
     card.appendChild(meta);
 
-    // 下载（阳光黄）+ 复制链接（图标按钮，放右侧）
+    // 下载（最新版本，阳光黄）+ 详情/复制链接
     var actions = el("div", "actions");
-    var dl = el("a", "btn primary", "下载 JSON");
-    dl.href = jobUrl(job.code);
-    dl.setAttribute("download", job.code + ".json");
-    actions.appendChild(dl);
-    actions.appendChild(iconBtn(SVG_LINK, "复制下载链接", function () {
-      copyText(new URL(jobUrl(job.code), location.href).href, "链接已复制");
-    }));
+    var v = latestVersion(job);
+    if (v) {
+      var dl = el("a", "btn primary", "下载 JSON");
+      dl.href = encPath(v.file);
+      dl.setAttribute("download", (String(job.name || job.id).replace(/[\\/:*?"<>|]/g, "") || "作业集") +
+        "_" + (v.date || v.label || "latest") + ".json");
+      actions.appendChild(dl);
+    }
+    var detailBtn = el("a", "btn", "看详情");
+    detailBtn.href = detailUrl(job);
+    actions.appendChild(detailBtn);
+    if (v) {
+      actions.appendChild(iconBtn(SVG_LINK, "复制下载链接", function () {
+        copyText(new URL(encPath(v.file), location.href).href, "链接已复制");
+      }));
+    }
     card.appendChild(actions);
 
     return card;
   }
 
-  // —— 三维筛选 ——
+  // —— 筛选（分组 / 世界 / 植物 / 装扮；标签只展示不过滤） ——
   function passFilters(j) {
+    // 分组：目录名就是分组，单选
+    if (fGroup && String(j.group) !== fGroup) return false;
     // 世界：选了才过滤；「无」命中 worlds 为空的作业集
     var ws = Object.keys(fWorlds);
     if (ws.length) {
@@ -364,12 +420,6 @@
       var jp = Array.isArray(j.plants) ? j.plants : [];
       if (!ps.every(function (p) { return jp.indexOf(p) !== -1; })) return false;
     }
-    // 标签：选中的标签命中任意一个即可
-    var ts = Object.keys(fTags);
-    if (ts.length) {
-      var jt = Array.isArray(j.tags) ? j.tags : [];
-      if (!ts.some(function (t) { return jt.indexOf(t) !== -1; })) return false;
-    }
     // 装扮：三态
     if (fCostume === "none" && j.costume !== "none") return false;
     if (fCostume === "required" && j.costume !== "required") return false;
@@ -381,15 +431,91 @@
     var list = jobs.filter(function (j) {
       if (!passFilters(j)) return false;
       if (!q) return true;
-      var hay = [j.name, j.code, j.author, j.desc,
+      var hay = [j.name, j.code, j.author, j.desc, j.group,
                  (Array.isArray(j.tags) ? j.tags.join(" ") : ""),
-                 (Array.isArray(j.worlds) ? j.worlds.join(" ") : "")]
+                 (Array.isArray(j.worlds) ? j.worlds.join(" ") : ""),
+                 (Array.isArray(j.versions) ? j.versions.map(function (v) {
+                   return (v.author || "") + " " + (v.label || "") + " " + (v.note || "");
+                 }).join(" ") : "")]
         .filter(Boolean).join("\n").toLowerCase();
       return hay.indexOf(q) !== -1;
     });
     grid.innerHTML = "";
     list.forEach(function (j) { grid.appendChild(buildCard(j)); });
     elEmpty.hidden = list.length !== 0;
+  }
+
+  // —— 总分组：目录名即分组；收进「常见阵型」下拉，避免一排 chip 把页面撑臃肿 ——
+  var groupItemEls = {};
+
+  function setGroup(id, push) {
+    fGroup = (id && GROUPS.some(function (g) { return g.id === id; })) ? id : "";
+    var allBtn = document.getElementById("group-all");
+    if (allBtn) allBtn.classList.toggle("on", !fGroup);
+    Object.keys(groupItemEls).forEach(function (k) {
+      groupItemEls[k].classList.toggle("on", k === fGroup);
+    });
+    var g = null;
+    GROUPS.forEach(function (x) { if (x.id === fGroup) g = x; });
+
+    // 下拉按钮显示当前选的阵型，便于一眼看出过滤状态
+    var toggle = document.getElementById("group-toggle");
+    if (toggle) toggle.textContent = (g ? g.name : "常见阵型") + " ▾";
+
+    var desc = document.getElementById("group-desc");
+    if (desc) {
+      if (g) {
+        desc.textContent = g.name + " · " + g.count + " 个作业集 · " + g.version_count + " 个版本" +
+          (g.desc ? "　" + g.desc : "");
+        desc.hidden = false;
+      } else {
+        desc.hidden = true;
+      }
+    }
+    if (push !== false && window.history && window.history.replaceState) {
+      var url = fGroup ? ("index.html?group=" + encodeURIComponent(fGroup)) : "index.html";
+      window.history.replaceState(null, "", url);
+    }
+    render();
+  }
+
+  function setupGroups() {
+    var bar = document.getElementById("group-bar");
+    var list = document.getElementById("group-list");
+    var allBtn = document.getElementById("group-all");
+    var toggle = document.getElementById("group-toggle");
+    var panel = document.getElementById("group-panel");
+    if (!bar || !list || !allBtn || !toggle || !panel) return;
+
+    allBtn.textContent = "全部（" + jobs.length + "）";
+    allBtn.addEventListener("click", function () { setGroup(""); });
+
+    list.innerHTML = "";
+    function addItem(id, label, title) {
+      var item = el("div", "picker-item" + (fGroup === id ? " on" : ""));
+      item.appendChild(el("span", null, label));
+      if (title) item.title = title;
+      item.addEventListener("click", function () {
+        setGroup(id);
+        panel.hidden = true;
+      });
+      groupItemEls[id] = item;
+      list.appendChild(item);
+    }
+    addItem("", "全部作业集（" + jobs.length + "）", "不按阵型过滤");
+    GROUPS.forEach(function (g) {
+      addItem(g.id, g.name + "（" + g.count + "）", g.desc || "");
+    });
+
+    toggle.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      panel.hidden = !panel.hidden;
+    });
+    document.addEventListener("click", function (ev) {
+      var picker = document.getElementById("group-picker");
+      if (picker && !picker.contains(ev.target)) panel.hidden = true;
+    });
+    bar.hidden = false;
   }
 
   function setupFilters() {
@@ -413,51 +539,7 @@
     });
     box.hidden = false;
 
-    // 标签多选（下拉，紫色勾选；作业集多了也不会把卡片撑难看）
-    var tagSet = [];
-    jobs.forEach(function (j) {
-      if (!Array.isArray(j.tags)) return;
-      j.tags.forEach(function (t) {
-        if (t && tagSet.indexOf(t) === -1) tagSet.push(String(t));
-      });
-    });
-    if (tagSet.length) {
-      tagSet.sort();
-      var tagBoxFilter = document.getElementById("f-tags");
-      var tagToggle = document.getElementById("tag-toggle");
-      var tagPanel = document.getElementById("tag-panel");
-      var tagList = document.getElementById("tag-list");
-
-      function refreshTagToggle() {
-        var picked = Object.keys(fTags);
-        if (!picked.length) {
-          tagToggle.textContent = "全部标签 ▾";
-        } else if (picked.length <= 2) {
-          tagToggle.textContent = picked.join("、") + " ▾";
-        } else {
-          tagToggle.textContent = "已选 " + picked.length + " 个标签 ▾";
-        }
-      }
-      tagSet.forEach(function (t) {
-        var item = el("div", "picker-item" + (fTags[t] ? " on" : ""));
-        item.appendChild(el("span", null, t));
-        item.addEventListener("click", function () {
-          if (fTags[t]) delete fTags[t]; else fTags[t] = 1;
-          item.classList.toggle("on");
-          refreshTagToggle();
-          render();
-        });
-        tagList.appendChild(item);
-      });
-      tagToggle.addEventListener("click", function () {
-        tagPanel.hidden = !tagPanel.hidden;
-      });
-      document.addEventListener("click", function (ev) {
-        var picker = document.getElementById("tag-picker");
-        if (picker && !picker.contains(ev.target)) tagPanel.hidden = true;
-      });
-      tagBoxFilter.hidden = false;
-    }
+    // 标签不再做筛选：作业集自带标签直接以紫色 #标签 铺在卡片上，并参与搜索
 
     // 植物多选（可搜索）
     var plantSet = [];
@@ -546,12 +628,24 @@
         });
       }
       jobs = Array.isArray(data.jobs) ? data.jobs : [];
+      GROUPS = Array.isArray(data.groups) ? data.groups : [];
       document.getElementById("stat-count").textContent =
         data.count != null ? data.count : jobs.length;
+      document.getElementById("stat-versions").textContent =
+        data.version_count != null ? data.version_count : jobs.length;
       document.getElementById("stat-updated").textContent = formatTime(data.updated);
       elLoading.hidden = true;
-      if (jobs.length) setupFilters();
-      render();
+      if (jobs.length) {
+        setupGroups();
+        setupFilters();
+        var want = "";
+        try {
+          want = new URLSearchParams(location.search).get("group") || "";
+        } catch (e) { want = ""; }
+        setGroup(want, false);
+      } else {
+        render();
+      }
     })
     .catch(function (err) {
       elLoading.hidden = true;

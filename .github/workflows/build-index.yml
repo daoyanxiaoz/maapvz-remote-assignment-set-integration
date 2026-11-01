@@ -4,20 +4,20 @@ on:
   push:
     branches: [main]
     paths:
-      # 只有作业集/sidecar 变化才触发；index.json 在仓库根目录，天然不在触发范围内
+      # 目录树就是数据源：jobs/ 下面任何变化都重建索引
       - "jobs/**"
-      - "meta/**"
+      - "tools/**"
   workflow_dispatch: # 允许手动触发兜底
 
 permissions:
   contents: write
 
 concurrency:
-  group: build-index
+  group: catalog
   cancel-in-progress: false
 
 jobs:
-  build-index:
+  rebuild:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

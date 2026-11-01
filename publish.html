@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上架作业集 · MAAPVZ 作业集分享站</title>
+<link rel="icon" href="img/logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img src="img/logo.png" alt="MAAPVZ"
+           onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
+      <span id="title-emoji" hidden>🌻</span>
+      MAAPVZ 作业集分享站
+      <small>植物大战僵尸2 · 无尽模式</small>
+    </a>
+    <nav>
+      <a class="nav-link" href="index.html">首页</a>
+      <a class="nav-link active" href="publish.html">上架作业集</a>
+      <a class="nav-link" href="about.html">关于</a>
+      <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="subbar-inner">
+    <span class="desc">维护者上架通道：拖入作业集文件 → 选「迭代」或「新建」→ 生成上架包 → 传到仓库 inbox/ 即自动上线</span>
+    <div class="stats">
+      <span class="badge">已收录 <b id="stat-jobs">-</b> 套</span>
+      <span class="badge">阵型 <b id="stat-groups">-</b> 个</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div id="state-loading" class="state">读取仓库清单…</div>
+  <div id="state-error" class="state error" hidden>
+    仓库清单读取失败 😢<br><br><small id="error-detail"></small>
+  </div>
+
+  <div id="publish-root" hidden>
+    <div class="table-card">
+      <h3>① 拖入作业集文件</h3>
+      <div class="table-sub">支持编辑器导出的 <code>.json</code>（也认 <code>.txt</code>）；可以一次拖多份，也可以选整个文件夹批量导入。</div>
+      <div class="drop-zone" id="drop">
+        <div class="drop-title">把作业集文件拖到这里</div>
+        <div class="drop-sub">或者点这里选择文件 / 选整个文件夹</div>
+        <div class="drop-actions">
+          <button class="btn primary" id="pick-files" type="button">选择文件</button>
+          <button class="btn" id="pick-dir" type="button">选择文件夹</button>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept=".json,.txt,application/json" multiple hidden>
+      <input type="file" id="dir-input" webkitdirectory directory multiple hidden>
+      <div class="drop-hint" id="drop-hint" hidden></div>
+    </div>
+
+    <div id="imported-wrap" hidden>
+      <div class="table-card">
+        <h3>② 选择导入方式</h3>
+        <div class="table-sub">每份文件二选一：<b>迭代作业集</b>（同一套方案出新版本，旧版本自动保留）或 <b>新建作业集</b>（新建一份方案）。</div>
+        <div id="item-list" class="pub-list"></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>③ 生成上架包</h3>
+      <div class="table-sub">上架包是一个 <code>.bundle.json</code> 文件，里面装着作业集原文 + 你的选择（阵型 / 版本 / 作者）。传到仓库 <code>inbox/</code> 后，GitHub Actions 会自动落库并刷新站点索引。</div>
+      <div class="pub-actions">
+        <button class="btn primary" id="gen-bundle" type="button" disabled>生成上架包</button>
+        <button class="btn" id="clear-all" type="button">清空重来</button>
+      </div>
+      <div id="bundle-result" hidden>
+        <div class="pub-result" id="bundle-summary"></div>
+        <div class="pub-actions">
+          <a id="bundle-download" class="btn primary" href="#" download>下载上架包</a>
+          <button class="btn" id="copy-steps" type="button">复制提交步骤</button>
+        </div>
+        <ol class="pub-steps">
+          <li>下载上架包（<code>.bundle.json</code>）。</li>
+          <li>在 GitHub 网页打开仓库的 <code>inbox/</code> 文件夹 → <b>Add file</b> → <b>Upload files</b> → 选这个上架包 → <b>Commit changes</b>。</li>
+          <li>等 1~2 分钟，<b>Actions</b> 会自动把作业集落进 <code>jobs/&lt;阵型&gt;/&lt;作业集&gt;/&lt;版本日期&gt;/</code>（不归入阵型就省掉阵型那层） 并重建索引，刷新首页就能看到。</li>
+        </ol>
+        <div class="pub-note">
+          没有 GitHub 权限的维护者：把上架包发给仓库管理员即可。<br>
+          本地有仓库的人：<code>python -X utf8 tools/apply_inbox.py 你的上架包.bundle.json</code> → <code>git push</code>。
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>仓库目录长这样</h3>
+      <pre class="pub-tree">jobs/
+  心塔/                                  ← 阵型（可省略）：同类型作业集放一起
+    失落原大火龙果/                        ← 作业集（新建一次 = 一个目录）
+      2026-10-19/                        ← 版本目录（建议用创建日期）
+        失落原大火龙果.json                ← 作业集本体
+        作者.txt                          ← 作者名（一行）
+        说明.txt                          ← 可选：这一版改了什么
+      2026-10-25/                        ← 再迭代一次 = 多一个日期目录
+        失落原大火龙果.json
+        作者.txt
+        说明.txt</pre>
+      <div class="table-sub">站点不读任何手写清单：目录树就是数据源，索引由脚本自动生成。</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div>
+    <a href="index.html">返回首页</a>
+    ·
+    <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
+  </div>
+  <div>作业集格式由 <a href="https://github.com/daoyanxiaoz/MAAPVZ" target="_blank" rel="noopener">MAAPVZ</a> 编辑器导出</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  var elLoading = document.getElementById("state-loading");
+  var elError = document.getElementById("state-error");
+  var elRoot = document.getElementById("publish-root");
+  var elToast = document.getElementById("toast");
+  var toastTimer = null;
+
+  var catalog = { groups: [], jobs: [] };
+  var items = [];   // 待上架条目
+  var seq = 0;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;   // ★ 用户数据一律走 textContent
+    return e;
+  }
+
+  function showToast(text) {
+    elToast.textContent = text;
+    elToast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { elToast.classList.remove("show"); }, 2000);
+  }
+
+  function today() {
+    var d = new Date();
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  function sanitize(name, fallback) {
+    var s = String(name == null ? "" : name).replace(/[\\/:*?"<>|\r\n\t]/g, "").replace(/^\s+|\s+$/g, "");
+    return s || fallback || "未命名";
+  }
+
+  function b64encode(text) {
+    var bytes;
+    if (typeof TextEncoder !== "undefined") {
+      bytes = new TextEncoder().encode(text);
+    } else {
+      var utf8 = unescape(encodeURIComponent(text));
+      bytes = new Uint8Array(utf8.length);
+      for (var i = 0; i < utf8.length; i++) bytes[i] = utf8.charCodeAt(i);
+    }
+    var bin = "";
+    for (var j = 0; j < bytes.length; j++) bin += String.fromCharCode(bytes[j]);
+    return btoa(bin);
+  }
+
+  // ---------- 读文件 ----------
+
+  function readFile(file) {
+    return new Promise(function (resolve, reject) {
+      if (file.size > 8 * 1024 * 1024) { reject(new Error("文件超过 8MB")); return; }
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result || "")); };
+      reader.onerror = function () { reject(new Error("读取失败")); };
+      reader.readAsText(file, "utf-8");
+    });
+  }
+
+  function parseJob(text) {
+    var data;
+    try {
+      data = JSON.parse(String(text).replace(/^\uFEFF/, ""));
+    } catch (e) {
+      throw new Error("不是合法的 JSON：" + e.message);
+    }
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("顶层必须是 JSON 对象");
+    var isJob = Array.isArray(data.tables) || (typeof data.code === "string" && data.code.trim());
+    if (!isJob) throw new Error("看起来不是作业集（缺少 tables / code 字段）");
+    return data;
+  }
+
+  function jobWarnings(data) {
+    var out = [];
+    var tables = Array.isArray(data.tables) ? data.tables : [];
+    var hasDeck = tables.some(function (t) {
+      return t && ((t.lineup && t.lineup.deck) || (t.boss_lineup && t.boss_lineup.deck));
+    });
+    if (hasDeck) out.push("有 lineup.deck（编队序号只在你自己游戏里有效），建议在编辑器里换成选卡后再导出。");
+    if (!tables.length) out.push("作业集里没有策略表（tables 为空）。");
+    if (!data.plant_notes || !Object.keys(data.plant_notes || {}).length) {
+      out.push("没有 plant_notes 标注（阶数 / 挂件 / 装扮），详情页会少显示角标。");
+    }
+    return out;
+  }
+
+  function worldsOf(data) {
+    var out = [];
+    function add(x) {
+      var s = String(x == null ? "" : x).trim();
+      if (s && out.indexOf(s) < 0) out.push(s);
+    }
+    if (Array.isArray(data.worlds)) data.worlds.forEach(add);
+    if (typeof data.world === "string") add(data.world);
+    if (Array.isArray(data.sub_worlds)) data.sub_worlds.forEach(add);
+    return out;
+  }
+
+  function plantsOf(data) {
+    var seen = {}, out = [];
+    (Array.isArray(data.tables) ? data.tables : []).forEach(function (t) {
+      if (!t) return;
+      ["lineup", "boss_lineup"].forEach(function (k) {
+        var lu = t[k];
+        if (lu && Array.isArray(lu.plants)) {
+          lu.plants.forEach(function (p) {
+            if (typeof p === "string" && p && !seen[p]) { seen[p] = 1; out.push(p); }
+          });
+        }
+      });
+    });
+    return out;
+  }
+
+  // ---------- 条目卡片 ----------
+
+  function findJob(group, jobName) {
+    var hit = null;
+    catalog.jobs.forEach(function (j) {
+      if (j.group === group && j.name === jobName) hit = j;
+    });
+    return hit;
+  }
+
+  function groupOptions(select, current) {
+    select.innerHTML = "";
+    var none = document.createElement("option");
+    none.value = "";
+    none.textContent = "（不归入阵型）";
+    if (!current) none.selected = true;
+    select.appendChild(none);
+    catalog.groups.forEach(function (g) {
+      var o = document.createElement("option");
+      o.value = g.id;
+      o.textContent = g.name + "（" + g.count + "）";
+      if (g.id === current) o.selected = true;
+      select.appendChild(o);
+    });
+    var nw = document.createElement("option");
+    nw.value = "__new__";
+    nw.textContent = "＋ 新建阵型…";
+    if (current === "__new__") nw.selected = true;
+    select.appendChild(nw);
+  }
+
+  function fillJobSelect(select, groupId, current) {
+    select.innerHTML = "";
+    var list = catalog.jobs.filter(function (j) { return j.group === groupId; });
+    if (!list.length) {
+      var o0 = document.createElement("option");
+      o0.value = "";
+      o0.textContent = "（这个阵型还没有作业集）";
+      select.appendChild(o0);
+      return;
+    }
+    list.forEach(function (j) {
+      var o = document.createElement("option");
+      o.value = j.name;
+      o.textContent = j.name + (j.version_count > 1 ? "（v" + j.version_count + "）" : "");
+      if (j.name === current) o.selected = true;
+      select.appendChild(o);
+    });
+  }
+
+  function buildItemCard(item) {
+    var card = el("div", "pub-card");
+
+    // 文件概要
+    var head = el("div", "pub-head");
+    var title = el("div", "pub-title", item.fields.name || item.filename);
+    head.appendChild(title);
+    var sub = el("div", "pub-sub");
+    var bits = [];
+    if (item.fields.code) bits.push("code " + item.fields.code);
+    var ws = item.fields.worlds || [];
+    if (ws.length) bits.push(ws.slice(0, 3).join(" / ") + (ws.length > 3 ? " …" : ""));
+    if (item.fields.plants) bits.push(item.fields.plants + " 株植物");
+    if (item.fields.tables != null) bits.push(item.fields.tables + " 张表");
+    sub.textContent = bits.join(" · ");
+    head.appendChild(sub);
+    var rm = el("button", "icon-btn pub-remove", "×");
+    rm.type = "button";
+    rm.title = "移除这份文件";
+    rm.addEventListener("click", function () {
+      items = items.filter(function (x) { return x.uid !== item.uid; });
+      renderItems();
+    });
+    head.appendChild(rm);
+    card.appendChild(head);
+
+    // 模式二选一
+    var modeRow = el("div", "pub-mode");
+    [["iterate", "迭代作业集", "同一套方案出新版本（推荐）"],
+     ["new", "新建作业集", "从头收一套新方案"]].forEach(function (m) {
+      var b = el("button", "pub-mode-btn" + (item.mode === m[0] ? " on" : ""), m[1]);
+      b.type = "button";
+      b.title = m[2];
+      b.addEventListener("click", function () {
+        item.mode = m[0];
+        if (item.mode === "iterate" && item.group === "__new__") {
+          // 迭代必须指向已有阵型，自动切回第一个阵型
+          if (catalog.groups.length) item.group = catalog.groups[0].id;
+        }
+        if (item.mode === "new" && item.group !== "__new__") item.job = item.fields.name || "";
+        renderItems();
+      });
+      modeRow.appendChild(b);
+    });
+    card.appendChild(modeRow);
+
+    // 阵型
+    var gRow = el("div", "pub-field");
+    gRow.appendChild(el("label", "pub-label", "阵型"));
+    var gSel = document.createElement("select");
+    gSel.className = "pub-select";
+    groupOptions(gSel, item.group);
+    gRow.appendChild(gSel);
+    var gNew = document.createElement("input");
+    gNew.className = "pub-input";
+    gNew.type = "text";
+    gNew.placeholder = "新阵型名，例如：心塔";
+    gNew.value = item.newGroup || "";
+    gNew.hidden = item.group !== "__new__";
+    gNew.addEventListener("input", function () { item.newGroup = gNew.value; });
+    gRow.appendChild(gNew);
+    card.appendChild(gRow);
+
+    // 作业集：迭代 → 选已有；新建 → 填名字
+    var jRow = el("div", "pub-field");
+    if (item.mode === "iterate") {
+      jRow.appendChild(el("label", "pub-label", "迭代哪一套"));
+      var jSel = document.createElement("select");
+      jSel.className = "pub-select";
+      var groupId = item.group === "__new__" ? "" : item.group;
+      if (!item.job) {
+        var first = catalog.jobs.filter(function (j) { return j.group === groupId; })[0];
+        item.job = first ? first.name : "";
+      }
+      fillJobSelect(jSel, groupId, item.job);
+      jSel.addEventListener("change", function () {
+        item.job = jSel.value;
+        var hit = findJob(groupId, item.job);
+        var latestAuthor = hit && hit.author ? hit.author : "";
+        if (!item.authorTouched && latestAuthor) { item.author = latestAuthor; renderItems(); }
+      });
+      jRow.appendChild(jSel);
+    } else {
+      jRow.appendChild(el("label", "pub-label", "作业集名"));
+      var jIn = document.createElement("input");
+      jIn.className = "pub-input";
+      jIn.type = "text";
+      jIn.value = item.job || "";
+      jIn.placeholder = "例如：失落原大火龙果";
+      jIn.addEventListener("input", function () { item.job = jIn.value; });
+      jRow.appendChild(jIn);
+    }
+    card.appendChild(jRow);
+
+    // 版本日期 + 作者
+    var dRow = el("div", "pub-field");
+    dRow.appendChild(el("label", "pub-label", "版本日期"));
+    var dIn = document.createElement("input");
+    dIn.className = "pub-input";
+    dIn.type = "date";
+    dIn.value = item.date;
+    dIn.addEventListener("change", function () { item.date = dIn.value || today(); });
+    dRow.appendChild(dIn);
+    dRow.appendChild(el("label", "pub-label", "作者"));
+    var aIn = document.createElement("input");
+    aIn.className = "pub-input";
+    aIn.type = "text";
+    aIn.value = item.author || "";
+    aIn.placeholder = "作者名（多人用、分开）";
+    aIn.addEventListener("input", function () {
+      item.author = aIn.value;
+      item.authorTouched = !!aIn.value.trim();
+    });
+    dRow.appendChild(aIn);
+    card.appendChild(dRow);
+
+    // 说明
+    var nRow = el("div", "pub-field");
+    nRow.appendChild(el("label", "pub-label", "这版改了什么"));
+    var nIn = document.createElement("input");
+    nIn.className = "pub-input pub-input-wide";
+    nIn.type = "text";
+    nIn.value = item.note || "";
+    nIn.placeholder = "例如：把第 41 关换成了双机枪（可留空）";
+    nIn.addEventListener("input", function () { item.note = nIn.value; });
+    nRow.appendChild(nIn);
+    card.appendChild(nRow);
+
+    // 目标路径预览
+    var target = el("div", "pub-target");
+    var gName = item.group === "__new__" ? (item.newGroup || "") : (item.group || "");
+    var jName = item.job || item.fields.name || "作业集名";
+    var segs = ["jobs"];
+    if (gName) segs.push(sanitize(gName, "阵型"));
+    segs.push(sanitize(jName, "作业集"));
+    segs.push(sanitize(item.date || today(), today()));
+    segs.push(sanitize(item.job || item.fields.name, "作业集") + ".json");
+    target.textContent = "将写入：" + segs.join("/");
+    card.appendChild(target);
+
+    // 提醒
+    if (item.warnings && item.warnings.length) {
+      var warn = el("div", "pub-warn");
+      item.warnings.forEach(function (w) { warn.appendChild(el("div", null, "⚠ " + w)); });
+      card.appendChild(warn);
+    }
+
+    // 阵型切换要重建（依赖的作业集列表会变）
+    gSel.addEventListener("change", function () {
+      item.group = gSel.value;
+      item.job = "";
+      item.authorTouched = false;
+      if (item.group === "__new__") {
+        // 新阵型里没有历史作业集可迭代 → 自然是新建
+        item.mode = "new";
+        item.job = item.fields.name || "";
+      } else if (item.mode === "iterate") {
+        var first = catalog.jobs.filter(function (j) { return j.group === item.group; })[0];
+        if (first) {
+          item.job = first.name;
+          if (first.author) item.author = first.author;
+        }
+      }
+      renderItems();
+    });
+
+    return card;
+  }
+
+  function renderItems() {
+    var wrap = document.getElementById("imported-wrap");
+    var list = document.getElementById("item-list");
+    list.innerHTML = "";
+    if (!items.length) {
+      wrap.hidden = true;
+      document.getElementById("gen-bundle").disabled = true;
+      return;
+    }
+    wrap.hidden = false;
+    items.forEach(function (item) { list.appendChild(buildItemCard(item)); });
+    document.getElementById("gen-bundle").disabled = false;
+  }
+
+  // ---------- 导入 ----------
+
+  function addFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+    var jobs = files.filter(function (f) { return /\.(json|txt)$/i.test(f.name); });
+    var skipped = files.length - jobs.length;
+    var hint = document.getElementById("drop-hint");
+    hint.hidden = false;
+    hint.textContent = "正在读取 " + jobs.length + " 个作业集文件…";
+
+    Promise.all(jobs.map(function (f) {
+      return readFile(f).then(function (text) {
+        var data = parseJob(text);
+        return { file: f, text: text, data: data };
+      }).catch(function (err) {
+        return { file: f, error: err };
+      });
+    })).then(function (results) {
+      var okCount = 0, bad = [];
+      results.forEach(function (r) {
+        if (r.error) { bad.push(r.file.name + "（" + r.error.message + "）"); return; }
+        var data = r.data;
+        var name = sanitize(data.name || r.file.name.replace(/\.(json|txt)$/i, ""), "作业集");
+        // 智能默认：仓库里已有同名作业集 → 直接进「迭代」；否则走「新建」
+        var hitJob = null;
+        catalog.jobs.forEach(function (j) { if (!hitJob && j.name === name) hitJob = j; });
+        items.push({
+          uid: ++seq,
+          filename: r.file.name,
+          text: r.text,
+          data: data,
+          mode: hitJob ? "iterate" : "new",
+          group: hitJob ? hitJob.group : (catalog.groups.length ? catalog.groups[0].id : "__new__"),
+          newGroup: "",
+          job: name,
+          author: hitJob && hitJob.author ? hitJob.author : "",
+          authorTouched: false,
+          date: today(),
+          note: "",
+          warnings: jobWarnings(data),
+          fields: {
+            name: name,
+            code: data.code || "",
+            worlds: worldsOf(data),
+            plants: plantsOf(data).length,
+            tables: Array.isArray(data.tables) ? data.tables.length : 0
+          }
+        });
+        okCount++;
+      });
+      hint.textContent = "已导入 " + okCount + " 份" +
+        (skipped ? "（跳过 " + skipped + " 个非 .json/.txt 文件）" : "") +
+        (bad.length ? "；失败 " + bad.length + " 份：" + bad.join("；") : "");
+      // 有历史作业集时优先「迭代同名作业集」
+      renderItems();
+    });
+  }
+
+  // ---------- 生成上架包 ----------
+
+  function buildBundle() {
+    var out = [];
+    var errs = [];
+    items.forEach(function (item) {
+      var group = item.group === "__new__" ? sanitize(item.newGroup, "") : String(item.group || "");
+      var job = sanitize(item.job, "");
+      if (item.group === "__new__" && !group) { errs.push((item.fields.name || item.filename) + "：请填写新阵型名"); return; }
+      if (!job) { errs.push((item.fields.name || item.filename) + "：请填写作业集名"); return; }
+      out.push({
+        mode: item.mode,
+        group: group,
+        job: job,
+        date: sanitize(item.date || today(), today()),
+        author: String(item.author || "").trim(),
+        note: String(item.note || "").trim(),
+        filename: sanitize(job, "作业集") + ".json",
+        content_b64: b64encode(item.text)
+      });
+    });
+    return { items: out, errors: errs };
+  }
+
+  function makeBundle() {
+    var built = buildBundle();
+    if (built.errors.length) { showToast(built.errors[0]); return; }
+    if (!built.items.length) { showToast("先导入至少一份作业集"); return; }
+    var bundle = {
+      format: "maapvz-jobset-bundle",
+      schema: 1,
+      created: new Date().toISOString(),
+      items: built.items
+    };
+    var text = JSON.stringify(bundle, null, 2);
+    var blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var fname = "上架包_" + (built.items[0].group ? sanitize(built.items[0].group, "阵型") + "_" : "") +
+      sanitize(built.items[0].job, "作业集") + "_" + (built.items[0].date || today()) +
+      (built.items.length > 1 ? "_等" + built.items.length + "份" : "") + ".bundle.json";
+
+    var dl = document.getElementById("bundle-download");
+    dl.href = url;
+    dl.setAttribute("download", fname);
+
+    var sum = document.getElementById("bundle-summary");
+    sum.innerHTML = "";
+    sum.appendChild(el("div", "pub-ok", "✅ 上架包已生成（" + built.items.length + " 份作业集，" +
+      Math.max(1, Math.round(text.length / 1024)) + " KB）"));
+    built.items.forEach(function (it) {
+      var row = el("div", "pub-target");
+      row.textContent = (it.mode === "iterate" ? "【迭代】" : "【新建】") +
+        " jobs/" + it.group + "/" + it.job + "/" + it.date + "/" + it.filename +
+        (it.mode === "iterate" ? " —— 旧版本保留，新版本追加" : "");
+      sum.appendChild(row);
+    });
+    document.getElementById("bundle-result").hidden = false;
+    document.getElementById("copy-steps").onclick = function () {
+      var steps = "1) 下载上架包 " + fname + "\n" +
+        "2) 打开 GitHub 仓库的 inbox/ 文件夹 → Add file → Upload files → 选上架包 → Commit changes\n" +
+        "3) 等 1~2 分钟，Actions 自动落库并重建 index.json，刷新首页即可" +
+        (built.items.length ? "\n目标路径：\n" + built.items.map(function (it) {
+          return "  jobs/" + it.group + "/" + it.job + "/" + it.date + "/" + it.filename;
+        }).join("\n") : "");
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(steps).then(function () { showToast("提交步骤已复制"); },
+          function () { showToast("复制失败，请手动复制"); });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = steps;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); showToast("提交步骤已复制"); }
+        catch (e) { showToast("复制失败"); }
+        document.body.removeChild(ta);
+      }
+    };
+  }
+
+  // ---------- 事件绑定 ----------
+
+  var drop = document.getElementById("drop");
+  var fileInput = document.getElementById("file-input");
+  var dirInput = document.getElementById("dir-input");
+
+  drop.addEventListener("click", function (ev) {
+    if (ev.target && ev.target.tagName === "BUTTON") return;
+    fileInput.click();
+  });
+  drop.addEventListener("dragover", function (ev) {
+    ev.preventDefault();
+    drop.classList.add("over");
+  });
+  drop.addEventListener("dragleave", function () { drop.classList.remove("over"); });
+  drop.addEventListener("drop", function (ev) {
+    ev.preventDefault();
+    drop.classList.remove("over");
+    if (!ev.dataTransfer) return;
+    if (ev.dataTransfer.items && ev.dataTransfer.items.length &&
+        ev.dataTransfer.items[0].webkitGetAsEntry) {
+      var collected = [];
+      var entries = [];
+      for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+        var entry = ev.dataTransfer.items[i].webkitGetAsEntry && ev.dataTransfer.items[i].webkitGetAsEntry();
+        if (entry) entries.push(entry);
+      }
+      if (!entries.length) { addFiles(ev.dataTransfer.files); return; }
+      var pending = entries.length;
+      entries.forEach(function (en) {
+        walkEntry(en, collected, function () {
+          pending--;
+          if (pending === 0) addFiles(collected);
+        });
+      });
+    } else {
+      addFiles(ev.dataTransfer.files);
+    }
+  });
+
+  function walkEntry(entry, out, done) {
+    if (!entry) { done(); return; }
+    if (entry.isFile) {
+      entry.file(function (f) { out.push(f); done(); }, function () { done(); });
+      return;
+    }
+    if (!entry.isDirectory) { done(); return; }
+    var reader = entry.createReader();
+    var all = [];
+    function readMore() {
+      reader.readEntries(function (batch) {
+        if (!batch.length) {
+          var pending = all.length;
+          if (!pending) { done(); return; }
+          all.forEach(function (child) {
+            walkEntry(child, out, function () { if (--pending === 0) done(); });
+          });
+          return;
+        }
+        for (var i = 0; i < batch.length; i++) all.push(batch[i]);
+        readMore();
+      }, function () { done(); });
+    }
+    readMore();
+  }
+
+  document.getElementById("pick-files").addEventListener("click", function () { fileInput.click(); });
+  document.getElementById("pick-dir").addEventListener("click", function () { dirInput.click(); });
+  fileInput.addEventListener("change", function () {
+    addFiles(fileInput.files);
+    fileInput.value = "";
+  });
+  dirInput.addEventListener("change", function () {
+    addFiles(dirInput.files);
+    dirInput.value = "";
+  });
+
+  document.getElementById("gen-bundle").addEventListener("click", makeBundle);
+  document.getElementById("clear-all").addEventListener("click", function () {
+    items = [];
+    document.getElementById("bundle-result").hidden = true;
+    document.getElementById("drop-hint").hidden = true;
+    renderItems();
+    showToast("已清空");
+  });
+
+  // ---------- 载入仓库清单 ----------
+
+  fetch("index.json", { cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      catalog.groups = Array.isArray(data.groups) ? data.groups : [];
+      catalog.jobs = Array.isArray(data.jobs) ? data.jobs : [];
+      document.getElementById("stat-jobs").textContent = data.count != null ? data.count : catalog.jobs.length;
+      document.getElementById("stat-groups").textContent = catalog.groups.length;
+      elLoading.hidden = true;
+      elRoot.hidden = false;
+    })
+    .catch(function (err) {
+      elLoading.hidden = true;
+      elError.hidden = false;
+      document.getElementById("error-detail").textContent =
+        "index.json 读取失败：" + err.message + "（本地预览请用 python -m http.server 启动）";
+    });
+})();
+</script>
+</body>
+</html>

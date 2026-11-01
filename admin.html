@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作业集维护工具（本地） · MAAPVZ</title>
+<link rel="icon" href="img/logo.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .adm-tip { font-size: 13px; color: var(--ink); background: #fff6d6; border-left: 4px solid var(--sun);
+             border-radius: 6px; padding: 10px 12px; line-height: 1.7; }
+  .adm-tip b { color: var(--wood); }
+  .adm-group { border: 2px solid var(--wood-light); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--parchment-in); }
+  .adm-group-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .adm-group-name { font-size: 15px; font-weight: 700; color: var(--wood); }
+  .adm-job { border-top: 1px dashed var(--wood-light); padding: 10px 0 4px; }
+  .adm-job:first-of-type { border-top: 0; }
+  .adm-job-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .adm-job-name { font-weight: 700; color: var(--wood); font-size: 14px; }
+  .adm-muted { font-size: 12px; color: var(--ink-muted); }
+  .adm-ver { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 6px 0 0 12px; }
+  .adm-input { font-size: 12.5px; padding: 4px 8px; border: 1.5px solid var(--wood-light); border-radius: 6px;
+               background: var(--parchment); color: var(--ink); outline: none; }
+  .adm-input:focus { border-color: var(--lawn); }
+  .adm-input.narrow { width: 110px; }
+  .adm-log { font-size: 12.5px; color: var(--lawn-deep); margin-top: 8px; white-space: pre-wrap; }
+  .adm-log.err { color: var(--danger); }
+  .adm-files { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .adm-file { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+              border: 1.5px solid var(--wood-light); border-radius: 8px; padding: 6px 10px; background: var(--parchment); }
+  .adm-badge { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: #e2efd2; color: var(--lawn-deep); }
+  .adm-badge.warn { background: #fdf0d2; color: #8a4b13; }
+  /* 选择弹窗（删除阵型这类多选项场景） */
+  .adm-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); display: flex;
+               align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+  .adm-modal[hidden] { display: none; }
+  .adm-modal-box { background: var(--parchment); border: 2px solid var(--wood); border-radius: 12px;
+                   padding: 18px 20px; width: 100%; max-width: 480px; box-shadow: var(--shadow-hover); }
+  .adm-modal-title { font-size: 16px; font-weight: 700; color: var(--wood); margin-bottom: 8px; }
+  .adm-modal-body { font-size: 13px; color: var(--ink); line-height: 1.75; margin-bottom: 14px; white-space: pre-line; }
+  .adm-modal-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="admin.html">
+      <img src="img/logo.png" alt="MAAPVZ"
+           onerror="this.hidden=true;document.getElementById('title-emoji').hidden=false">
+      <span id="title-emoji" hidden>🌻</span>
+      MAAPVZ 作业集 · 维护工具
+      <small>本地版</small>
+    </a>
+    <nav>
+      <a class="nav-link" href="index.html">首页预览</a>
+      <a class="nav-link active" href="admin.html">维护工具</a>
+      <a class="nav-link" href="about.html">关于</a>
+    </nav>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="subbar-inner">
+    <span class="desc">双击「启动维护工具.bat」打开的本地页面：上传作业集、改作者/说明、重命名、删版本</span>
+    <div class="stats">
+      <span class="badge">作业集 <b id="stat-jobs">-</b></span>
+      <span class="badge">阵型 <b id="stat-groups">-</b></span>
+      <span class="badge">版本 <b id="stat-versions">-</b></span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div id="state-error" class="state error" hidden>
+    连不上本地服务 😢<br><br>
+    <small>请先双击仓库根目录的「启动维护工具.bat」，再由它自动打开本页面。</small>
+  </div>
+
+  <div id="tool-root" hidden>
+    <div class="adm-tip" id="preview-warn" hidden
+         style="border-left-color:var(--danger);background:#fdeaea">
+      当前是「站点预览」模式：上传 / 改信息等写操作已全部关闭。<br>
+      要改内容请关掉预览窗口，双击 <b>启动维护工具.bat</b>。
+    </div>
+    <div class="table-card">
+      <h3>① 上传作业集</h3>
+      <div class="adm-tip">
+        拖入编辑器导出的 <code>.json</code>（也认 <code>.txt</code>），选好阵型 / 填好作者后点「写入仓库」。<br>
+        <b>作业集名和已有的一致 = 迭代新版本</b>（旧版本原样保留）；写成新名字 = 新建一份作业集。<br>
+        写入时会自动规整：<b>局外选卡强制「自动选卡」</b>，候选池只留本作业集实际用到的植物。
+      </div>
+      <div class="drop-zone" id="drop" style="margin-top:10px">
+        <div class="drop-title">把作业集文件拖到这里</div>
+        <div class="drop-sub">或者点这里选择文件</div>
+        <div class="drop-actions">
+          <button class="btn primary" id="pick" type="button">选择文件</button>
+          <button class="btn" id="clear-files" type="button">清空</button>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept=".json,.txt,application/json" multiple hidden>
+      <div class="adm-files" id="file-list"></div>
+
+      <div class="pub-field" style="margin-top:12px">
+        <label class="pub-label">阵型</label>
+        <select class="pub-select" id="up-group"></select>
+        <input class="pub-input" id="up-newgroup" type="text" placeholder="新阵型名，例如：心塔" hidden>
+      </div>
+      <div class="pub-field">
+        <label class="pub-label">版本日期</label>
+        <input class="pub-input" id="up-date" type="date">
+        <label class="pub-label">作者</label>
+        <input class="pub-input" id="up-author" type="text" placeholder="作者名（多人用、分开）">
+      </div>
+      <div class="pub-field">
+        <label class="pub-label">说明</label>
+        <input class="pub-input pub-input-wide" id="up-note" type="text" placeholder="这一版改了什么（可留空）">
+      </div>
+      <div class="pub-actions">
+        <button class="btn primary" id="do-upload" type="button">写入仓库</button>
+        <span class="adm-muted">写入后索引会自动重建，刷新「首页预览」即可看到</span>
+      </div>
+      <div class="adm-log" id="upload-log"></div>
+    </div>
+
+    <div class="table-card">
+      <h3>② 现有作业集（改作者 / 说明 / 名字 / 版本）</h3>
+      <div class="table-sub">作者和说明就写在每个版本目录的 <code>作者.txt</code> / <code>说明.txt</code> 里，改完记得 commit + push。</div>
+      <div id="catalog"></div>
+    </div>
+
+    <div class="table-card">
+      <h3>③ 维护操作</h3>
+      <div class="pub-actions">
+        <button class="btn" id="do-rebuild" type="button">重建索引</button>
+        <button class="btn" id="do-reload" type="button">刷新列表</button>
+      </div>
+      <div class="adm-log" id="op-log"></div>
+      <div class="adm-tip" style="margin-top:10px">
+        站点是纯静态的：这里的改动只落在本机仓库里。上线要 <code>git add -A; git commit -m "…"; git push</code>
+        或交给 GitHub Desktop；推送后 1~2 分钟 Pages 自动部署。
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div>
+    <a href="index.html">首页预览</a> · <a href="about.html">关于</a>
+  </div>
+  <div>本地工具 · 只监听 127.0.0.1</div>
+</footer>
+
+<div id="toast"></div>
+
+<div class="adm-modal" id="modal" hidden>
+  <div class="adm-modal-box">
+    <div class="adm-modal-title" id="modal-title"></div>
+    <div class="adm-modal-body" id="modal-body"></div>
+    <div class="adm-modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var elToast = $("toast");
+  var toastTimer = null;
+  var catalog = { groups: [], jobs: [] };
+  var pending = [];   // 待上传文件
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function toast(msg) {
+    elToast.textContent = msg;
+    elToast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { elToast.classList.remove("show"); }, 2200);
+  }
+
+  // 多选项弹窗（删除阵型这种「保留 or 一起删」的场景用），返回 Promise<选项 id>
+  function askChoice(title, body, choices) {
+    return new Promise(function (resolve) {
+      var box = $("modal");
+      $("modal-title").textContent = title;
+      $("modal-body").textContent = body;
+      var acts = $("modal-actions");
+      acts.innerHTML = "";
+      function done(id) { box.hidden = true; box.onclick = null; resolve(id); }
+      choices.forEach(function (c) {
+        var b = el("button", "btn" + (c.primary ? " primary" : ""), c.label);
+        b.type = "button";
+        b.addEventListener("click", function () { done(c.id); });
+        acts.appendChild(b);
+      });
+      box.onclick = function (ev) { if (ev.target === box) done("cancel"); };
+      box.hidden = false;
+    });
+  }
+  function today() {
+    var d = new Date();
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function kb(n) { return Math.max(1, Math.round((n || 0) / 1024)) + " KB"; }
+
+  function api(action, payload) {
+    var body = Object.assign({ action: action }, payload || {});
+    return fetch("/api/" + action, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Maapvz-Tool": "1" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().catch(function () {
+        return { ok: false, error: "服务返回的不是 JSON（HTTP " + r.status + "）" };
+      });
+    });
+  }
+
+  function b64(text) {
+    var bytes = new TextEncoder().encode(text);
+    var bin = "";
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  // ---------- 载入索引 ----------
+  function load() {
+    return fetch("index.json", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        catalog.groups = Array.isArray(data.groups) ? data.groups : [];
+        catalog.jobs = Array.isArray(data.jobs) ? data.jobs : [];
+        $("stat-jobs").textContent = data.count || catalog.jobs.length;
+        $("stat-groups").textContent = catalog.groups.length;
+        $("stat-versions").textContent = data.version_count || 0;
+        $("tool-root").hidden = false;
+        renderCatalog();
+        fillGroupSelect();
+      })
+      .catch(function (err) {
+        $("state-error").hidden = false;
+        console.error(err);
+      });
+  }
+
+  function fillGroupSelect() {
+    var sel = $("up-group");
+    var current = sel.value;
+    sel.innerHTML = "";
+    var none = document.createElement("option");
+    none.value = "";
+    none.textContent = "（不归入阵型）";
+    sel.appendChild(none);
+    catalog.groups.forEach(function (g) {
+      var o = document.createElement("option");
+      o.value = g.id;
+      o.textContent = g.name + "（" + g.count + "）";
+      sel.appendChild(o);
+    });
+    var nw = document.createElement("option");
+    nw.value = "__new__";
+    nw.textContent = "＋ 新建阵型…";
+    sel.appendChild(nw);
+    if (current) sel.value = current;
+    $("up-newgroup").hidden = sel.value !== "__new__";
+  }
+
+  // ---------- 现有作业集列表 ----------
+  function renderCatalog() {
+    var box = $("catalog");
+    box.innerHTML = "";
+    if (!catalog.jobs.length) {
+      box.appendChild(el("div", "adm-muted", "仓库里还没有作业集，先在上面上传一份。"));
+      return;
+    }
+    catalog.groups.forEach(function (g) {
+      var gJobs = catalog.jobs.filter(function (j) { return j.group === g.id; });
+      if (!gJobs.length) return;
+
+      var card = el("div", "adm-group");
+      var head = el("div", "adm-group-head");
+      head.appendChild(el("span", "adm-group-name", g.name));
+      head.appendChild(el("span", "adm-muted", gJobs.length + " 个作业集 · " + g.version_count + " 个版本"));
+      head.appendChild(el("span", "adm-muted", g.id !== g.name ? "目录：" + g.id : ""));
+      var renameG = el("button", "btn", "重命名阵型");
+      renameG.type = "button";
+      renameG.addEventListener("click", function () {
+        var to = prompt("阵型新目录名（就是站点上的阵型名）：", g.id);
+        if (!to || to === g.id) return;
+        api("rename_group", { group: g.id, to: to }).then(afterOp);
+      });
+      head.appendChild(renameG);
+      var descBtn = el("button", "btn", "编辑阵型信息");
+      descBtn.type = "button";
+      descBtn.addEventListener("click", function () {
+        var name = prompt("阵型显示名：", g.name);
+        if (name === null) return;
+        var desc = prompt("阵型简介（可留空）：", g.desc || "");
+        if (desc === null) return;
+        api("set_group_meta", { group: g.id, name: name, desc: desc }).then(afterOp);
+      });
+      head.appendChild(descBtn);
+      var delG = el("button", "btn", "删除阵型");
+      delG.type = "button";
+      delG.addEventListener("click", function () {
+        var n = gJobs.length;
+        if (!n) {
+          askChoice("删除空阵型「" + g.name + "」",
+            "这个阵型里没有作业集，删除只会删掉阵型文件夹本身。",
+            [
+              { id: "move", label: "删除阵型", primary: true },
+              { id: "cancel", label: "取消" }
+            ]).then(function (choice) {
+              if (choice === "move") api("delete_group", { group: g.id, confirm: true }).then(afterOp);
+            });
+          return;
+        }
+        askChoice("删除阵型「" + g.name + "」",
+          "这个阵型下有 " + n + " 个作业集，你想怎么处理？\n\n" +
+          "· 移到「不归入阵型」：作业集全部保留，只是不再挂在任何阵型下（推荐）\n" +
+          "· 连作业集一起删除：这些作业集和它们的所有版本都会消失（可用 git 恢复）",
+          [
+            { id: "move", label: "移到「不归入阵型」并删除阵型", primary: true },
+            { id: "purge", label: "连作业集一起删除" },
+            { id: "cancel", label: "取消" }
+          ]).then(function (choice) {
+            if (choice === "move") {
+              api("delete_group", { group: g.id, confirm: true, moveJobs: true }).then(afterOp);
+            } else if (choice === "purge") {
+              api("delete_group", { group: g.id, confirm: true, moveJobs: false }).then(afterOp);
+            }
+          });
+      });
+      head.appendChild(delG);
+      card.appendChild(head);
+      if (g.desc) card.appendChild(el("div", "adm-muted", g.desc));
+
+      gJobs.forEach(function (j) { card.appendChild(jobBlock(j)); });
+      box.appendChild(card);
+    });
+
+    // 没有归入任何阵型的作业集
+    var orphans = catalog.jobs.filter(function (j) { return !j.group; });
+    if (orphans.length) {
+      var loose = el("div", "adm-group");
+      var looseHead = el("div", "adm-group-head");
+      looseHead.appendChild(el("span", "adm-group-name", "未归入阵型"));
+      looseHead.appendChild(el("span", "adm-muted", orphans.length + " 个作业集"));
+      loose.appendChild(looseHead);
+      orphans.forEach(function (j) { loose.appendChild(jobBlock(j)); });
+      box.appendChild(loose);
+    }
+  }
+
+  // 作业集目录名：优先用 index 里的 dir（jobs/[阵型/]作业集），拿不到再退回 id
+  function jobFolder(j) {
+    var parts = String(j.dir || j.id || "").split("/");
+    return parts[parts.length - 1];
+  }
+
+  function jobBlock(j) {
+    var wrap = el("div", "adm-job");
+    var head = el("div", "adm-job-head");
+    head.appendChild(el("span", "adm-job-name", j.name));
+    var jAuthors = Array.isArray(j.authors) && j.authors.length ? j.authors : (j.author ? [j.author] : []);
+    head.appendChild(el("span", "adm-muted", "作者：" + (jAuthors.length ? jAuthors.join("、") : "未知")));
+    head.appendChild(el("span", "adm-badge", "v" + j.version_count));
+    head.appendChild(el("span", "adm-muted", "更新于 " + (j.updated || "").slice(0, 10)));
+
+    var rename = el("button", "btn", "重命名");
+    rename.type = "button";
+    rename.addEventListener("click", function () {
+      var to = prompt("作业集新目录名：", jobFolder(j));
+      if (!to) return;
+      api("rename_job", { group: j.group, job: jobFolder(j), to: to }).then(afterOp);
+    });
+    head.appendChild(rename);
+
+    // 阵型下拉：不用记名字，选中 + 点「移动」就行
+    var moveRow = el("div", "adm-ver");
+    moveRow.appendChild(el("span", "adm-muted", "阵型"));
+    var gSel = document.createElement("select");
+    gSel.className = "adm-input";
+    var noneOpt = document.createElement("option");
+    noneOpt.value = "";
+    noneOpt.textContent = "（不归入阵型）";
+    if (!j.group) noneOpt.selected = true;
+    gSel.appendChild(noneOpt);
+    catalog.groups.forEach(function (g) {
+      var o = document.createElement("option");
+      o.value = g.id;
+      o.textContent = g.name + "（" + g.count + "）";
+      if (g.id === j.group) o.selected = true;
+      gSel.appendChild(o);
+    });
+    var newOpt = document.createElement("option");
+    newOpt.value = "__new__";
+    newOpt.textContent = "＋ 新建阵型…";
+    gSel.appendChild(newOpt);
+    var applyMove = el("button", "btn", "移动");
+    applyMove.type = "button";
+    applyMove.addEventListener("click", function () {
+      var to = gSel.value;
+      if (to === "__new__") {
+        var name = prompt("新阵型名（会新建一个阵型文件夹）：", "");
+        to = String(name == null ? "" : name).trim();
+        if (!to) { toast("没有输入阵型名"); return; }
+      }
+      if (to === (j.group || "")) { toast("已经在这个阵型里了"); return; }
+      api("move_job", { group: j.group, job: jobFolder(j), toGroup: to }).then(afterOp);
+    });
+    moveRow.appendChild(gSel);
+    moveRow.appendChild(applyMove);
+    wrap.appendChild(moveRow);
+
+    var del = el("button", "btn", "删除作业集");
+    del.type = "button";
+    del.addEventListener("click", function () {
+      if (!confirm("确认删除作业集「" + j.name + "」的全部版本？")) return;
+      api("delete_job", { group: j.group, job: jobFolder(j), confirm: true }).then(afterOp);
+    });
+    head.appendChild(del);
+
+    var openLink = el("a", "btn", "看详情");
+    openLink.href = "job.html?id=" + encodeURIComponent(j.id);
+    openLink.target = "_blank";
+    head.appendChild(openLink);
+    wrap.appendChild(head);
+
+    (j.versions || []).forEach(function (v, i) {
+      var row = el("div", "adm-ver");
+      row.appendChild(el("span", "ver-date", v.label || v.date || ""));
+      if (i === 0) row.appendChild(el("span", "ver-badge", "最新"));
+      row.appendChild(el("span", "adm-muted", kb(v.size)));
+
+      var authorIn = el("input", "adm-input narrow");
+      authorIn.type = "text";
+      authorIn.value = (Array.isArray(v.authors) && v.authors.length ? v.authors.join("、") : (v.author || ""));
+      authorIn.placeholder = "作者（多人用、分开）";
+      row.appendChild(authorIn);
+
+      var noteIn = el("input", "adm-input");
+      noteIn.type = "text";
+      noteIn.value = v.note || "";
+      noteIn.placeholder = "这一版改了什么（说明）";
+      row.appendChild(noteIn);
+
+      var save = el("button", "btn", "保存");
+      save.type = "button";
+      save.addEventListener("click", function () {
+        api("version_meta", { file: v.file, author: authorIn.value, note: noteIn.value }).then(function (res) {
+          afterOp(res);
+        });
+      });
+      row.appendChild(save);
+
+      var dl = el("a", "btn", "下载");
+      dl.href = v.file.split("/").map(encodeURIComponent).join("/");
+      dl.setAttribute("download", (j.name || "作业集") + "_" + (v.label || "") + ".json");
+      row.appendChild(dl);
+
+      var delV = el("button", "btn", "删除");
+      delV.type = "button";
+      delV.addEventListener("click", function () {
+        if (j.versions.length <= 1) { toast("至少要留一个版本"); return; }
+        if (!confirm("删除版本「" + (v.label || "") + "」？")) return;
+        api("delete_version", { file: v.file, confirm: true }).then(afterOp);
+      });
+      row.appendChild(delV);
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  function afterOp(res) {
+    var log = $("op-log");
+    if (!res || !res.ok) {
+      toast((res && res.error) || "操作失败");
+      log.textContent = "❌ " + ((res && res.error) || "操作失败");
+      log.classList.add("err");
+      return;
+    }
+    toast("完成");
+    log.classList.remove("err");
+    log.textContent = "✅ " + (res.message || "完成") + "\n· 本地文件已改好，点右上角「首页预览」按 F5 就能看到效果";
+    load();
+  }
+
+  // ---------- 上传 ----------
+  function readFile(file) {
+    return new Promise(function (resolve, reject) {
+      var fr = new FileReader();
+      fr.onload = function () { resolve(String(fr.result || "")); };
+      fr.onerror = function () { reject(new Error("读取失败")); };
+      fr.readAsText(file, "utf-8");
+    });
+  }
+
+  function addFiles(files) {
+    var list = Array.prototype.slice.call(files || []).filter(function (f) { return /\.(json|txt)$/i.test(f.name); });
+    if (!list.length) { toast("请选择 .json 作业集文件"); return; }
+    Promise.all(list.map(function (f) {
+      return readFile(f).then(function (text) {
+        var data = JSON.parse(text.replace(/^\uFEFF/, ""));
+        return { file: f, text: text, data: data };
+      }).catch(function (err) { return { file: f, error: err }; });
+    })).then(function (rows) {
+      rows.forEach(function (r) {
+        if (r.error) { toast(r.file.name + "：" + r.error.message); return; }
+        var name = String(r.data.name || r.file.name.replace(/\.(json|txt)$/i, "")).trim();
+        pending.push({
+          filename: r.file.name,
+          text: r.text,
+          job: name,
+          code: r.data.code || "",
+          plants: (r.data.tables || []).length,
+          warn: r.data.outer_pick ? "" : "无 outer_pick"
+        });
+      });
+      renderFiles();
+    });
+  }
+
+  function renderFiles() {
+    var box = $("file-list");
+    box.innerHTML = "";
+    pending.forEach(function (p, i) {
+      var row = el("div", "adm-file");
+      row.appendChild(el("span", "adm-badge", p.code || "无 code"));
+      var nameIn = el("input", "adm-input");
+      nameIn.type = "text";
+      nameIn.value = p.job;
+      nameIn.title = "作业集名（和已有的一致 = 迭代新版本）";
+      nameIn.addEventListener("input", function () { p.job = nameIn.value; });
+      row.appendChild(nameIn);
+      row.appendChild(el("span", "adm-muted", p.filename + " · " + p.plants + " 张表"));
+      if (p.warn) row.appendChild(el("span", "adm-badge warn", p.warn));
+      var rm = el("button", "btn", "移除");
+      rm.type = "button";
+      rm.addEventListener("click", function () {
+        pending.splice(i, 1);
+        renderFiles();
+      });
+      row.appendChild(rm);
+      box.appendChild(row);
+    });
+  }
+
+  function doUpload() {
+    var log = $("upload-log");
+    if (!pending.length) { toast("先拖入作业集文件"); return; }
+    var groupVal = $("up-group").value;
+    if (groupVal === "__new__" && !$("up-newgroup").value.trim()) { toast("请填写新阵型名"); return; }
+    var payload = {
+      group: groupVal,
+      newGroup: $("up-newgroup").value,
+      date: $("up-date").value || today(),
+      author: $("up-author").value,
+      note: $("up-note").value,
+      mode: "new",
+      items: pending.map(function (p) {
+        return { filename: p.filename, job: p.job, content_b64: b64(p.text) };
+      })
+    };
+    log.classList.remove("err");
+    log.textContent = "写入中…";
+    api("upload", payload).then(function (res) {
+      if (!res.ok) {
+        log.classList.add("err");
+        log.textContent = "❌ " + (res.error || "写入失败");
+        return;
+      }
+      var lines = ["✅ " + res.message];
+      (res.written || []).forEach(function (w) {
+        lines.push("· " + w.path + (w.changes && w.changes.length ? "（" + w.changes.join("；") + "）" : ""));
+      });
+      log.textContent = lines.join("\n");
+      pending = [];
+      renderFiles();
+      $("up-note").value = "";
+      load();
+    });
+  }
+
+  // ---------- 事件 ----------
+  $("pick").addEventListener("click", function () { $("file-input").click(); });
+  $("file-input").addEventListener("change", function (ev) { addFiles(ev.target.files); ev.target.value = ""; });
+  $("clear-files").addEventListener("click", function () { pending = []; renderFiles(); });
+  $("drop").addEventListener("click", function (ev) {
+    if (ev.target && ev.target.tagName === "BUTTON") return;
+    $("file-input").click();
+  });
+  $("drop").addEventListener("dragover", function (ev) { ev.preventDefault(); $("drop").classList.add("over"); });
+  $("drop").addEventListener("dragleave", function () { $("drop").classList.remove("over"); });
+  $("drop").addEventListener("drop", function (ev) {
+    ev.preventDefault();
+    $("drop").classList.remove("over");
+    if (ev.dataTransfer) addFiles(ev.dataTransfer.files);
+  });
+  $("up-group").addEventListener("change", function () {
+    $("up-newgroup").hidden = $("up-group").value !== "__new__";
+  });
+  $("do-upload").addEventListener("click", doUpload);
+  $("do-rebuild").addEventListener("click", function () {
+    api("rebuild", {}).then(afterOp);
+  });
+  $("do-reload").addEventListener("click", function () { load(); toast("已刷新"); });
+
+  $("up-date").value = today();
+  load();
+
+  // 预览模式（只读）下 /api 会 403：给个明显提示，免得以为是自己点错了
+  fetch("/api/ping", { cache: "no-store" })
+    .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+    .then(function (res) {
+      if (!res || !res.ok) {
+        var warn = $("preview-warn");
+        if (warn) warn.hidden = false;
+      }
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>

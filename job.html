@@ -19,7 +19,8 @@
       <small>植物大战僵尸2 · 无尽模式</small>
     </a>
     <nav>
-      <a class="nav-link active" href="index.html">首页</a>
+      <a class="nav-link" href="index.html">首页</a>
+      <a class="nav-link" href="publish.html">上架作业集</a>
       <a class="nav-link" href="about.html">关于</a>
       <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -52,6 +53,12 @@
           <button id="j-copy-link" class="btn" type="button">复制下载链接</button>
         </div>
       </div>
+    </div>
+
+    <div class="table-card" id="j-ver-card" hidden>
+      <h3>版本历史</h3>
+      <div class="table-sub">同一份作业集每次迭代都会新增一个版本（不会覆盖旧版），旧版本随时可以下载。</div>
+      <div class="ver-list" id="j-versions"></div>
     </div>
 
     <div class="table-card" id="j-ov-card">
@@ -95,7 +102,6 @@
   var PLANT_EN = {};    // 植物中文名 → 英文文件名
   var PLANT_RARE = {};  // 植物中文名 → 稀有度 0~4
   var ART_EN = {};      // 神器中文名 → 英文文件名（兜底，优先用作业集自带的 artifact_en）
-  var COSTUMES = {};    // 植物中文名 → 是否需装扮（meta.plant_costumes ∪ plant_meta）
   var PENDANT_IMG = {}; // 挂件中文名 → 图标文件名（data/pendants.json）
   var ART_NOTES = {};   // 神器中文名 → {tier}（作业集 artifact_notes）
 
@@ -181,9 +187,17 @@
     return e;
   }
 
-  // ★ code 参数是 URL 输入：先过白名单再拼路径（与服务端同一套规则）
-  var CODE_RE = /^[A-Za-z0-9_\-]{1,64}$/;
-  var code = new URLSearchParams(location.search).get("code") || "";
+  // ★ URL 输入一律当外部数据处理：id = 分组/作业集（目录身份），v = 版本目录名
+  //   code= 是旧链接的兼容入口（旧 index.json 时代分享出去的链接不能失效）
+  var PARAMS = new URLSearchParams(location.search);
+  var idParam = PARAMS.get("id") || "";
+  var vParam = PARAMS.get("v") || "";
+  var codeParam = PARAMS.get("code") || "";
+
+  // 仓库里的中文/空格路径：逐段 encodeURIComponent，保住 "/" 分隔
+  function encPath(p) {
+    return String(p || "").split("/").map(encodeURIComponent).join("/");
+  }
 
   function fail(msg) {
     elLoading.hidden = true;
@@ -468,8 +482,8 @@
         }
       }
     }
-    // 需装扮徽标（阳光黄醒目色）：meta sidecar 的 plant_costumes ∪ plant_meta
-    var costume = (meta && (meta.costume || meta["装扮"])) || COSTUMES[name];
+    // 需装扮徽标（阳光黄醒目色）：作业集自带的 plant_notes 标注
+    var costume = meta && (meta.costume || meta["装扮"]);
     if (costume) {
       var cb = el("span", "costume-badge", "需装扮");
       cb.title = "这株植物需要装扮";
@@ -643,24 +657,55 @@
     return card;
   }
 
-  function render(job, sidecar) {
-    document.title = (job.name || job.code) + " · MAAPVZ 作业集分享站";
+  // 版本历史：每版一行（日期 / 作者 / 说明 / 查看 / 下载）
+  function buildVersionList(entry, currentLabel) {
+    var card = document.getElementById("j-ver-card");
+    var box = document.getElementById("j-versions");
+    var versions = Array.isArray(entry.versions) ? entry.versions : [];
+    box.innerHTML = "";
+    if (versions.length < 1) { card.hidden = true; return; }
+    card.hidden = false;
 
-    // 装扮标注：meta sidecar 的 plant_costumes 汇入全局
-    if (sidecar && sidecar.plant_costumes && typeof sidecar.plant_costumes === "object") {
-      Object.keys(sidecar.plant_costumes).forEach(function (k) {
-        COSTUMES[k] = !!sidecar.plant_costumes[k];
-      });
-    }
+    versions.forEach(function (v, i) {
+      var row = el("div", "ver-row" + (v.label === currentLabel ? " on" : ""));
+      row.appendChild(el("span", "ver-date", v.label || v.date || "未标日期"));
+      if (i === 0) row.appendChild(el("span", "ver-badge", "最新"));
+      else if (v.label === currentLabel) row.appendChild(el("span", "ver-badge cur", "正在查看"));
+      var vAuthors = Array.isArray(v.authors) && v.authors.length
+        ? v.authors.map(function (a) { return String(a == null ? "" : a).trim(); }).filter(Boolean)
+        : (v.author ? [String(v.author).trim()] : []);
+      row.appendChild(el("span", "ver-author", "作者：" + (vAuthors.length ? vAuthors.join("、") : "未知")));
+      if (v.note) row.appendChild(el("span", "ver-note", v.note));
+      if (v.size) row.appendChild(el("span", "ver-author", Math.max(1, Math.round(v.size / 1024)) + " KB"));
+
+      var acts = el("div", "ver-actions");
+      var view = el("a", "btn", "查看");
+      view.href = "job.html?id=" + encodeURIComponent(entry.id) + "&v=" + encodeURIComponent(v.label || "");
+      acts.appendChild(view);
+      var dl = el("a", "btn primary", "下载");
+      dl.href = encPath(v.file);
+      dl.setAttribute("download", ((entry.name || entry.id) + "_" + (v.label || "版本"))
+        .replace(/[\\/:*?"<>|]/g, "") + ".json");
+      acts.appendChild(dl);
+      row.appendChild(acts);
+      box.appendChild(row);
+    });
+  }
+
+  function render(job, entry, version) {
+    var latest = (entry.versions && entry.versions[0]) || version;
+    var isLatest = !latest || !version || latest.label === version.label || latest.file === version.file;
+    document.title = (job.name || entry.name) + (isLatest ? "" : "（" + version.label + "）") +
+      " · MAAPVZ 作业集分享站";
 
     // —— 头部 ——
-    document.getElementById("j-name").textContent = job.name || job.code;
-    document.getElementById("j-code").textContent = job.code;
-    var dl = document.getElementById("j-download");
-    dl.href = "jobs/" + encodeURIComponent(job.code) + ".json";
-    // 下载文件名用作业集原名（中文名），剥掉文件系统非法字符
-    var dlName = String(job.name || job.code).replace(/[\\/:*?"<>|]/g, "").trim();
-    dl.setAttribute("download", (dlName || job.code) + ".json");
+    document.getElementById("j-name").textContent = job.name || entry.name || entry.id;
+    document.getElementById("j-code").textContent = job.code || version.code || "（无 code）";
+
+    var dlBtn = document.getElementById("j-download");
+    dlBtn.href = encPath(version.file);
+    var dlName = String(job.name || entry.name || entry.id).replace(/[\\/:*?"<>|]/g, "").trim();
+    dlBtn.setAttribute("download", (dlName || "作业集") + "_" + (version.label || "版本") + ".json");
 
     var worlds = jobWorlds(job);
     var art = worldArt(worlds);
@@ -671,20 +716,38 @@
       wa.onerror = function () { this.hidden = true; };
     }
 
-    // 世界标签（主世界高亮，副世界淡化）+ 用户标签（紫色 #tag）
+    // 世界标签（主世界高亮，副世界淡化）+ 用户标签（紫色 #tag）+ 分组
     var tagBox = document.getElementById("j-worlds");
+    tagBox.innerHTML = "";
+    var groupLabel = String(entry.group_name || entry.group || "").trim();
+    if (entry.group) {
+      var gTag = el("a", "tag tag-group", groupLabel || entry.group);
+      gTag.href = "index.html?group=" + encodeURIComponent(entry.group);
+      gTag.title = "只看「" + (groupLabel || entry.group) + "」这个阵型的作业集";
+      tagBox.appendChild(gTag);
+    }
     var primaryWorld = (typeof job.world === "string" && job.world.trim())
       ? job.world.trim() : (worlds.length ? worlds[0] : null);
     var subs = Array.isArray(job.sub_worlds)
       ? job.sub_worlds.map(function (x) { return String(x).trim(); }).filter(Boolean) : [];
 
-    // 副世界标签多的时候先折叠：主世界 + 前 3 个副世界 + 「+N」展开
-    var SUB_SHOW = 3;
+    // 世界标签去重：和分组同名的世界不再重复铺一遍（分组已经是那个身份的展示位）
+    var worldTags = [];
+    var seenWorld = {};
+    worlds.forEach(function (w) {
+      var s = String(w).trim();
+      if (!s || s === groupLabel || seenWorld[s]) return;
+      seenWorld[s] = 1;
+      worldTags.push(s);
+    });
+
+    // 卡片只显示主世界，这里同理：默认只露主世界，副世界收进「+N 个世界」点了再展开
+    var SUB_SHOW = 0;
     var subShown = 0;
     var hiddenSubTags = [];
-    worlds.forEach(function (w) {
+    worldTags.forEach(function (w) {
       var isSub = subs.indexOf(w) !== -1 && w !== primaryWorld;
-      var wTag = el("span", isSub ? "tag tag-sub" : "tag", String(w));
+      var wTag = el("span", isSub ? "tag tag-sub" : "tag", w);
       if (isSub) {
         wTag.title = "副世界（这套方案也能用在这些世界）";
         subShown++;
@@ -723,14 +786,23 @@
     if (job.max_level != null) metaBits.push("最高 " + job.max_level + " 关");
     if (typeof job.everyN === "number") metaBits.push("循环间隔 " + job.everyN + " 秒");
     if (job.outer_pick && job.outer_pick.mode === "auto") metaBits.push("自动选卡");
-    if (sidecar && sidecar.author) metaBits.push("作者：" + sidecar.author);
-    if (sidecar && sidecar.updated) metaBits.push("更新于 " + formatTime(sidecar.updated));
+    var vAuthors = Array.isArray(version.authors) && version.authors.length
+      ? version.authors.map(function (a) { return String(a == null ? "" : a).trim(); }).filter(Boolean)
+      : (version.author ? [String(version.author).trim()] : []);
+    metaBits.push("作者：" + (vAuthors.length ? vAuthors.join("、") : "未知"));
+    metaBits.push("版本 " + (version.label || "未标日期") + (isLatest ? "（最新）" : ""));
+    metaBits.push("更新于 " + formatTime(entry.updated));
+    if (entry.version_count > 1) metaBits.push("共 " + entry.version_count + " 个版本");
     document.getElementById("j-meta").textContent = metaBits.join(" · ");
-    if (sidecar && sidecar.desc) {
+
+    var descText = job.desc || version.note || entry.desc || "";
+    if (descText) {
       var d = document.getElementById("j-desc");
-      d.textContent = sidecar.desc;
+      d.textContent = descText;
       d.hidden = false;
     }
+
+    buildVersionList(entry, version.label);
 
     // —— 总览 + 关卡覆盖画板（全表图层叠放） ——
     // 植物阶数/挂件/装扮：新版编辑器导出在 plant_notes，旧兼容 plant_meta；表级覆盖全局
@@ -782,39 +854,42 @@
     elRoot.hidden = false;
   }
 
-  if (!CODE_RE.test(code)) {
-    fail("链接里缺少有效的 code 参数。");
+  if (!idParam && !codeParam) {
+    fail("链接里缺少作业集参数，请从首页点进作业集。");
     return;
   }
 
+  // 复制按钮：code / 当前版本的下载链接（版本解析出来之后才绑定）
+  var currentRef = { entry: null, version: null };
   document.getElementById("j-copy-code").innerHTML =
     '<svg viewBox="0 0 16 16"><path d="M4 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-1v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h1V2zm2 0v1h4a2 2 0 0 1 2 2v5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1h1zM3 4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H3z" transform="translate(1,1) scale(0.875)"/></svg>';
   document.getElementById("j-copy-code").addEventListener("click", function () {
-    copyText(code, "已复制 code");
+    var code = (currentRef.version && currentRef.version.code) ||
+               (currentRef.entry && currentRef.entry.code) || "";
+    if (code) copyText(code, "已复制 code");
+    else showToast("这一版没有 code");
   });
   document.getElementById("j-copy-link").addEventListener("click", function () {
-    copyText(new URL("jobs/" + encodeURIComponent(code) + ".json", location.href).href, "链接已复制");
+    if (!currentRef.version) return;
+    copyText(new URL(encPath(currentRef.version.file), location.href).href, "链接已复制");
   });
 
   Promise.all([
-    fetch("jobs/" + encodeURIComponent(code) + ".json", { cache: "no-store" }),
+    fetch("index.json", { cache: "no-store" }),
     fetch("data/plants.json", { cache: "no-store" }),
     fetch("data/artifacts.json", { cache: "no-store" }),
-    fetch("meta/" + encodeURIComponent(code) + ".json", { cache: "no-store" }),
     fetch("data/pendants.json", { cache: "no-store" })
   ])
     .then(function (rs) {
-      if (!rs[0].ok) throw new Error("作业集不存在（HTTP " + rs[0].status + "）");
+      if (!rs[0].ok) throw new Error("index.json 读取失败（HTTP " + rs[0].status + "）");
       return Promise.all([
         rs[0].json(),
         rs[1].ok ? rs[1].json() : [],
         rs[2].ok ? rs[2].json() : [],
-        rs[3].ok ? rs[3].json() : null,
-        rs[4].ok ? rs[4].json() : []
+        rs[3].ok ? rs[3].json() : []
       ]);
     })
     .then(function (rs) {
-      var job = rs[0];
       (Array.isArray(rs[1]) ? rs[1] : []).forEach(function (p) {
         if (p && p.name) {
           if (p.en) PLANT_EN[p.name] = p.en;
@@ -822,9 +897,45 @@
         }
       });
       (Array.isArray(rs[2]) ? rs[2] : []).forEach(function (a) { if (a && a.name && a.en) ART_EN[a.name] = a.en; });
-      (Array.isArray(rs[4]) ? rs[4] : []).forEach(function (pd) { if (pd && pd.name && pd.img) PENDANT_IMG[pd.name] = pd.img; });
-      if (!job || typeof job !== "object" || Array.isArray(job)) throw new Error("作业集格式不对");
-      render(job, rs[3]);
+      (Array.isArray(rs[3]) ? rs[3] : []).forEach(function (pd) { if (pd && pd.name && pd.img) PENDANT_IMG[pd.name] = pd.img; });
+
+      var idx = rs[0];
+      var entries = Array.isArray(idx.jobs) ? idx.jobs : [];
+      var entry = null;
+      if (idParam) {
+        entries.forEach(function (e) { if (e.id === idParam) entry = e; });
+      } else {
+        // 旧链接兼容：按 code 找作业集（可能是历史版本里的 code）
+        entries.forEach(function (e) {
+          if (entry) return;
+          var vs = Array.isArray(e.versions) ? e.versions : [];
+          if (e.code === codeParam || vs.some(function (v) { return v.code === codeParam; })) entry = e;
+        });
+      }
+      if (!entry) throw new Error("找不到作业集：" + (idParam || codeParam));
+
+      var versions = Array.isArray(entry.versions) ? entry.versions : [];
+      if (!versions.length) throw new Error("这个作业集还没有可用版本");
+      var version = versions[0];
+      if (codeParam && !idParam) {
+        versions.forEach(function (v) { if (v.code === codeParam) version = v; });
+      }
+      if (vParam) {
+        versions.forEach(function (v) { if (v.label === vParam) version = v; });
+      }
+      currentRef.entry = entry;
+      currentRef.version = version;
+
+      return fetch(encPath(version.file), { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("这一版的文件读不到（HTTP " + r.status + "）");
+          return r.json();
+        })
+        .then(function (job) { return { job: job, entry: entry, version: version }; });
+    })
+    .then(function (ctx) {
+      if (!ctx.job || typeof ctx.job !== "object" || Array.isArray(ctx.job)) throw new Error("作业集格式不对");
+      render(ctx.job, ctx.entry, ctx.version);
     })
     .catch(function (err) { fail(err.message); });
 })();

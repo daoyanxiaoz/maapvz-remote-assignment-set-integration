@@ -1,296 +1,201 @@
 # MAAPVZ 远程作业集分享站
 
-> **⚠️ 给 coding agent：本仓库当前有未完成的开发任务，先读文末
-> [「开发任务书 v4」](#开发任务书-v4给-coding-agent) 再动手。**
-
 《植物大战僵尸2》无尽模式自动化项目 [MAAPVZ](https://github.com/daoyanxiaoz/MAAPVZ) 的作业集分享站。
-在这里可以浏览、下载其他玩家分享的作业集，也可以投稿自己的作品。
+纯静态站点（无后端、无数据库、无 CDN），GitHub Pages 托管；**仓库目录树就是唯一数据源**。
 
-- 🌐 站点地址：<https://daoyanxiaoz.github.io/maapvz-remote-assignment-set-integration/>
-- 📮 投稿入口：[New Issue → 分享作业集](https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration/issues/new?template=share-jobset.yml)
-
-<!-- 站点截图占位：上线后补一张首页截图放这里 -->
+- 🌐 站点：<https://daoyanxiaoz.github.io/maapvz-remote-assignment-set-integration/>
+- 🚀 上架向导：<https://daoyanxiaoz.github.io/maapvz-remote-assignment-set-integration/publish.html>
+- 👋 不懂开发也能上架：见 [`docs/维护者上架指南.md`](docs/维护者上架指南.md)
 
 ---
 
-## 下载作业集（玩家）
+## 玩家：浏览 / 下载
 
-1. 打开站点，用搜索框按名称 / code / 作者 / 简介筛选，
-   或用筛选栏按 **世界 / 植物 / 装扮需求** 过滤；
-2. 点卡片进详情页，可以查看只读的**关卡覆盖画板**和**种植布局画板**；
+1. 首页顶部「阵型 → 常见阵型 ▾」下拉按打法类型过滤（例如 `心塔`），再用 **世界 / 植物 / 装扮** 或搜索框收窄；
+   卡片上只显示**主世界**一个世界标签 + 紫色 `#标签`，副世界在详情页里看；
+2. 点卡片进详情页：关卡覆盖画板、总览配置、策略表，以及**版本历史**（每一版都能单独下载）；
 3. 点「下载 JSON」，在 MAAPVZ 编辑器里导入即可使用。
 
-## 投稿作业集（玩家）
+## 维护者：上架一份作业集
 
-方式一（推荐）：站点导航栏点「上传作业集」，把 .json 文件拖进去 → 本地校验 → 逐棵标注装扮 → 一键打开 GitHub 投稿（标题正文已预填）。
+五条等价的路，选一条即可（都不需要改代码、不需要手改索引）：
 
-方式二（手动）：
+| 方式 | 适合谁 | 怎么做 |
+| --- | --- | --- |
+| **本地维护工具（最省事）** | 有仓库副本的人 | 双击 `启动维护工具.bat` → 浏览器里拖文件、改作者/说明、重命名、删版本 |
+| **网页向导** | 只有网页权限的维护者 | 打开 `publish.html` → 拖入作业集 → 选「迭代 / 新建」→ 生成上架包 → 传到 `inbox/` |
+| **inbox 投递** | 有仓库写权限的人 | 把 `*.bundle.json` 上传到 `inbox/`，Action 自动拆包落库并重建索引 |
+| **本地命令** | 喜欢命令行的人 | `python tools/publish.py 作业集.json --group 心塔 --author 名字` |
+| **纯手动** | 想完全掌控的人 | 按目录约定把文件放进 `jobs/<阵型>/<作业集>/<版本日期>/`，再写一份 `作者.txt` |
 
-1. 打开[投稿入口](https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration/issues/new?template=share-jobset.yml)，使用「分享作业集」模板开 Issue；
-2. 把编辑器导出的 .json 文件**拖进「作业集 JSON」一栏**（GitHub 会自动上传成附件链接），或直接粘贴 JSON 全文；
-3. **装扮标注必填**：作业集里出现的每一棵植物都要标注「需要/不需要」装扮，
-   每行一条，如 `娜迦蛇皮果:需要`、`大嘴花:不需要`，一颗不落；
-4. 作者昵称、一句话简介可选填；
-5. 提交后机器人自动校验：
-   - ✅ 通过 → 自动开 PR，等维护者审核合并后自动上站；
-   - ❌ 未通过 → 机器人会在 Issue 下评论原因（缺漏的装扮标注会直接列出清单），
-     **直接编辑原 Issue** 改好即可，机器人会重新校验；
-6. 想改已投稿的内容：直接编辑原 Issue，PR 会自动同步更新。
+跑完自动重建索引；线上由 Action 完成，本地跑：
 
-校验规则速览：
-
-| 规则 | 说明 |
-| --- | --- |
-| 必需字段 | `code`、`name`、`tables`（非空数组） |
-| code 格式 | 仅字母、数字、下划线、连字符，1~64 位 |
-| 体积上限 | 2MB |
-| code 唯一 | 与站内已有作业集撞车会被拒绝 |
-| **装扮标注** | **必填，作业集里每棵植物一条，不多不少；植物名须在植物数据库内** |
-| **编队方式** | **必须使用选卡编队（明确植物列表）；用编队序号（deck）的一律拒绝**——编队序号只在投稿人本机有效，别人无法复现 |
-| **适用世界** | **必填，至少一个**，限 19 个世界：埃及、海盗、西部、功夫、未来、黑暗、沙滩、冰河、天空、失落、摇滚、恐龙、摩登、蒸汽、复兴、平安、童话、亚特兰蒂斯、月球 |
-
----
-
-## 维护者手册
-
-### 前置设置（一次性）
-
-1. **Settings → Pages** → Deploy from a branch → `main` / `(root)`；
-2. **Settings → Actions → General** → Workflow permissions →
-   勾选 **Read and write permissions**；
-3. **Settings → Issues** 保持开启（投稿入口）；
-4. 建两个 label：`投稿`、`无效投稿`（Issues → Labels → New label，
-   机器人打标签和投稿模板都依赖它们）。
-
-### 手动上架
-
-直接把作业集 JSON 丢进 `jobs/` 推送即可，
-Action「重建作业集索引」会自动重建 `index.json`，几分钟后站点可见。
-
-### 修改作者 / 简介 / 装扮标注
-
-编辑 `meta/<code>.json`：
-
-```json
-{
-  "author": "作者昵称",
-  "desc": "一句话简介",
-  "plant_costumes": { "娜迦蛇皮果": true, "大嘴花": false }
-}
+```powershell
+python -X utf8 tools/build_index.py     # 重建 index.json
 ```
 
-推送后索引自动更新。
+### 上架时的强制规整（所有通道一致）
 
-### 下架作业集
+`tools/joblib.py` 的 `normalize_job()` 会对每份上架/规整的作业集统一处理：
 
-删除 `jobs/<code>.json`（连同 `meta/<code>.json` 可一起删），推送即可。
+- `outer_pick.mode` **强制 `auto`**（别人导入后不用手点确认选卡）；
+- `outer_pick.plants` **强制 = 本作业集阵容实际用到的植物**（保序去重）；
+  既不是空池，也不是编辑器里的 80 株全量池。
 
-### 投稿审核
+已有作业集可以用 `python -X utf8 tools/normalize_jobs.py --apply` 一次性规整（幂等）。
 
-带「投稿」标签的 Issue 会被机器人自动校验并开 PR：
+### 目录约定（唯一真相源）
 
-- PR 正文含校验摘要，`Closes #<issue>` 合并后自动关闭原 Issue；
-- 审核时**可以也应该修改格式**：merge 前在 PR 里直接改
-  `jobs/<code>.json` 本体或 `meta/<code>.json`（修正装扮标注、补简介等）；
-- 无效投稿会被打「无效投稿」标签，投稿人编辑 Issue 后会自动重试。
+```
+jobs/
+  心塔/                              ← 阵型（可选：同类型打法放一起；目录名 = 站点阵型名）
+    _group.json                      ← 可选：{"name","desc","order","icon"}
+    失落原大火龙果/                    ← 作业集（一次新建 = 一个目录）
+      2026-10-19/                    ← 版本目录（名字必须是日期 YYYY-MM-DD）
+        失落原大火龙果.json            ← 作业集本体（.json / .txt 均可）
+        作者.txt                      ← 作者名（一行一个，支持多人）
+        说明.txt                      ← 可选：这一版改了什么
+      2026-10-25/                    ← 再迭代一次 = 多一个日期目录，旧版保留
+        失落原大火龙果.json
+        作者.txt
+
+  火气珊瑚/                          ← 不归入阵型：直接放在 jobs/ 下，同样三层结构
+    2026-10-30/
+      火气珊瑚.json
+      作者.txt
+```
+
+- **阵型层是可选的**：`jobs/` 下的直接子目录如果里面是「日期目录」就算作业集（不归入阵型）；
+  如果里面还有作业集目录，那就是阵型。
+- **版本目录名必须像日期**（`2026-10-19` / `2026_10_19` / `20261019`），扫描器靠它区分作业集和版本。
+- 兼容写法：`jobs/<阵型>/xxx.json`、`jobs/xxx.json`（单版本）照样能扫出来。
+- 模板见 [`docs/模板作业集/`](docs/模板作业集/)。
+
+### 日常操作
+
+- **迭代**：同目录下加一个日期目录（或用向导选「迭代」）。
+- **改作者 / 说明**：直接编辑对应版本目录里的 `作者.txt` / `说明.txt`。
+- **下架**：删掉 `jobs/[阵型/]<作业集>/` 整个目录。
+- **只撤某一版**：删掉那个版本目录。
+- **换阵型 / 阵型改名**：在本地维护工具里用每个作业集下面的「阵型」下拉 + 「移动」；或直接把作业集目录挪进/挪出阵型文件夹
+  （阵型层可省略，挪到 `jobs/` 顶层就是不归入阵型）；阵型改名就是重命名阵型文件夹（可同时改 `_group.json` 的 `name`）。
+- 以上任何改动推送后，Action「重建作业集索引」都会自动重建 `index.json`。
 
 ---
-
-## 作业集 JSON 格式
-
-顶层字段一览（校验只强依赖 `code` / `name` / `tables`）：
-
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| `code` | string | 唯一标识，白名单 `^[A-Za-z0-9_\-]{1,64}$` |
-| `name` | string | 作业集名称（展示用） |
-| `version` | number | 格式版本 |
-| `worlds` | string[] | 适用世界（**目前普遍是空数组**，空时不显示世界维度） |
-| `max_level` | number | 最高关卡（普遍 149，弱化展示） |
-| `everyN` | number | 循环动作间隔（秒） |
-| `swipeMs` | number | 滑动时长（毫秒） |
-| `outer_pick` | object | 局外选卡配置，可空 |
-| `tables` | array | ★ 核心：分关卡段的种植策略表，至少 1 张 |
-| `format` | string | 固定为 `maapvz-jobset` |
-
-`tables` 元素关键字段：
-
-| 字段 | 说明 |
-| --- | --- |
-| `levels` / `cover.picks` | **显式关卡号数组**（可能离散，如只挑 5 的倍数关）。画覆盖用这个，**别用 from_level/to_level 区间画** |
-| `from_level` / `to_level` | 范围摘要（null = 到 149），仅作文字显示 |
-| `lineup.plants` | 阵容植物中文名数组；**可为空**（编队换阵型，显示「编队换阵」） |
-| `lineup.artifact` | 携带神器（如「葫芦神器」） |
-| `boardEarly` / `boardLate` | 前期/后期种植布局：行数组 × 9 列，格子为 `[]` 或 `{label, type, mode, col, row, seq, plant:{name, img}}` |
-| `supplyPicks` | 补给优先序 `[{id, name, img, pinned?}]` |
-| `endType` / `endLoopCount` | 收尾模式：detect=识别最后一波 / loops=循环 N 次后收尾 |
-| `boss_lineup` / `boss` | boss 关单独配置（有则展示「boss 关单独配置」标记） |
-| `compiled` | 预编译产物，展示时忽略 |
-
-### 装扮标注的存储
-
-**作者投稿时逐棵标注**（机器人强制校验齐全），落两处之一：
-
-- 投稿通道：Action ① 把标注写进 `meta/<code>.json` 的 `plant_costumes`；
-- 兼容：作业集 JSON 里的 `plant_meta`（表级优先于全局）详情页同样识别。
-
-`tier`（1~5 阶数角标）仍可选；`costume: true/false` 为装扮标记。
 
 ## 仓库结构
 
 ```
-├── index.html            首页：作业集卡片列表 + 搜索 + 三维筛选
-├── job.html              详情页：关卡覆盖画板 / 种植布局画板 / 阵容装扮 / 补给
-├── submit.html           上传作业集：本地校验 + 一键投稿
-├── about.html            关于（待开发）
-├── style.css             全站共享样式（本地文件，无外部依赖）
-├── index.json            作业集清单（Action 自动维护，勿手改）
-├── jobs/<code>.json      作业集本体
-├── meta/<code>.json      sidecar：作者 / 简介 / 装扮标注
-├── data/                 plants.json / artifacts.json（名称映射表）
-├── img/                  植物/神器/阶数/世界立绘/挂件图
+├── index.html            首页：阵型（常见阵型下拉）+ 卡片列表 + 搜索 + 世界/植物/装扮筛选
+├── job.html              详情页：总览 / 覆盖画板 / 策略表 / 版本历史
+├── publish.html          上架向导（线上）：拖文件 → 迭代 or 新建 → 生成上架包（零依赖）
+├── admin.html            维护工具（本地）：上传 / 改信息 / 重命名 / 删版本
+├── 启动维护工具.bat       双击 = 起本地服务 + 打开 admin.html（可写）
+├── 启动作业站预览工具.bat   双击 = 起本地预览 + 打开 index.html（只读，写接口全关）
+├── about.html            关于 + 维护指南
+├── style.css             全站样式（PVZ 种子包风，本地文件，零 CDN）
+├── index.json            站点清单（脚本生成，勿手改）
+├── jobs/[阵型/]<作业集>/<版本>/     ★ 作业集目录树（唯一数据源；阵型层可选）
+├── inbox/                上架包投递口（Action 自动消费，见 inbox/README.md）
+├── data/                 plants.json / artifacts.json / pendants.json（名称映射）
+├── img/                  植物 / 神器 / 阶数 / 世界立绘 / 挂件 / 稀有度底图
+├── docs/                 模板作业集 + 给非开发者的上架指南
 ├── tools/
-│   ├── build_index.py    重建 index.json
-│   └── issue_to_pr.py    投稿 Issue → 校验 → 自动开 PR
-└── .github/
-    ├── workflows/        两个 Action：索引重建、投稿处理
-    └── ISSUE_TEMPLATE/   投稿表单
+│   ├── joblib.py         目录约定 + 解析 + 规整 + 落库（所有脚本的公共库）
+│   ├── build_index.py    扫描目录树 → index.json
+│   ├── dev_server.py     本地维护服务器（127.0.0.1，提供 admin.html 用的 /api/*）
+│   ├── apply_inbox.py    消费 inbox/*.bundle.json → 落库 → 重建索引
+│   ├── publish.py        本地命令行上架
+│   ├── normalize_jobs.py 批量把作业集规整成「自动选卡 + 固定植物」
+│   └── migrate_legacy.py 旧版平铺 jobs/*.json 迁移（一次性，幂等）
+└── .github/workflows/
+    ├── build-index.yml   jobs/ 有变化 → 重建 index.json
+    └── apply-inbox.yml   inbox/ 有新包 → 拆包落库 → 重建 index.json
 ```
+
+## index.json（schema 2）
+
+```jsonc
+{
+  "schema": 2,
+  "updated": "2026-10-31T00:00:00Z",
+  "count": 10,               // 作业集数
+  "version_count": 12,       // 版本总数
+  "groups": [                // 阵型
+    { "id": "心塔", "name": "心塔", "desc": "", "count": 3, "version_count": 5,
+      "updated": "...", "jobs": ["心塔/失落原大火龙果"] }
+  ],
+  "jobs": [
+    {
+      "id": "心塔/失落原大火龙果",   // 作业集身份 = 阵型/名称（目录身份）
+      "group": "心塔", "name": "失落原大火龙果", "dir": "jobs/心塔/失落原大火龙果",
+      "code": "pvz_20261019_143143",  // 最新版本的 code（旧链接兼容用）
+      "author": "站长", "date": "2026-10-25", "updated": "...",   // author 为兼容字段
+      "version_count": 3,
+      "versions": [                   // 新的在前
+        { "label": "2026-10-25", "date": "2026-10-25", "file": "jobs/...",
+          "name": "...", "code": "...", "authors": ["站长", "某某"], "author": "站长、某某",
+          "note": "...", "size": 12345 }
+      ],
+      // 以下为最新版本聚合出来的卡片字段（与旧版契约兼容）
+      "worlds": [], "world_primary": "...", "tags": [], "tables": 2,
+      "max_level": 149, "coverage": [], "plants": [], "plants_max": 8,
+      "outer_pick": "auto", "artifact": "...", "artifact_en": "...",
+      "end_desc": "...", "supply": [], "costume": "none|required", "desc": "..."
+    }
+  ]
+}
+```
+
+页面只依赖 `index.json` + 版本文件本身，**不会**为主页去 fetch 全部作业集。
+
+---
+
+## 作业集 JSON 字段速查
+
+| 字段 | 说明 |
+| --- | --- |
+| `code` | 唯一 ID，白名单 `^[A-Za-z0-9_\-]{1,64}$`（缺省用文件名兜底） |
+| `name` | 显示名（下载文件名也用它） |
+| `worlds` / `world` / `sub_worlds` | 世界：兼容三代格式；索引生成时做语义去重（留全名） |
+| `tags` | 标签数组，紫色 `#标签` 直接铺在卡片上，参与搜索（不做筛选） |
+| `max_level` / `everyN` / `swipeMs` | 最高关 / 循环间隔 / 滑动时长 |
+| `plant_notes` | 植物标注 `{植物: {tier, pendant, pendantTier, costume}}`（表级覆盖全局） |
+| `artifact_notes` | 神器阶数 `{神器: {tier}}` |
+| `outer_pick` | 局外选卡（候选池不计入阵容统计） |
+| `tables[]` | 关卡段策略表：`levels`/`cover.picks`（权威离散覆盖）、`from_level`/`to_level`、`lineup`、`boss_lineup`、`supplyPicks`、`non_boss`/`boss` 动作链、`endType`/`endLoopCount` |
+| `boardEarly` / `boardLate` | 种植布局（站点不画板，但计入植物并集） |
+| `compiled` | 编辑器预编译快照，站点忽略 |
+
+- 覆盖画板/预览条只认 `levels`（或 `cover.picks`）这类**显式关卡号数组**（可能离散），不拿 `from_level`/`to_level` 连成区间画。
+- 阵容植物 = `lineup.plants` ∪ `boss_lineup.plants` ∪ 棋盘 `type=plant` 格子，去重后统计。
+- 装扮筛选聚合自 `plant_notes[*].costume`。
+
+## 详情页展示规范
+
+1. **总览**：全部表并集 —— 植物（阶数/挂件/装扮徽标）、神器、补给；
+2. **关卡覆盖画板**（只读）：1~149 宫格 + 图层栈，交叠关归先出现的表，boss 关描金，未覆盖标红；点表名只显示那张表；
+3. **策略表卡片**：阵容 → 神器 → boss 阵容 → 动作链规模 → 补给 → 收尾；
+4. **版本历史**：每版的作者 / 日期 / 说明 / 大小 + 查看与下载。
+
+---
 
 ## 本地预览
 
-```bash
-python -m http.server 8000
-# 打开 http://localhost:8000
+```powershell
+# 最省事：双击 启动作业站预览工具.bat（浏览器自动打开，只读）
+# 或者手动起一个静态服务器：
+python -m http.server 8931 --bind 127.0.0.1 --directory .
+# 打开 http://127.0.0.1:8931
 ```
+
+## GitHub Actions 前置设置（一次性）
+
+1. **Settings → Pages** → Deploy from a branch → `main` / `(root)`；
+2. **Settings → Actions → General** → Workflow permissions → **Read and write permissions**
+   （Action 需要提交 `index.json` 和拆包结果）；
+3. 仓库必须有 `.nojekyll`（否则 Pages 走 Jekyll 会卡住不部署）。
 
 ## 许可
 
 见 [LICENSE](LICENSE)。
-
----
-
-# 开发任务书 v4（给 coding agent）
-
-> 本节是给开发 AI 的任务说明，完成后由维护者删除。
-> 主项目仓库在 `D:\maapvz\MAAPVZ`（只读参考，**不要改动它**）。
-> v4 修正：画板范围、审核改格式由机器人自动执行、卡片内容、筛选确认。
-
-## 0. 立即执行：清场
-
-- 删除 `jobs/` 下**所有**现有作业集（含 pvz_demo_huoshe 示例）；
-- 重建空 index.json，站点显示空状态；
-- 之后维护者本人会走投稿流程上传一个远程测试作业集验证全链路。
-
-## 1. 详情页：两个只读画板（都要）
-
-数据获取：点卡片进详情页时 `fetch('jobs/<code>.json')`（按需加载，不进 index.json）。
-
-### 1a. 关卡覆盖画板（复刻编辑器「🧩 布局配置」）
-
-编辑器里的布局配置是 1-149 关的**宫格涂层板**：表列表 = 图层栈，
-上面的表优先盖住下面的表。详情页把它**只读复刻**：
-
-- 1~149 宫格矩阵（编辑器样式参考：`D:\maapvz\MAAPVZ\game_assist_tools\endless_setup\static\js\34-jobset-layout.js`），每格一个关卡号；
-- 每表一色（草坪绿系轮换），用 `tables[].levels`（或 `cover.picks`）着色——
-  **是显式关卡号数组，可能离散**（例：某表只覆盖 51,56,61,66… 逢五关），
-  严禁用 from_level/to_level 连成区间画；
-- **格子可被多表同时覆盖**（图层模式：数组先出现的表优先）——交叠格画
-  先出现表的颜色，tooltip 注明「表1、表2 都覆盖此关，实际用表1」；
-- 5 的倍数关（boss 关）加角标；某关无任何表覆盖标红（非法作业集）；
-- 左侧/上方放表列表（图层栈顺序展示），点表名高亮该表的格子；
-- 只读，hover 出 tooltip，无任何编辑。
-
-### 1b. 草坪种植布局画板（boardEarly / boardLate）
-
-- 草坪 5 行 × 9 列，深绿/浅绿棋盘格底；
-- 格子放植物立绘：`plant.img` 是 `static/plant/xxx.webp`，**改写前缀为
-  本仓库 `img/plant/xxx.webp`**（资产已复制，注意核对实际目录名）；
-- 格子角标：mode（once=单次 / loop=循环）与 seq 顺序号；
-- `type != "plant"` 的格子（feed=喂豆 / shovel=铲子等）用文字标签；
-- 前期/后期两个 Tab 切换；只读。
-
-### 1c. 详情页其余信息
-
-阵容植物列表（逐棵带「需装扮」徽标，见第 3 节）、携带神器、补给优先序
-（配 img/supply 图标）、收尾模式徽标（「识别收尾」「循环×N 收尾」）、
-boss 关单独配置标记、everyN。
-
-## 2. 主页
-
-### 2a. 卡片内容（三样，勿加戏）
-
-1. **基础信息**：名称、code（点击复制）、作者/更新时间（有则显示）；
-2. **关卡覆盖预览条**：1~149 迷你横条，按 tables 图层规则分段着色
-   （离散覆盖照样画点，规则同 1a），一眼看出几张表怎么分关卡；
-3. **阵容植物图标**：该作业集全量植物（去重）的小图标一排，
-   图标用 `img/plant/<en>.webp`，中英映射查 `data/plants.json`；
-   超过一排的数量折行或「+N」。
-
-### 2b. 三维筛选（可叠加，已确认）
-
-| 维度 | 数据来源 | 交互 |
-| --- | --- | --- |
-| 世界 | index.json `worlds` | 多选标签组；数据普遍为空数组，**全部为空时隐藏该维度** |
-| 植物 | index.json 每条 `plants` 数组 | 可搜索多选；「阵容含此植物」 |
-| 装扮 | index.json 每条 `costume` 聚合 | 三态：全部 / 全无需装扮 / 含需装扮植物 |
-
-**build_index.py 配套**：
-- 每条目从作业集提取全量植物名集合（`lineup.plants` ∪ `boss_lineup.plants` ∪
-  `boardEarly/boardLate` 中 `type=plant` 格子的 label ∪ boss 对应字段），
-  去重写入 `plants`；同时写入图层规则的 `coverage`（供预览条：
-  每表 `{levels: [...]}` 或压缩为区间+散点）；
-- 从 `meta/<code>.json` 的 `plant_costumes` 聚合 `costume: "none"|"required"`；
-- 主页筛选与卡片**只走 index.json**，禁止为主页 fetch 作业集全量。
-
-## 3. 投稿：机器人自动改格式 + 强制装扮标注
-
-### 3a. 机器人自动改格式（Action ① 负责，规则固定）
-
-投稿 JSON 校验通过后，落盘前自动做：
-
-1. **剥掉所有 `tables[].compiled` 块**——这是编辑器保存时的预编译快照
-   （占文件 70%~90% 体积，且带时效性：守卫 ROI 等变了就是过期数据）。
-   剥掉后使用者导入编辑器重存时会用**最新编译器**重新生成。
-   ★ 依据：主项目 runtime 对无 compiled 的作业集会明确提示「去编辑器重新
-   保存一次」，这正是设计的导入路径（download → 导入编辑器 → 重存）。
-2. **JSON 规范化落盘**：UTF-8 无 BOM、ensure_ascii=False、缩进 2；
-3. **写 `meta/<code>.json`**：author / desc / plant_costumes。
-
-维护者 merge 前仍可在 PR 里手改任何内容（内容审核在人）。
-
-### 3b. 强制装扮标注（维护者原话：每个植物都要标注，作者严格配置）
-
-- Issue 表单必填 textarea「装扮标注」：每行 `植物名:需要` 或 `植物名:不需要`；
-- Action ① 校验：**作业集内每棵植物都有标注（漏→评论缺漏清单）、
-  无作业集外植物（多→报错）、植物名在 data/plants.json 内、
-  值仅「需要/不需要」**；失败评论缺漏清单，作者编辑 Issue 重触发；
-- 通过 → 写 `meta/<code>.json` 的 `plant_costumes`；
-- 展示：详情页阵容列表逐棵徽标（需装扮用阳光黄醒目色）。
-
-## 4. 风格（已定：PVZ 种子包风，勿推翻）
-
-羊皮纸卡片 `#f7ecc9` + 木棕 `#6b4423` 描边 + 阳光黄主按钮 `#ffd93b` +
-夜空草坪背景 `#16301b→#1e4023` 渐变；术语与编辑器同源
-（单次链/循环链/收尾链/补给/神器/表/覆盖）；纯静态零 CDN；
-textContent 防注入；移动端可读。
-
-## 5. 真实参考数据（只读）
-
-主项目 `D:\maapvz\MAAPVZ\assets\resource\jobs\` 下有 5 份真实作业集
-（心喷/蛇果/火珊冰大/阿金/沙滩无尽挂机，11111 是测试集）——
-**仅作开发素材读取，不许发布上站**。注意它们的 worlds 全是空数组、
-蛇果表2 只覆盖逢五关（离散 levels 的真实样例）、火珊冰大 lineup.plants 为空。
-
-## 6. 验收清单
-
-- [ ] jobs/ 已清空，空索引，空状态正常
-- [ ] 覆盖画板用 levels 数组着色，离散覆盖（逢五关）渲染正确，交叠格不串色，
-      点表名能高亮该表格子
-- [ ] 种植布局画板植物立绘路径改写正确，无 404；feed/shovel 格子显示文字
-- [ ] 卡片三要素齐全：基础信息 + 覆盖预览条 + 阵容图标排
-- [ ] 三维筛选可叠加，全部 worlds 为空时世界维度隐藏
-- [ ] 投稿后 PR 里的 JSON 已无 compiled 块、JSON 规范化、meta 三件齐全
-- [ ] 投稿缺装扮标注 → 评论缺漏清单；补齐 → PR 开出
-- [ ] 标注混入作业集外植物 / 数据库外名字 / 非法值 → 拒绝
-- [ ] 详情页阵容逐棵显示装扮徽标；主页装扮筛选生效

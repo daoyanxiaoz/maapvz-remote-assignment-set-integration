@@ -33,8 +33,17 @@
   "everyN": 10,
   "swipeMs": 80,
   "outer_pick": {
-    "plants": [],
-    "mode": "confirm",
+    "plants": [
+      "超级机枪射手",
+      "原始豌豆射手",
+      "桑葚爆破手",
+      "青蛇藤蔓",
+      "芦荟医师",
+      "气流水仙花",
+      "南瓜头",
+      "全息坚果"
+    ],
+    "mode": "auto",
     "order": []
   },
   "tables": [

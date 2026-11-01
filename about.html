@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>关于 · MAAPVZ 作业集分享站</title>
+<title>关于与维护指南 · MAAPVZ 作业集分享站</title>
 <link rel="icon" href="img/logo.png">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -20,6 +20,7 @@
     </a>
     <nav>
       <a class="nav-link" href="index.html">首页</a>
+      <a class="nav-link" href="publish.html">上架作业集</a>
       <a class="nav-link active" href="about.html">关于</a>
       <a class="nav-link external" href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -27,19 +28,72 @@
 </header>
 
 <main class="page-narrow">
-  <div class="form-card" style="text-align:center;padding:64px 24px">
-    <div style="font-size:44px;margin-bottom:14px">🚧</div>
-    <h2 style="margin:0 0 10px">关于页面待开发</h2>
-    <p style="color:var(--muted);font-size:14px;line-height:1.9;margin:0">
-      这里计划放站点介绍、更新日志和致谢名单。<br>
-      先去看看<a href="index.html">首页的作业集</a>吧。
-    </p>
+  <div class="table-card">
+    <h3>这是什么</h3>
+    <div class="table-sub">玩家分享的 MAAPVZ 无尽模式作业集仓库。下载 JSON，导入编辑器即可复现别人的阵容与打法。</div>
+    <div class="pub-note">
+      站点是纯静态页面（无后端、无数据库、无 CDN），靠 GitHub Pages 托管；
+      全部数据来自仓库里的 <code>jobs/</code> 目录树。
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>站点怎么工作</h3>
+    <div class="pub-tree">jobs/&lt;阵型&gt;/&lt;作业集&gt;/&lt;版本日期&gt;/作业集文件 + 作者.txt
+     ↑ 阵型层可选：不归入阵型就是 jobs/&lt;作业集&gt;/&lt;版本日期&gt;/
+        ↓  tools/build_index.py（或 GitHub Actions 自动跑）
+index.json  ← 站点唯一读的清单（阵型 / 作业集 / 版本历史 / 卡片字段）
+        ↓  fetch
+index.html / job.html / publish.html</div>
+    <div class="pub-note">
+      没有任何手写清单：<b>目录树就是数据源</b>。所以新人上架只需要放文件，不用改代码、不用改索引。
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>上架一份作业集（三条路）</h3>
+    <div class="pub-steps">
+      <li><b>本地维护工具（最省事）</b>：双击仓库根目录的 <code>启动维护工具.bat</code> → 浏览器里拖文件、改作者/说明、重命名、删版本，改完 commit + push。</li>
+      <li><b>线上网页向导</b>：打开 <a href="publish.html">上架作业集</a> → 拖入文件 → 选「迭代」或「新建」→ 生成上架包 → 传到仓库 <code>inbox/</code>。</li>
+      <li><b>命令行 / 手动</b>：<code>python tools/publish.py 作业集.json --group 心塔 --author 你的名字</code>，或按目录约定直接放文件。</li>
+    </div>
+    <div class="pub-note">
+      上架时会自动规整：<b>局外选卡强制「自动选卡」</b>，候选池只保留这套作业集实际用到的植物（固定植物）。
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>版本与历史</h3>
+    <div class="pub-note">
+      一份作业集可以有很多版本：每次「迭代」都会在作业集目录下新增一个<b>版本日期目录</b>，旧版本原样保留。
+      详情页的「版本历史」列出每一版的作者、日期、说明和大小，任意一版都能单独下载。
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>约定（维护者请遵守）</h3>
+    <div class="pub-steps">
+      <li>阵型目录名 = 站点上的阵型名，例如 <code>心塔</code>、<code>失落之城</code>；可选 <code>_group.json</code> 补简介与排序。</li>
+      <li>版本目录用创建日期 <code>YYYY-MM-DD</code>；同一天重复上架会自动加 <code>_2</code>，不会覆盖。</li>
+      <li><code>作者.txt</code> 写一行作者名；<code>说明.txt</code> 写这一版改了什么（可选）。</li>
+      <li>作业集文件保持编辑器导出的样子即可，站点只用 <code>textContent</code> 渲染，不会执行里面的任何内容。</li>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>致谢</h3>
+    <div class="pub-note">
+      作业集格式由 <a href="https://github.com/daoyanxiaoz/MAAPVZ" target="_blank" rel="noopener">MAAPVZ</a> 编辑器导出；
+      站点素材与代码见 <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>（LICENSE 见仓库根目录）。
+    </div>
   </div>
 </main>
 
 <footer>
   <div>
     <a href="index.html">返回首页</a>
+    ·
+    <a href="publish.html">上架作业集</a>
     ·
     <a href="https://github.com/daoyanxiaoz/maapvz-remote-assignment-set-integration" target="_blank" rel="noopener">GitHub 仓库</a>
   </div>

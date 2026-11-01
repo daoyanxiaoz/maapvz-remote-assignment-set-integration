@@ -1,281 +1,171 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""扫描 jobs/ 与 meta/，重建站点索引 index.json（Action ② 的核心）。
+"""扫描 jobs/ 目录树，重建站点索引 index.json。
 
 用法：
-    python tools/build_index.py
+    python tools/build_index.py            # 重建索引
+    python tools/build_index.py --quiet    # 只在有变化时说话（Action 用）
 
-说明：
-    - 纯标准库，无需 pip install
-    - 单个作业集解析失败只警告并跳过，绝不让整个 Action 失败
-    - 输出 UTF-8 无 BOM、ensure_ascii=False、缩进 2
+约定见 tools/joblib.py 顶部注释：jobs/<分组>/<作业集>/<版本日期>/<作业集文件 + 作者.txt>。
+本脚本不读任何手写清单——**目录树就是真相**，所以新人只要把文件拖进目录即可上架。
+
+- 纯标准库，无 pip 依赖
+- 单个作业集解析失败只警告并跳过，绝不让整个 Action 失败
+- 输出 UTF-8 无 BOM、ensure_ascii=False、缩进 2、LF
 """
 
 import json
 import os
-import re
-import subprocess
-from datetime import datetime, timezone
+import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-JOBS_DIR = os.path.join(ROOT, "jobs")
-META_DIR = os.path.join(ROOT, "meta")
-OUT_FILE = os.path.join(ROOT, "index.json")
-
-# ★ 与投稿校验同一套白名单：拼 meta 文件路径前必须先过这道关
-CODE_RE = re.compile(r"^[A-Za-z0-9_\-]{1,64}$")
+import joblib
 
 
-def now_iso():
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+def iso_of(path, fallback_date):
+    """版本时间：优先 git 最后提交时间，退化为文件修改时间 / 版本目录日期。"""
+    ts = joblib.git_last_commit_time(path)
+    if ts:
+        return ts
+    if os.path.isfile(path):
+        return joblib.file_mtime_iso(path)
+    return (fallback_date or joblib.today_label()) + "T00:00:00Z"
 
 
-def load_json_tolerant(path):
-    """UTF-8 读取，容忍 BOM。"""
-    with open(path, "r", encoding="utf-8-sig") as f:
-        return json.load(f)
-
-
-def git_last_commit_time(path):
-    """取文件最近一次 git 提交时间（UTC，Z 结尾）；没有 git 历史时退化为当前时间。"""
-    try:
-        rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
-        out = subprocess.run(
-            ["git", "log", "-1", "--format=%cI", "--", rel],
-            cwd=ROOT, capture_output=True, text=True, timeout=10,
-        )
-        ts = out.stdout.strip()
-        if out.returncode == 0 and ts:
-            dt = datetime.fromisoformat(ts)
-            return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    except Exception:
-        pass
-    return now_iso()
-
-
-def collect_plants(jobset):
-    """作业集全量植物名（保序去重）：
-    lineup.plants ∪ boss_lineup.plants ∪ boardEarly/boardLate 中 type=plant 的格子。
-    （不含 outer_pick.plants —— 那是局外选卡候选池，auto 模式能灌 80 个，
-      不是真实阵容。）
-    与 tools/issue_to_pr.py 的 collect_plants 同一口径。"""
-    names = []
-    seen = set()
-
-    def add(n):
-        if isinstance(n, str) and n and n not in seen:
-            seen.add(n)
-            names.append(n)
-
-    for t in jobset.get("tables") or []:
-        if not isinstance(t, dict):
-            continue
-        for key in ("lineup", "boss_lineup"):
-            lu = t.get(key)
-            if isinstance(lu, dict):
-                for p in lu.get("plants") or []:
-                    add(p)
-        for bkey in ("boardEarly", "boardLate"):
-            board = t.get(bkey)
-            if not isinstance(board, list):
-                continue
-            for row in board:
-                if not isinstance(row, list):
-                    continue
-                for cell in row:
-                    entries = cell.get("value") if isinstance(cell, dict) else None
-                    if not isinstance(entries, list):
-                        continue
-                    for ent in entries:
-                        if isinstance(ent, dict) and ent.get("type") == "plant":
-                            plant = ent.get("plant") if isinstance(ent.get("plant"), dict) else {}
-                            add(ent.get("label") or plant.get("name"))
-    return names
-
-
-def build_entry(path, fname):
-    """解析单个作业集文件，返回索引条目；失败抛异常由调用方捕获。"""
-    data = load_json_tolerant(path)
-    if not isinstance(data, dict):
-        raise ValueError("顶层不是 JSON 对象")
-
-    code = data.get("code")
-    if not isinstance(code, str) or not code:
-        code = os.path.splitext(fname)[0]  # 缺 code 时用文件名兜底
-
-    tables = data.get("tables")
-
-    # 世界：兼容三代格式 ——
-    #   旧 worlds: ["失落"]          新 world: "摇滚年代" + sub_worlds: ["神秘埃及", ...]
-    # 语义去重：「失落」与「失落之城」视为同一个世界，留更全的名字
-    worlds = []
-
-    def add_w(x):
-        s = str(x).strip() if x is not None else ""
-        if not s:
-            return
-        for i, e in enumerate(worlds):
-            if e == s:
-                return
-            if e in s or s in e:
-                if len(s) > len(e):
-                    worlds[i] = s
-                return
-        worlds.append(s)
-
-    raw_worlds = data.get("worlds")
-    if isinstance(raw_worlds, list):
-        for x in raw_worlds:
-            add_w(x)
-    primary = data.get("world")
-    if isinstance(primary, str):
-        add_w(primary)
-    subs = data.get("sub_worlds")
-    if isinstance(subs, list):
-        for x in subs:
-            add_w(x)
-
-    entry = {
-        "code": code,
-        "name": data.get("name") or code,
-        "worlds": worlds,
-        "world_primary": primary.strip() if isinstance(primary, str) and primary.strip() else None,
-        "tables": len(tables) if isinstance(tables, list) else 0,
-        "file": "jobs/" + fname,
-        "updated": git_last_commit_time(path),
-        "size": os.path.getsize(path),
-    }
-    if not entry["world_primary"] and worlds:
-        entry["world_primary"] = worlds[0]
-
-    # 标签（编辑器 tags 字段，纯展示 + 搜索命中）
-    tags = data.get("tags")
-    if isinstance(tags, list):
-        tl = [str(t).strip() for t in tags if isinstance(t, (str, int, float)) and str(t).strip()]
-        if tl:
-            entry["tags"] = tl
-    if isinstance(data.get("max_level"), (int, float)):
-        entry["max_level"] = data["max_level"]
-
-    # 关卡覆盖（图层模型：levels 是权威覆盖，空则退化为 [from_level, to_level) 区间；
-    # to_level 为 None 表示到 MAX）
-    coverage = []
-    plants_max = 0
-    if isinstance(tables, list):
-        for t in tables:
-            if not isinstance(t, dict):
-                continue
-            cov = {}
-            if isinstance(t.get("from_level"), (int, float)):
-                cov["from"] = t["from_level"]
-            cov["to"] = t["to_level"] if isinstance(t.get("to_level"), (int, float)) else None
-            if isinstance(t.get("levels"), list) and t["levels"]:
-                cov["levels"] = t["levels"]
-            if cov.get("from") is not None:
-                coverage.append(cov)
-            lu = t.get("lineup")
-            if isinstance(lu, dict) and isinstance(lu.get("plants"), list):
-                plants_max = max(plants_max, len([p for p in lu["plants"] if p]))
-    if coverage:
-        entry["coverage"] = coverage
-    if plants_max:
-        entry["plants_max"] = plants_max
-
-    # 局外选卡模式（auto=自动选卡）
-    op = data.get("outer_pick")
-    if isinstance(op, dict) and op.get("mode"):
-        entry["outer_pick"] = str(op["mode"])
-
-    # 从第一张表提取阵容植物和神器（首页卡片图标条 / 详情页用）
-    if isinstance(tables, list) and tables and isinstance(tables[0], dict):
-        first = tables[0]
-        lineup = first.get("lineup")
-        if isinstance(lineup, dict) and isinstance(lineup.get("plants"), list):
-            plants = [str(p) for p in lineup["plants"] if p]
-            if plants:
-                entry["plants"] = plants[:8]  # 8 个槽位封顶
-        if first.get("artifact"):
-            entry["artifact"] = str(first["artifact"])
-        if first.get("artifact_en"):
-            entry["artifact_en"] = str(first["artifact_en"])
-        # 收尾方式徽标（术语与编辑器同源）
-        et = first.get("endType")
-        if et == "detect":
-            entry["end_desc"] = "识别收尾"
-        elif et == "loops":
-            entry["end_desc"] = "循环×%s收尾" % (first.get("endLoopCount") or "?")
-        elif et == "once":
-            entry["end_desc"] = "单次收尾"
-        # 补给优先序（只留 id+name，图标站点按 id 自己映射）
-        sp = first.get("supplyPicks")
-        if isinstance(sp, list):
-            supply = [
-                {"id": str(s.get("id")), "name": str(s.get("name", s.get("id")))}
-                for s in sp if isinstance(s, dict) and s.get("id")
-            ]
-            if supply:
-                entry["supply"] = supply
-
-    # 全量植物集合（阵容 ∪ boss 阵容 ∪ 棋盘格子，保序去重）——筛选和装扮统计用
-    all_plants = collect_plants(data)
-    if all_plants:
-        entry["plants"] = all_plants  # 覆盖上面的首表槽位（全量 ⊇ 槽位）
-
-    # 合并 sidecar 作者/简介/装扮标注（meta/<code>.json）
-    if CODE_RE.match(code):
-        meta_path = os.path.join(META_DIR, code + ".json")
-        if os.path.isfile(meta_path):
-            try:
-                meta = load_json_tolerant(meta_path)
-                if isinstance(meta, dict):
-                    if meta.get("author"):
-                        entry["author"] = str(meta["author"])
-                    if meta.get("desc"):
-                        entry["desc"] = str(meta["desc"])
-                    # 装扮聚合：none=全不需要 / required=含需装扮（供主页筛选）
-                    pc = meta.get("plant_costumes")
-                    if isinstance(pc, dict) and pc:
-                        entry["costume"] = "required" if any(pc.values()) else "none"
-            except Exception as e:
-                print(f"[warn] meta/{code}.json 解析失败，忽略 sidecar：{e}")
-    # 作业集内 plant_notes 的装扮标注也参与聚合（新版编辑器导出）
-    notes = data.get("plant_notes")
-    if isinstance(notes, dict) and "costume" not in entry:
-        if any(isinstance(v, dict) and v.get("costume") for v in notes.values()):
-            entry["costume"] = "required"
-        elif notes:
-            entry["costume"] = "none"
-    return entry
-
-
-def main():
+def build_entries():
     entries = []
-    if not os.path.isdir(JOBS_DIR):
-        print(f"[warn] 目录不存在：{JOBS_DIR}")
-    else:
-        for fname in sorted(os.listdir(JOBS_DIR)):
-            if not fname.lower().endswith(".json"):
-                continue  # 跳过 .gitkeep 等
-            path = os.path.join(JOBS_DIR, fname)
-            try:
-                entries.append(build_entry(path, fname))
-            except Exception as e:
-                # ★ 单个文件坏了不能拖垮整个 Action
-                print(f"[warn] 解析失败，已跳过 jobs/{fname}：{e}")
+    total_versions = 0
+    group_names = {g["id"]: g["name"] for g in joblib.list_groups()}
+    for rec in joblib.scan_jobs():
+        versions = rec["versions"]
+        if not versions:
+            continue
+        latest = versions[0]
+        try:
+            fields = latest["fields"]
+        except Exception as e:  # 理论上 scan 已经解析过，这里只是兜底
+            print("[warn] 跳过 %s：%s" % (rec["dir"], e))
+            continue
 
-    # 按更新时间倒序
-    entries.sort(key=lambda e: e["updated"], reverse=True)
+        entry = {
+            "id": "/".join(p for p in (rec["group"], rec["job"]) if p),
+            "group": rec["group"],
+            "group_name": group_names.get(rec["group"], rec["group"]),
+            "name": fields.get("name") or rec["job"],
+            "dir": rec["dir"],
+            "code": fields.get("code") or "",
+            "date": latest["date"],
+            "updated": iso_of(os.path.join(joblib.ROOT, latest["file"]), latest["date"]),
+            "version_count": len(versions),
+            "versions": [],
+        }
+        entry["authors"] = list(latest.get("authors") or fields.get("authors") or [])
+        entry["author"] = "、".join(entry["authors"])
 
-    index = {
-        "updated": now_iso(),
+        for v in versions:
+            vf = v["fields"]
+            v_authors = list(v.get("authors") or vf.get("authors") or [])
+            entry["versions"].append({
+                "label": v["label"],
+                "date": v["date"],
+                "file": v["file"],
+                "name": vf.get("name") or rec["job"],
+                "code": vf.get("code") or "",
+                "authors": v_authors,
+                "author": "、".join(v_authors),
+                "note": v["note"] or vf.get("desc") or "",
+                "size": v["size"],
+            })
+            total_versions += 1
+
+        # 其余字段（世界/植物/覆盖/标签…）沿用旧版卡片契约，只取最新版本
+        for key, value in fields.items():
+            if key in ("name", "code", "author", "authors", "desc"):
+                continue
+            entry[key] = value
+        if fields.get("desc"):
+            entry["desc"] = fields["desc"]
+
+        entries.append(entry)
+
+    entries.sort(key=lambda e: (e["updated"], e["id"]), reverse=True)
+    return entries, total_versions
+
+
+def build_groups(entries):
+    """分组由目录推导，_group.json 只用来补名字/简介/排序。"""
+    by_id = {}
+    for meta in joblib.list_groups():
+        by_id[meta["id"]] = {
+            "id": meta["id"],
+            "name": meta["name"],
+            "desc": meta["desc"],
+            "icon": meta["icon"],
+            "order": meta["order"],
+            "count": 0,
+            "version_count": 0,
+            "updated": "",
+            "jobs": [],
+        }
+    for e in entries:
+        if not e["group"]:
+            continue  # 不归入阵型的作业集只在「全部」里出现
+        g = by_id.setdefault(e["group"], {
+            "id": e["group"], "name": e["group"], "desc": "", "icon": "",
+            "order": 999, "count": 0, "version_count": 0, "updated": "", "jobs": [],
+        })
+        g["count"] += 1
+        g["version_count"] += e["version_count"]
+        g["jobs"].append(e["id"])
+        if e["updated"] > g["updated"]:
+            g["updated"] = e["updated"]
+    groups = [g for g in by_id.values() if g["count"]]
+    groups.sort(key=lambda g: (-g["count"], g["order"], g["id"]))
+    return groups
+
+
+def build_index():
+    entries, total_versions = build_entries()
+    return {
+        "schema": joblib.SCHEMA,
+        "updated": joblib.now_iso(),
         "count": len(entries),
+        "version_count": total_versions,
+        "groups": build_groups(entries),
         "jobs": entries,
     }
-    with open(OUT_FILE, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(index, f, ensure_ascii=False, indent=2)
-        f.write("\n")
-    print(f"[ok] index.json 已生成，共 {len(entries)} 个作业集")
+
+
+def write_index(index, quiet=False):
+    """落盘；内容没变就不动文件（避免 Action 空提交 / 无意义 diff）。"""
+    old = None
+    if os.path.isfile(joblib.INDEX_FILE):
+        try:
+            with open(joblib.INDEX_FILE, "r", encoding="utf-8") as f:
+                old = json.load(f)
+        except Exception:
+            old = None
+    payload = dict(index)
+    if old:
+        # 只比内容，不比 generated 时间戳
+        a, b = dict(old), dict(payload)
+        a.pop("updated", None)
+        b.pop("updated", None)
+        if a == b:
+            if not quiet:
+                print("[ok] index.json 无变化")
+            return False
+    joblib.dump_json_file(joblib.INDEX_FILE, payload)
+    print("[ok] index.json 已更新：%d 个作业集 / %d 个版本 / %d 个分组"
+          % (payload["count"], payload["version_count"], len(payload["groups"])))
+    return True
+
+
+def main(argv=None):
+    argv = argv if argv is not None else sys.argv[1:]
+    index = build_index()
+    write_index(index, quiet="--quiet" in argv)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
