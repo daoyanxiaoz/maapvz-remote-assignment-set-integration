@@ -1,7 +1,9 @@
-name: 应用上架包
+name: 应用上架包（仅在 inbox/ 有包时）
 
-# 维护者在网页把 *.bundle.json 传进 inbox/ → 这里自动拆包落库 + 重建索引。
-# 不涉及 Issue、不涉及 PR：只是把「一个文件」展开成 jobs/ 目录树。
+# 这是唯一会自动提交的 Action，而且只在你把 *.bundle.json 传进 inbox/ 时才会跑：
+#   inbox/ 有新包 → 拆包写进 jobs/ → 重建 index.json → 一次性提交（带 [skip ci]，不会自我循环）
+# 它不涉及 Issue、不涉及 PR，也不是「每次 push 都重建索引」的那种机器人
+#（那种已经在 v2 里删掉了：index.json 现在由本地维护工具生成，跟着你的 commit 一起提交）。
 on:
   push:
     branches: [main]
@@ -28,7 +30,7 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: 拆包落库
+      - name: 拆包落库（并重建 index.json）
         run: python tools/apply_inbox.py
 
       - name: 提交并推送（有变化时）
@@ -39,6 +41,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "没有需要提交的变化"
           else
-            git commit -m "chore: 应用上架包 [skip ci]"
+            git commit -m "chore: 应用 inbox 上架包 [skip ci]"
             git push
           fi

@@ -1,0 +1,11 @@
+# index.json 是脚本生成的，不是手写文件。
+# 冲突时不要逐行合并（否则会把 <<<<<<< 之类的冲突标记混进 JSON，整站直接读不出来），
+# merge=binary 会让 git 保留你本地那份并报冲突，你跑一遍 tools/build_index.py 重新生成即可。
+index.json merge=binary
+
+# 作业集与文本资料统一 LF，避免 Windows 上的 CRLF 噪音
+*.py text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf

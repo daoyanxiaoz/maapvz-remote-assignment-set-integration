@@ -1,15 +1,11 @@
-name: 重建作业集索引
+name: 重建作业集索引（手动）
 
+# 平时不用它：本地维护工具每次写操作都会自动重建 index.json，跟着你的 commit 一起提交。
+# 只有在「直接改了 jobs/ 却没重建索引」时才需要：
+#   仓库 → Actions → 重建作业集索引（手动） → Run workflow
+# 这是手动触发，不是自动机器人，不会在你每次 push 后自己提交。
 on:
-  push:
-    branches: [main]
-    paths:
-      # 目录树就是数据源：jobs/ 下面任何变化都重建索引
-      - "jobs/**"
-      - "tools/**"
-      # index.json 是生成物：谁手改 / merge 出冲突痕迹，都让 Action 重新生成一遍
-      - "index.json"
-  workflow_dispatch: # 允许手动触发兜底
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -24,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 需要完整历史来取文件的最后提交时间
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -33,7 +29,7 @@ jobs:
       - name: 重建 index.json
         run: python tools/build_index.py
 
-      - name: 提交并推送（有变化时）
+      - name: 提交（有变化时）
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -41,7 +37,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "index.json 无变化，跳过提交"
           else
-            # [skip ci] 防止本次提交再次触发 workflow 造成循环
-            git commit -m "chore: rebuild index.json [skip ci]"
+            git commit -m "chore: 手动重建 index.json"
             git push
           fi

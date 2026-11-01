@@ -28,11 +28,14 @@
 | **本地命令** | 喜欢命令行的人 | `python tools/publish.py 作业集.json --group 心塔 --author 名字` |
 | **纯手动** | 想完全掌控的人 | 按目录约定把文件放进 `jobs/<阵型>/<作业集>/<版本日期>/`，再写一份 `作者.txt` |
 
-跑完自动重建索引；线上由 Action 完成，本地跑：
+跑完自动重建索引（本地工具会顺带重建 `index.json`，跟着你的 commit 一起提交；手动也可）：
 
 ```powershell
 python -X utf8 tools/build_index.py     # 重建 index.json
 ```
+
+> ⚠ 仓库里**没有**「每次 push 就自动重建索引并提交」的机器人（v2 已删除 `build-index.yml`）。
+> 所以：`index.json` 由你（或本地维护工具）生成并提交；只有往 `inbox/` 传上架包时，Action 才会代你提交一次。
 
 ### 上架时的强制规整（所有通道一致）
 
@@ -79,7 +82,8 @@ jobs/
 - **只撤某一版**：删掉那个版本目录。
 - **换阵型 / 阵型改名**：在本地维护工具里用每个作业集下面的「阵型」下拉 + 「移动」；或直接把作业集目录挪进/挪出阵型文件夹
   （阵型层可省略，挪到 `jobs/` 顶层就是不归入阵型）；阵型改名就是重命名阵型文件夹（可同时改 `_group.json` 的 `name`）。
-- 以上任何改动推送后，Action「重建作业集索引」都会自动重建 `index.json`。
+- 以上任何改动完成后，要重建一次 `index.json` 再推送：本地维护工具自动做；
+  手工改文件的话跑 `python -X utf8 tools/build_index.py`（或在 Actions 里手动点「重建作业集索引（手动）」）。
 
 ---
 
@@ -110,8 +114,8 @@ jobs/
 │   ├── audit.py          仓库体检（空目录 / 重复 code / 同名 / 版本目录名），--clean 删空目录
 │   └── migrate_legacy.py 旧版平铺 jobs/*.json 迁移（一次性，幂等）
 └── .github/workflows/
-    ├── build-index.yml   jobs/ 有变化 → 重建 index.json
-    └── apply-inbox.yml   inbox/ 有新包 → 拆包落库 → 重建 index.json
+    ├── apply-inbox.yml    inbox/ 有新包 → 拆包落库 → 重建 index.json（唯一会自动提交的 Action）
+    └── rebuild-index.yml  手动触发：Actions 里点一下才重建 index.json（平时用不到）
 ```
 
 ## index.json（schema 2）
@@ -194,7 +198,7 @@ python -m http.server 8931 --bind 127.0.0.1 --directory .
 
 1. **Settings → Pages** → Deploy from a branch → `main` / `(root)`；
 2. **Settings → Actions → General** → Workflow permissions → **Read and write permissions**
-   （Action 需要提交 `index.json` 和拆包结果）；
+   （只有 inbox 拆包 / 手动重建索引这两个 Action 需要提交，其余都是纯读取）；
 3. 仓库必须有 `.nojekyll`（否则 Pages 走 Jekyll 会卡住不部署）。
 
 ## 许可
