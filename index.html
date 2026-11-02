@@ -399,17 +399,23 @@
   }
 
   // —— 筛选（分组 / 世界 / 植物 / 装扮；标签只展示不过滤） ——
+  // 「地宫无尽」= 现在的叫法；旧作业集里写的是「地宫世界」，两者视为同一个世界
+  function normWorld(s) {
+    return String(s == null ? "" : s).replace(/地宫世界/g, "地宫无尽");
+  }
+
   function passFilters(j) {
     // 分组：目录名就是分组，单选
     if (fGroup && String(j.group) !== fGroup) return false;
     // 世界：选了才过滤；「无」命中 worlds 为空的作业集
     var ws = Object.keys(fWorlds);
     if (ws.length) {
-      var jw = Array.isArray(j.worlds) ? j.worlds : [];
+      var jw = Array.isArray(j.worlds) ? j.worlds.map(normWorld) : [];
       var hit = ws.some(function (w) {
         if (w === "__none__") return jw.length === 0;
+        var key = normWorld(w);
         return jw.some(function (jw1) {
-          return jw1 === w || jw1.indexOf(w) !== -1 || w.indexOf(jw1) !== -1;
+          return jw1 === key || jw1.indexOf(key) !== -1 || key.indexOf(jw1) !== -1;
         });
       });
       if (!hit) return false;
@@ -519,11 +525,12 @@
   }
 
   function setupFilters() {
-    // 世界 chips：固定 17 世界（官方全名）+ 末尾「无」（命中未标世界的作业集），点击多选。
-    // 匹配做包含兼容：作业集存简称「失落」能命中 chip「失落之城」，反之亦然。
+    // 世界 chips：固定世界名 + 末尾「无」（命中未标世界的作业集），点击多选。
+    // 匹配做包含兼容：作业集存简称「失落」能命中 chip「失落之城」，反之亦然；
+    // 「地宫无尽」与旧数据里的「地宫世界」视为同一个（见 normWorld）。
     var WORLDS = ["神秘埃及","海盗港湾","狂野西部","功夫世界","未来世界","黑暗时代",
                   "巨浪沙滩","冰河世界","天空之城","失落之城","摇滚年代","恐龙危机",
-                  "摩登世界","蒸汽时代","复兴时代","童话世界","地宫世界"];
+                  "摩登世界","蒸汽时代","复兴时代","童话世界","地宫无尽"];
     var box = document.getElementById("f-worlds");
     var chips = document.getElementById("world-chips");
     WORLDS.concat(["无"]).forEach(function (w) {

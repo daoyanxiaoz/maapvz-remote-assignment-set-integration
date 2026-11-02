@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "updated": "2026-11-02T17:06:24Z",
+  "updated": "2026-11-02T18:07:53Z",
   "count": 11,
   "version_count": 12,
   "groups": [
@@ -12,7 +12,7 @@
       "order": 999,
       "count": 7,
       "version_count": 7,
-      "updated": "2026-11-02T17:06:24Z",
+      "updated": "2026-11-02T17:26:23Z",
       "jobs": [
         "g挂机阵/地宫原大火龙果",
         "g挂机阵/火气珊瑚",
@@ -59,7 +59,7 @@
       "dir": "jobs/g挂机阵/地宫原大火龙果",
       "code": "pvz_20261101_134909",
       "date": "2026-11-03",
-      "updated": "2026-11-02T17:06:24Z",
+      "updated": "2026-11-02T17:26:23Z",
       "version_count": 1,
       "versions": [
         {
@@ -73,7 +73,7 @@
           ],
           "author": "火龙果领域大神",
           "note": "",
-          "size": 45925
+          "size": 47972
         }
       ],
       "authors": [
@@ -327,7 +327,7 @@
           ],
           "author": "水皮",
           "note": "当前版本：已按站点规则规整为「自动选卡 + 固定植物」",
-          "size": 155561
+          "size": 148873
         },
         {
           "label": "2026-10-25-原始导出",
@@ -340,7 +340,7 @@
           ],
           "author": "水皮",
           "note": "从旧平铺结构 jobs/5-5.json 迁入的历史版本：编辑器原始导出，局外选卡是 confirm（需要手动确认）",
-          "size": 155248
+          "size": 148574
         }
       ],
       "authors": [
@@ -599,7 +599,7 @@
           ],
           "author": "导演小z",
           "note": "",
-          "size": 68502
+          "size": 65677
         }
       ],
       "authors": [
@@ -858,7 +858,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 174952
+          "size": 167834
         }
       ],
       "authors": [],
@@ -1119,7 +1119,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 90438
+          "size": 86743
         }
       ],
       "authors": [],
@@ -1360,7 +1360,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 92549
+          "size": 88766
         }
       ],
       "authors": [],
@@ -1629,7 +1629,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 132286
+          "size": 126638
         }
       ],
       "authors": [],
@@ -1885,7 +1885,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 105107
+          "size": 100775
         }
       ],
       "authors": [],
@@ -2117,7 +2117,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 151003
+          "size": 144353
         }
       ],
       "authors": [],
@@ -2384,7 +2384,7 @@
           ],
           "author": "导演小z",
           "note": "",
-          "size": 58918
+          "size": 56318
         }
       ],
       "authors": [
@@ -2636,7 +2636,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 32400
+          "size": 30926
         }
       ],
       "authors": [],
