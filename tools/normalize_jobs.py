@@ -25,6 +25,7 @@ def main(argv=None):
     argv = argv if argv is not None else sys.argv[1:]
     apply_changes = "--apply" in argv
     touched = 0
+    skipped = 0
     seen_jobs = 0
 
     for rec in joblib.scan_jobs():
@@ -37,16 +38,24 @@ def main(argv=None):
             except Exception as e:
                 print("[warn] %s 解析失败，跳过：%s" % (v["file"], e))
                 continue
-            changes = joblib.normalize_job(data)
+            changes, problems = joblib.enforce_upload_rules(data)
+            if problems:
+                skipped += 1
+                print("[skip] %s/%s @ %s：%s" % (rec["group"] or "（不归入阵型）", rec["job"], v["label"],
+                                                 "；".join(problems)))
+                continue
             if not changes:
                 continue
             touched += 1
-            print("%s/%s @ %s" % (rec["group"], rec["job"], v["label"]))
+            print("%s/%s @ %s" % (rec["group"] or "（不归入阵型）", rec["job"], v["label"]))
             for c in changes:
                 print("    - %s" % c)
             if apply_changes:
                 new_text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
                 joblib.write_text_file(path, new_text)
+
+    if skipped:
+        print("[warn] 有 %d 个版本只能用编队序号（deck）无法自动规整，需要作者在编辑器里改成选卡" % skipped)
 
     if not touched:
         print("[ok] %d 个作业集全部已符合「自动选卡 + 固定植物」，无需改动" % seen_jobs)

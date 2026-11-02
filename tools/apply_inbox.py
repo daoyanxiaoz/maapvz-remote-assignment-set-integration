@@ -76,8 +76,11 @@ def decode_item(item):
     if not joblib.looks_like_job(data):
         raise ValueError("作业集缺少 tables / code 字段")
 
-    # ★ 上架强制规整：自动选卡 + 局外选卡只留本作业集用到的固定植物
-    changes = joblib.normalize_job(data)
+    # ★ 上架强制规整：自动选卡 + 局外只留固定植物 + 不允许编队序号（deck）
+    changes, problems = joblib.enforce_upload_rules(data)
+    if problems:
+        raise ValueError("不能用编队序号（deck），别人复现不了：%s。请在编辑器里改成「选卡」后再导出"
+                         % "；".join(problems))
     if changes:
         text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 

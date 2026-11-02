@@ -230,6 +230,14 @@
       return r.json().catch(function () {
         return { ok: false, error: "服务返回的不是 JSON（HTTP " + r.status + "）" };
       });
+    }).catch(function (err) {
+      // 服务没开 / 端口变了 / 页面没走工具地址时，fetch 会直接 reject。
+      // 以前这里什么都不发生，看起来就像「点了删除没反应」。
+      return {
+        ok: false,
+        error: "连不上本地服务（" + (err && err.message ? err.message : "网络错误") +
+          "）：确认「启动维护工具.bat」的黑窗口还开着，并用它打印的地址访问本页"
+      };
     });
   }
 

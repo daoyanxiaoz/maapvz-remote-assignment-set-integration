@@ -427,6 +427,63 @@ def prepare_job_text(text, normalize=True):
     return data, new_text, changes
 
 
+DECK_LINEUP_KEYS = ("lineup", "boss_lineup")
+
+
+def strip_decks(data):
+    """去掉 tables[].lineup.deck / boss_lineup.deck（编队序号只在作者本机有效，别人复现不了）。
+
+    返回 (changes, problems)：
+      - 表里已经有 plants（显式选卡）→ 直接去掉 deck，记一条 change；
+      - 只有 deck、没有 plants → 记一条 problem（没法自动转，需要在编辑器里改成选卡再导出）。
+    """
+    changes, problems = [], []
+    tables = data.get("tables") if isinstance(data, dict) else None
+    if not isinstance(tables, list):
+        return changes, problems
+    for i, t in enumerate(tables, 1):
+        if not isinstance(t, dict):
+            continue
+        for key in DECK_LINEUP_KEYS:
+            lu = t.get(key)
+            if not isinstance(lu, dict) or not lu.get("deck"):
+                continue
+            plants = [p for p in (lu.get("plants") or []) if isinstance(p, str) and p.strip()]
+            if plants:
+                lu["deck"] = None
+                changes.append("表%d %s：去掉编队序号（已有选卡）" % (i, key))
+            else:
+                problems.append("表%d %s：只有编队序号（deck），没有选卡植物" % (i, key))
+    return changes, problems
+
+
+def enforce_upload_rules(data):
+    """上架统一规整：自动选卡 + 局外固定植物 + 不允许编队序号。
+
+    返回 (changes, problems)。problems 非空 → 这套作业集别人复现不了，上架应拒绝并提示作者。
+    """
+    changes = normalize_job(data)
+    deck_changes, problems = strip_decks(data)
+    return changes + deck_changes, problems
+
+
+def find_decks(data):
+    """只读检查：返回还带着编队序号的表（给体检用，不改数据）。"""
+    found = []
+    tables = data.get("tables") if isinstance(data, dict) else None
+    if not isinstance(tables, list):
+        return found
+    for i, t in enumerate(tables, 1):
+        if not isinstance(t, dict):
+            continue
+        for key in DECK_LINEUP_KEYS:
+            lu = t.get(key)
+            if isinstance(lu, dict) and lu.get("deck"):
+                plants = [p for p in (lu.get("plants") or []) if isinstance(p, str) and p.strip()]
+                found.append("表%d %s（%s）" % (i, key, "有选卡可删 deck" if plants else "只有 deck，需人工改"))
+    return found
+
+
 # ---------------------------------------------------------------- 目录扫描
 
 def classify_dir(dirpath, filenames):
@@ -479,6 +536,11 @@ def classify_dir(dirpath, filenames):
 def scan_jobs():
     """扫描 jobs/ 目录树，返回作业集记录列表。
 
+    目录约定（v3，用固定前缀把「阵型」和「作业集」分开，一眼能看出层级）：
+
+        jobs/g<阵型名>/<作业集>/<版本>/**    ← g 开头 = 阵型目录（g 后面才是站点显示名）
+        jobs/<作业集>/<版本>/**              ← 不带 g = 不归入阵型的作业集
+
     每条记录：
         {group, job, dir, versions: [{label, date, dir, file, filename, author, note, size, data}]}
     """
@@ -496,24 +558,17 @@ def scan_jobs():
 
         rel = os.path.relpath(dirpath, JOBS_DIR).replace(os.sep, "/").split("/")
 
-        def is_version_name(name):
-            """版本目录名认日期（2026-10-19 / 2026_10_19 / 20261019）。"""
-            return date_label_from(name) is not None
-
-        # 目录层级 → 阵型 / 作业集 / 版本
-        #   jobs/<作业集>/<版本>/         → 不归入阵型（group 为空）
-        #   jobs/<阵型>/<作业集>/<版本>/   → 归入阵型
-        #   jobs/<阵型>/xxx.json          → 阵型 + 单版本（老式写法）
-        if len(rel) == 1:
-            group, job_fixed, version_label = rel[0], None, ""
-        elif len(rel) == 2 and is_version_name(rel[1]):
-            group, job_fixed, version_label = "", rel[0], rel[1]
-        elif len(rel) == 2:
-            group, job_fixed, version_label = rel[0], rel[1], ""
-        elif is_version_name(rel[1]):
-            group, job_fixed, version_label = "", rel[0], "/".join(rel[1:])
+        # 第一层以 g 开头 = 阵型目录；其余一律当作业集目录
+        if len(rel[0]) > 1 and rel[0].startswith("g"):
+            group = rel[0]
+            rest = rel[1:]
         else:
-            group, job_fixed, version_label = rel[0], rel[1], "/".join(rel[2:])
+            group = ""
+            rest = rel
+
+        # rest[0] 是作业集目录，剩下的都算版本标签（允许 <版本>/<子目录> 这种）
+        job_fixed = rest[0] if rest else None
+        version_label = "/".join(rest[1:]) if len(rest) > 1 else ""
 
         # 同一目录里若混了多个作业集，按各自的 name 分开各算一版
         for fname, data in job_files:
@@ -553,8 +608,16 @@ def scan_jobs():
     return out
 
 
+def group_display_name(group):
+    """阵型目录名 → 站点显示名：去掉开头的 g（jobs/g心塔 → 心塔）。"""
+    gid = str(group or "")
+    if len(gid) > 1 and gid.startswith("g"):
+        return gid[1:]
+    return gid
+
+
 def read_group_meta(group):
-    """读取 jobs/<分组>/_group.json（可选）：{name, desc, order, icon}。"""
+    """读取 jobs/g<阵型>/_group.json（可选）：{name, desc, order, icon}。"""
     path = os.path.join(JOBS_DIR, group, "_group.json")
     meta = {}
     if os.path.isfile(path):
@@ -564,8 +627,9 @@ def read_group_meta(group):
                 meta = data
         except Exception as e:
             print("[warn] %s 解析失败：%s" % (path, e))
+    default_name = group_display_name(group)
     return {
-        "name": str(meta.get("name") or group).strip() or group,
+        "name": str(meta.get("name") or default_name).strip() or default_name,
         "desc": str(meta.get("desc") or "").strip(),
         "order": meta.get("order") if isinstance(meta.get("order"), (int, float)) else 999,
         "icon": str(meta.get("icon") or "").strip(),
@@ -717,6 +781,14 @@ def audit_jobs():
             continue
         if os.path.isfile(os.path.join(full, "_group.json")):
             add("warn", "empty-group", full, "空阵型：只剩 _group.json，里面没有作业集（可在工具里删掉）")
+
+    # 8) 还带着编队序号（deck）的作业集：别人复现不了，应该改成选卡
+    for rec in recs:
+        for v in rec["versions"]:
+            decks = find_decks(v["data"])
+            if decks:
+                add("warn", "deck", os.path.join(ROOT, v["file"]),
+                    "还用着编队序号：%s —— 别人导入复现不了，建议改成选卡" % "、".join(decks))
 
     return issues
 

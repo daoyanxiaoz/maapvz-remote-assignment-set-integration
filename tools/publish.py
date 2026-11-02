@@ -67,8 +67,12 @@ def main(argv=None):
     job = args.job or fields.get("name") or os.path.splitext(os.path.basename(path))[0]
     date = joblib.date_label_from(args.date) or joblib.today_label()
 
-    # ★ 上架强制规整：自动选卡 + 局外选卡只留本作业集用到的固定植物
-    changes = joblib.normalize_job(data)
+    # ★ 上架强制规整：自动选卡 + 固定植物 + 不允许编队序号（deck）
+    changes, problems = joblib.enforce_upload_rules(data)
+    if problems:
+        print("[error] 不能用编队序号（deck），别人复现不了：%s" % "；".join(problems))
+        print("        请在编辑器里改成「选卡」后再导出。")
+        return 1
     if changes:
         for c in changes:
             print("[fix] %s" % c)
