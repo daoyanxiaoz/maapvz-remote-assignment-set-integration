@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "updated": "2026-11-02T18:22:54Z",
+  "updated": "2026-11-03T01:04:59Z",
   "count": 11,
   "version_count": 12,
   "groups": [
@@ -327,7 +327,7 @@
           ],
           "author": "水皮",
           "note": "当前版本：已按站点规则规整为「自动选卡 + 固定植物」",
-          "size": 148873
+          "size": 155561
         },
         {
           "label": "2026-10-25-原始导出",
@@ -340,7 +340,7 @@
           ],
           "author": "水皮",
           "note": "从旧平铺结构 jobs/5-5.json 迁入的历史版本：编辑器原始导出，局外选卡是 confirm（需要手动确认）",
-          "size": 148574
+          "size": 155248
         }
       ],
       "authors": [
@@ -599,7 +599,7 @@
           ],
           "author": "导演小z",
           "note": "",
-          "size": 65677
+          "size": 68502
         }
       ],
       "authors": [
@@ -858,7 +858,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 167834
+          "size": 174952
         }
       ],
       "authors": [],
@@ -1116,14 +1116,18 @@
           "file": "jobs/g挂机阵/摇滚年代原大火龙果/2026-10-27/pvz_20261027_113520.json",
           "name": "摇滚年代原大火龙果",
           "code": "pvz_20261027_113520",
-          "authors": [],
-          "author": "",
+          "authors": [
+            "lanker"
+          ],
+          "author": "lanker",
           "note": "",
-          "size": 86743
+          "size": 90438
         }
       ],
-      "authors": [],
-      "author": "",
+      "authors": [
+        "lanker"
+      ],
+      "author": "lanker",
       "worlds": [
         "摇滚年代",
         "神秘埃及",
@@ -1360,7 +1364,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 88766
+          "size": 92549
         }
       ],
       "authors": [],
@@ -1626,14 +1630,18 @@
           "file": "jobs/g挂机阵/失落火龙果/2026-10-22/pvz_20261021_221416.json",
           "name": "失落火龙果",
           "code": "pvz_20261021_221416",
-          "authors": [],
-          "author": "",
+          "authors": [
+            "lanker"
+          ],
+          "author": "lanker",
           "note": "",
-          "size": 126638
+          "size": 132286
         }
       ],
-      "authors": [],
-      "author": "",
+      "authors": [
+        "lanker"
+      ],
+      "author": "lanker",
       "worlds": [
         "失落之城"
       ],
@@ -1885,7 +1893,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 100775
+          "size": 105107
         }
       ],
       "authors": [],
@@ -2117,7 +2125,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 144353
+          "size": 151003
         }
       ],
       "authors": [],
@@ -2370,7 +2378,7 @@
       "dir": "jobs/失落难民带瓷",
       "code": "pvz_20261024_223230",
       "date": "2026-10-24",
-      "updated": "2026-11-01T17:50:20Z",
+      "updated": "2026-11-01T18:26:48Z",
       "version_count": 1,
       "versions": [
         {
@@ -2384,7 +2392,7 @@
           ],
           "author": "导演小z",
           "note": "",
-          "size": 56318
+          "size": 58918
         }
       ],
       "authors": [
@@ -2624,7 +2632,7 @@
       "dir": "jobs/失落丐中丐",
       "code": "pvz_20261023_171234",
       "date": "2026-10-23",
-      "updated": "2026-11-01T17:50:20Z",
+      "updated": "2026-11-01T18:26:48Z",
       "version_count": 1,
       "versions": [
         {
@@ -2636,7 +2644,7 @@
           "authors": [],
           "author": "",
           "note": "",
-          "size": 30926
+          "size": 32400
         }
       ],
       "authors": [],
