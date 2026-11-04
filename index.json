@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "updated": "2026-11-02T17:06:24Z",
+  "updated": "2026-11-04T08:03:43Z",
   "count": 11,
-  "version_count": 12,
+  "version_count": 13,
   "groups": [
     {
       "id": "g挂机阵",
@@ -11,8 +11,8 @@
       "icon": "",
       "order": 999,
       "count": 7,
-      "version_count": 7,
-      "updated": "2026-11-02T17:06:24Z",
+      "version_count": 8,
+      "updated": "2026-11-04T08:03:42Z",
       "jobs": [
         "g挂机阵/地宫原大火龙果",
         "g挂机阵/火气珊瑚",
@@ -58,10 +58,23 @@
       "name": "地宫原大火龙果",
       "dir": "jobs/g挂机阵/地宫原大火龙果",
       "code": "pvz_20261101_134909",
-      "date": "2026-11-03",
-      "updated": "2026-11-02T17:06:24Z",
-      "version_count": 1,
+      "date": "2026-11-04",
+      "updated": "2026-11-04T08:03:42Z",
+      "version_count": 2,
       "versions": [
+        {
+          "label": "2026-11-04",
+          "date": "2026-11-04",
+          "file": "jobs/g挂机阵/地宫原大火龙果/2026-11-04/地宫原大火龙果（无神器）.json",
+          "name": "地宫原大火龙果",
+          "code": "pvz_20261101_134909",
+          "authors": [
+            "火龙果领域大神"
+          ],
+          "author": "火龙果领域大神",
+          "note": "加入加速",
+          "size": 46849
+        },
         {
           "label": "2026-11-03",
           "date": "2026-11-03",
