@@ -84,8 +84,8 @@ def decode_item(item):
     if changes:
         text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
-    filename = joblib.sanitize_component(
-        os.path.splitext(str(item.get("filename") or job))[0], job) + ".json"
+    # 落库文件名统一用「作业集名」，别让 jobs/gX/作业集/版本/ 里躺着一个 download(1).json
+    filename = joblib.sanitize_component(job, "作业集") + ".json"
     # 作者可以有多个：逗号/顿号/分号/换行都行，落库时一行一个
     authors = joblib.parse_authors(item.get("author"))
     author = "、".join(authors)[:200]
