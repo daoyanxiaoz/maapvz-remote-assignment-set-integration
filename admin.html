@@ -588,6 +588,14 @@
     })).then(function (rows) {
       rows.forEach(function (r) {
         if (r.error) { toast(r.file.name + "：" + r.error.message); return; }
+        if (r.data && r.data.format === "maapvz-jobset-bundle") {
+          toast(r.file.name + "：这是上架包，不是作业集。请把它放到 inbox/，或用 tools/apply_inbox.py 处理；这里要拖编辑器导出的作业集 JSON。");
+          return;
+        }
+        if (!r.data || !Array.isArray(r.data.tables) || !r.data.code) {
+          toast(r.file.name + "：缺少 tables / code 字段，不是有效的作业集 JSON。");
+          return;
+        }
         var name = String(r.data.name || r.file.name.replace(/\.(json|txt)$/i, "")).trim();
         var key = r.file.name + "|" + name;
         if (pending.some(function (x) { return x.key === key; })) {
