@@ -1,0 +1,3384 @@
+{
+  "code": "pvz_20261029_223904",
+  "name": "原大桑葚（沙滩）",
+  "version": "1.0",
+  "max_level": 149,
+  "world": "巨浪沙滩",
+  "sub_worlds": [
+    "神秘埃及",
+    "海盗港湾",
+    "狂野西部",
+    "功夫世界",
+    "未来世界",
+    "黑暗时代",
+    "冰河世界",
+    "天空之城",
+    "失落之城",
+    "摇滚年代",
+    "恐龙危机",
+    "摩登世界",
+    "蒸汽时代",
+    "复兴时代",
+    "童话世界",
+    "地宫无尽"
+  ],
+  "plant_notes": {
+    "桑葚爆破手": {
+      "tier": 5,
+      "pendant": "杀虫剂"
+    },
+    "超级机枪射手": {
+      "tier": 5
+    },
+    "原始豌豆射手": {
+      "tier": 1
+    },
+    "青蛇藤蔓": {
+      "tier": 1
+    },
+    "芦荟医师": {
+      "tier": 1
+    },
+    "橄榄坑": {
+      "tier": 1
+    }
+  },
+  "artifact_notes": {},
+  "tags": [],
+  "everyN": 10,
+  "swipeMs": 80,
+  "outer_pick": {
+    "plants": [
+      "超级机枪射手",
+      "原始豌豆射手",
+      "桑葚爆破手",
+      "青蛇藤蔓",
+      "芦荟医师",
+      "橄榄坑",
+      "电能豌豆",
+      "粉丝心叶兰"
+    ],
+    "mode": "auto",
+    "order": [
+      "桑葚爆破手",
+      "超级机枪射手",
+      "青蛇藤蔓",
+      "橄榄坑",
+      "原始豌豆射手",
+      "芦荟医师"
+    ]
+  },
+  "reserved_version": 1,
+  "world_chains": {
+    "enable": false,
+    "items": []
+  },
+  "mode_check": {
+    "enable": false,
+    "expect": "ranked",
+    "on_missing": "warn"
+  },
+  "tables": [
+    {
+      "from_level": 1,
+      "to_level": 2,
+      "label": "",
+      "levels": [
+        1
+      ],
+      "cover": {
+        "picks": [
+          1
+        ]
+      },
+      "lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "boss_lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "slots": {
+        "1": "超级机枪射手",
+        "2": "原始豌豆射手",
+        "3": "桑葚爆破手",
+        "4": "青蛇藤蔓",
+        "5": "芦荟医师",
+        "6": "橄榄坑",
+        "7": "电能豌豆",
+        "8": "粉丝心叶兰"
+      },
+      "squad": null,
+      "boss_squad": null,
+      "bossLineupMode": "",
+      "bossDeckNo": 4,
+      "bossSlots": {},
+      "artifact": null,
+      "artifact_en": null,
+      "artifact_body": null,
+      "bossArtifact": null,
+      "boss_artifact_en": null,
+      "boss_artifact_body": null,
+      "slotModes": {
+        "artifactswipe": "once",
+        "card1": "loop",
+        "card2": "loop",
+        "card3": "loop",
+        "card4": "loop",
+        "card5": "loop",
+        "card6": "loop",
+        "card7": "once",
+        "card8": "once",
+        "feed": "once",
+        "shovel": "once",
+        "skill": "once",
+        "tapcell": "once"
+      },
+      "slotOrder": [
+        {
+          "key": "card1",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "card2",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "card5",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1
+          ]
+        },
+        {
+          "key": "card3",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "key": "card4",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "key": "card6",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "card7",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "loopOrder": [
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card2",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card1",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card5",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card4",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card6",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "endOrder": [],
+      "waitAfter": {},
+      "endType": "detect",
+      "endPostDelay": 15000,
+      "endLoopCount": 3,
+      "endAfterAction": "sub",
+      "endSettleMs": 15000,
+      "endSubAction": "loop",
+      "bossSlotModes": {},
+      "bossSlotOrder": [],
+      "bossLoopOrder": [],
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "img": "全部植物.png",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "img": "橙色植物.png",
+          "name": "橙色植物"
+        },
+        {
+          "id": "purple",
+          "img": "紫色植物.png",
+          "name": "紫色植物"
+        },
+        {
+          "id": "blue",
+          "img": "蓝色植物.png",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "green",
+          "img": "绿色植物.png",
+          "name": "绿色植物"
+        }
+      ],
+      "boardEarly": [
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 0,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 3,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 1,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 2,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 4,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 2,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 6,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 2,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 2,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 3,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 5,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 3,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 8,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 1,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 11,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "loop",
+              "ord": 14,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 9,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 2,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 12,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "loop",
+              "ord": 15,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 7,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 5,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 10,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 3,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 13,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "loop",
+              "ord": 16,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "pre_battle": [],
+      "pick_favorite": false,
+      "pick_tiers": {},
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "1",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3"
+            ]
+          },
+          {
+            "slot": "2",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3"
+            ]
+          },
+          {
+            "slot": "3",
+            "cells": [
+              "格子2_3",
+              "格子2_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子2_3",
+              "格子2_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "5",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          },
+          {
+            "slot": "6",
+            "cells": [
+              "格子4_3",
+              "格子4_4",
+              "格子4_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card2",
+            "slot": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "mode": "loop",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3"
+            ]
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "mode": "loop",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3"
+            ]
+          },
+          {
+            "key": "card5",
+            "slot": 5,
+            "type": "plant",
+            "label": "芦荟医师",
+            "mode": "loop",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          },
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "mode": "loop",
+            "cells": [
+              "格子2_3",
+              "格子2_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "mode": "loop",
+            "cells": [
+              "格子2_3",
+              "格子2_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card6",
+            "slot": 6,
+            "type": "plant",
+            "label": "橄榄坑",
+            "mode": "loop",
+            "cells": [
+              "格子4_3",
+              "格子4_4",
+              "格子4_5"
+            ]
+          }
+        ],
+        "end_chain": [],
+        "sequence": [
+          {
+            "slot": 2,
+            "order": 1,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 3,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 3,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 1,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 2,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 1,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 2,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 6,
+            "order": 3,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_5",
+            "mode": "loop"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [],
+        "loop_chain": [],
+        "sequence": []
+      }
+    },
+    {
+      "from_level": 2,
+      "to_level": 16,
+      "label": "",
+      "levels": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "cover": {
+        "picks": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "boss_lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "slots": {
+        "1": "超级机枪射手",
+        "2": "原始豌豆射手",
+        "3": "桑葚爆破手",
+        "4": "青蛇藤蔓",
+        "5": "芦荟医师",
+        "6": "橄榄坑",
+        "7": "电能豌豆",
+        "8": "粉丝心叶兰"
+      },
+      "squad": null,
+      "boss_squad": null,
+      "bossLineupMode": "",
+      "bossDeckNo": 4,
+      "bossSlots": {},
+      "artifact": null,
+      "artifact_en": null,
+      "artifact_body": null,
+      "bossArtifact": null,
+      "boss_artifact_en": null,
+      "boss_artifact_body": null,
+      "slotModes": {
+        "artifactswipe": "once",
+        "card1": "once",
+        "card2": "once",
+        "card3": "loop",
+        "card4": "loop",
+        "card5": "loop",
+        "card6": "once",
+        "card7": "once",
+        "card8": "once",
+        "feed": "once",
+        "shovel": "once",
+        "skill": "once",
+        "tapcell": "once"
+      },
+      "slotOrder": [
+        {
+          "key": "card5",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card4",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card6",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        }
+      ],
+      "loopOrder": [
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card5",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card4",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "endOrder": [],
+      "waitAfter": {},
+      "endType": "detect",
+      "endPostDelay": 15000,
+      "endLoopCount": 3,
+      "endAfterAction": "sub",
+      "endSettleMs": 15000,
+      "endSubAction": "loop",
+      "bossSlotModes": {},
+      "bossSlotOrder": null,
+      "bossLoopOrder": null,
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "img": "全部植物.png",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "img": "橙色植物.png",
+          "name": "橙色植物"
+        },
+        {
+          "id": "purple",
+          "img": "紫色植物.png",
+          "name": "紫色植物"
+        },
+        {
+          "id": "blue",
+          "img": "蓝色植物.png",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "green",
+          "img": "绿色植物.png",
+          "name": "绿色植物"
+        }
+      ],
+      "boardEarly": [
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 2,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 10,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 5,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 4,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 13,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 4,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "once",
+              "ord": 18,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 0,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 2,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 6,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 5,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 14,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 5,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "once",
+              "ord": 19,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 3,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 2,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 11,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 7,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 6,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 15,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 6,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "once",
+              "ord": 20,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 4,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 3,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 12,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 8,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 7,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 16,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 7,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "once",
+              "ord": 21,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 4,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 1,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 5,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 9,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 8,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 17,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 8,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 4,
+              "id": "card6",
+              "label": "橄榄坑",
+              "mode": "once",
+              "ord": 22,
+              "plant": {
+                "img": "static/plant/olivepit.webp",
+                "name": "橄榄坑",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 5,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "pre_battle": [],
+      "pick_favorite": false,
+      "pick_tiers": {},
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "3",
+            "cells": [
+              "格子2_1",
+              "格子3_1",
+              "格子3_2",
+              "格子2_3",
+              "格子3_3",
+              "格子2_4",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子2_1",
+              "格子3_1",
+              "格子3_2",
+              "格子2_3",
+              "格子3_3",
+              "格子2_4",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "5",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          },
+          {
+            "slot": "6",
+            "cells": [
+              "格子4_1",
+              "格子4_2",
+              "格子4_3",
+              "格子4_4",
+              "格子4_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "card6",
+            "slot": 6,
+            "type": "plant",
+            "label": "橄榄坑",
+            "mode": "once",
+            "cells": [
+              "格子4_1",
+              "格子4_2",
+              "格子4_3",
+              "格子4_4",
+              "格子4_5"
+            ]
+          },
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card5",
+            "slot": 5,
+            "type": "plant",
+            "label": "芦荟医师",
+            "mode": "loop",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          },
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "mode": "loop",
+            "cells": [
+              "格子2_1",
+              "格子2_3",
+              "格子2_4",
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "mode": "loop",
+            "cells": [
+              "格子2_1",
+              "格子2_3",
+              "格子2_4",
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          }
+        ],
+        "end_chain": [],
+        "sequence": [
+          {
+            "slot": 6,
+            "order": 1,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_1",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 2,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_2",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 3,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_3",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 4,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_4",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 5,
+            "type": "plant",
+            "label": "橄榄坑",
+            "cell": "格子4_5",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 1,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 2,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 4,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 5,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 6,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 7,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 8,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 4,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 5,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 6,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 7,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 8,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_5",
+            "mode": "loop"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [],
+        "loop_chain": [],
+        "sequence": []
+      }
+    },
+    {
+      "from_level": 16,
+      "to_level": 150,
+      "label": "",
+      "levels": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149
+      ],
+      "cover": {
+        "picks": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149
+        ]
+      },
+      "lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "boss_lineup": {
+        "plants": [
+          "超级机枪射手",
+          "原始豌豆射手",
+          "桑葚爆破手",
+          "青蛇藤蔓",
+          "芦荟医师",
+          "橄榄坑",
+          "电能豌豆",
+          "粉丝心叶兰"
+        ],
+        "deck": null,
+        "artifact": null
+      },
+      "slots": {
+        "1": "超级机枪射手",
+        "2": "原始豌豆射手",
+        "3": "桑葚爆破手",
+        "4": "青蛇藤蔓",
+        "5": "芦荟医师",
+        "6": "橄榄坑",
+        "7": "电能豌豆",
+        "8": "粉丝心叶兰"
+      },
+      "squad": null,
+      "boss_squad": null,
+      "bossLineupMode": "",
+      "bossDeckNo": 4,
+      "bossSlots": {},
+      "artifact": null,
+      "artifact_en": null,
+      "artifact_body": null,
+      "bossArtifact": null,
+      "boss_artifact_en": null,
+      "boss_artifact_body": null,
+      "slotModes": {
+        "artifactswipe": "once",
+        "card1": "loop",
+        "card2": "loop",
+        "card3": "loop",
+        "card4": "loop",
+        "card5": "loop",
+        "card6": "once",
+        "card7": "once",
+        "card8": "once",
+        "feed": "once",
+        "shovel": "once",
+        "skill": "once",
+        "tapcell": "once"
+      },
+      "slotOrder": [
+        {
+          "key": "card5",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card4",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card6",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "shovel",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card1",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "loopOrder": [
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card5",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card3",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card4",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card1",
+          "from": 0,
+          "to": null
+        },
+        {
+          "key": "card2",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "endOrder": [],
+      "waitAfter": {},
+      "endType": "detect",
+      "endPostDelay": 15000,
+      "endLoopCount": 3,
+      "endAfterAction": "sub",
+      "endSettleMs": 15000,
+      "endSubAction": "loop",
+      "bossSlotModes": {},
+      "bossSlotOrder": null,
+      "bossLoopOrder": null,
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "img": "全部植物.png",
+          "name": "全部植物"
+        },
+        {
+          "id": "orange",
+          "img": "橙色植物.png",
+          "name": "橙色植物"
+        },
+        {
+          "id": "purple",
+          "img": "紫色植物.png",
+          "name": "紫色植物"
+        },
+        {
+          "id": "blue",
+          "img": "蓝色植物.png",
+          "name": "蓝色植物"
+        },
+        {
+          "id": "green",
+          "img": "绿色植物.png",
+          "name": "绿色植物"
+        }
+      ],
+      "boardEarly": [
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 2,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 7,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 14,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 22,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 17,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 4,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 25,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 1,
+              "seq": 4,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 3,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 2,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 8,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 2,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 12,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 2,
+              "seq": 1,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 18,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 5,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 26,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 2,
+              "seq": 5,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 4,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 3,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 9,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 3,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 15,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 2,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 23,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 19,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 6,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 27,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 3,
+              "seq": 6,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 5,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 4,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 10,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 4,
+              "seq": 4,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 16,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 3,
+              "type": "plant"
+            },
+            {
+              "col": 2,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 24,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 3,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 20,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 7,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 28,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 4,
+              "seq": 7,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "col": 1,
+              "id": "card1",
+              "label": "超级机枪射手",
+              "mode": "loop",
+              "ord": 6,
+              "plant": {
+                "img": "static/plant/megagatling.webp",
+                "name": "超级机枪射手",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 5,
+              "type": "plant"
+            },
+            {
+              "col": 1,
+              "id": "card2",
+              "label": "原始豌豆射手",
+              "mode": "loop",
+              "ord": 11,
+              "plant": {
+                "img": "static/plant/primalpeashooter.webp",
+                "name": "原始豌豆射手",
+                "rare": 2
+              },
+              "row": 5,
+              "seq": 5,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 2,
+              "id": "card5",
+              "label": "芦荟医师",
+              "mode": "loop",
+              "ord": 13,
+              "plant": {
+                "img": "static/plant/aloes.webp",
+                "name": "芦荟医师",
+                "rare": 3
+              },
+              "row": 5,
+              "seq": 2,
+              "type": "plant"
+            }
+          ],
+          [
+            {
+              "col": 3,
+              "id": "card3",
+              "label": "桑葚爆破手",
+              "mode": "loop",
+              "ord": 21,
+              "plant": {
+                "img": "static/plant/mulberry.webp",
+                "name": "桑葚爆破手",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 8,
+              "type": "plant"
+            },
+            {
+              "col": 3,
+              "id": "card4",
+              "label": "青蛇藤蔓",
+              "mode": "loop",
+              "ord": 29,
+              "plant": {
+                "img": "static/plant/poisonvine.webp",
+                "name": "青蛇藤蔓",
+                "rare": 4
+              },
+              "row": 5,
+              "seq": 8,
+              "type": "plant"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "pre_battle": [],
+      "pick_favorite": false,
+      "pick_tiers": {},
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "1",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          },
+          {
+            "slot": "2",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          },
+          {
+            "slot": "3",
+            "cells": [
+              "格子2_1",
+              "格子3_1",
+              "格子3_2",
+              "格子2_3",
+              "格子3_3",
+              "格子2_4",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子2_1",
+              "格子3_1",
+              "格子3_2",
+              "格子2_3",
+              "格子3_3",
+              "格子2_4",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "5",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "loop",
+            "cells": []
+          },
+          {
+            "key": "card5",
+            "slot": 5,
+            "type": "plant",
+            "label": "芦荟医师",
+            "mode": "loop",
+            "cells": [
+              "格子2_2",
+              "格子2_5"
+            ]
+          },
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "mode": "loop",
+            "cells": [
+              "格子2_1",
+              "格子2_3",
+              "格子2_4",
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "mode": "loop",
+            "cells": [
+              "格子2_1",
+              "格子2_3",
+              "格子2_4",
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "mode": "loop",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          },
+          {
+            "key": "card2",
+            "slot": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "mode": "loop",
+            "cells": [
+              "格子1_1",
+              "格子1_2",
+              "格子1_3",
+              "格子1_4",
+              "格子1_5"
+            ]
+          }
+        ],
+        "end_chain": [],
+        "sequence": [
+          {
+            "slot": 5,
+            "order": 1,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 5,
+            "order": 2,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 4,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 5,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 6,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 7,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 3,
+            "order": 8,
+            "type": "plant",
+            "label": "桑葚爆破手",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子2_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 4,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 5,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 6,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 7,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 4,
+            "order": 8,
+            "type": "plant",
+            "label": "青蛇藤蔓",
+            "cell": "格子3_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 3,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 4,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 1,
+            "order": 5,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子1_5",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 1,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_1",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_2",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 3,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_3",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 4,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_4",
+            "mode": "loop"
+          },
+          {
+            "slot": 2,
+            "order": 5,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子1_5",
+            "mode": "loop"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [],
+        "loop_chain": [],
+        "sequence": []
+      }
+    }
+  ]
+}
