@@ -115,7 +115,7 @@ def api_upload(payload):
     seen_codes = {}
     for it in items:
         item = {
-            "mode": payload.get("mode") or "new",
+            "mode": it.get("mode") or payload.get("mode") or "new",
             "group": group,
             "job": it.get("job"),
             "date": date,

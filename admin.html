@@ -605,6 +605,7 @@
       code: data.code || "",
       plants: (data.tables || []).length,
       warn: warn,
+      mode: bundleItem ? (bundleItem.mode || "new") : "new",
       sourceGroup: sourceGroup || "",
       fromBundle: !!bundleItem,
       bundleDate: bundleItem ? (bundleItem.date || "") : "",
@@ -710,7 +711,7 @@
       note: $("up-note").value,
       mode: "new",
       items: pending.map(function (p) {
-        return { filename: p.filename, job: p.job, content_b64: b64(p.text) };
+        return { filename: p.filename, job: p.job, mode: p.mode || "new", content_b64: b64(p.text) };
       })
     };
     log.classList.remove("err");
