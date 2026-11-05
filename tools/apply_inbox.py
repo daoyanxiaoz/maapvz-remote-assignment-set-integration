@@ -73,8 +73,29 @@ def decode_item(item):
         data = joblib.load_json_text(text)
     except Exception as e:
         raise ValueError("作业集不是合法 JSON：%s" % e)
+    if isinstance(data, dict) and data.get("format") == joblib.BUNDLE_FORMAT:
+        raise ValueError(
+            "这是上架包（*.bundle.json），不是作业集。"
+            "请把上架包放到 inbox/，或运行 tools/apply_inbox.py 处理；"
+            "维护工具的上传框要拖编辑器导出的作业集 JSON。"
+        )
     if not joblib.looks_like_job(data):
         raise ValueError("作业集缺少 tables / code 字段")
+
+    # “迭代”必须指向已存在的作业集，不能悄悄新建一份重复的
+    if mode == "iterate" and not joblib.find_job(group, job):
+        raise ValueError(
+            "选择了迭代，但目标作业集不存在：%s/%s。请选择已有作业集，或改成“新建作业集”。"
+            % (group or "（不归入阵型）", job)
+        )
+
+    # 同一个 code 不能出现在两个不同作业集里（同一作业集的多个版本共用 code 是正常的）
+    conflict = joblib.find_code_conflict(data.get("code"), group, job)
+    if conflict:
+        raise ValueError(
+            "这个作业集的 code 已存在于另一个作业集：%s。请选择正确的阵型/作业集，或确认是否应新建。"
+            % conflict["dir"]
+        )
 
     # ★ 上架强制规整：自动选卡 + 局外只留固定植物 + 不允许编队序号（deck）
     changes, problems = joblib.enforce_upload_rules(data)

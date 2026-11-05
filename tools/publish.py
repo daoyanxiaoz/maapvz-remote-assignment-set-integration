@@ -67,6 +67,13 @@ def main(argv=None):
     job = args.job or fields.get("name") or os.path.splitext(os.path.basename(path))[0]
     date = joblib.date_label_from(args.date) or joblib.today_label()
 
+    # 同一个 code 不能出现在两个不同作业集里；否则会造出“看起来一模一样”的重复作业集
+    conflict = joblib.find_code_conflict(data.get("code"), group, job)
+    if conflict:
+        print("[error] 这个 code 已存在于另一个作业集：%s" % conflict["dir"])
+        print("        请检查 --group / --job 是否和现有目录一致，或确认是否应换成新的 code。")
+        return 1
+
     # ★ 上架强制规整：自动选卡 + 固定植物 + 不允许编队序号（deck）
     changes, problems = joblib.enforce_upload_rules(data)
     if problems:

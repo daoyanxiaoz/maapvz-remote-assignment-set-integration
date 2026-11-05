@@ -498,23 +498,28 @@
         if (r.error) { bad.push(r.file.name + "（" + r.error.message + "）"); return; }
         var data = r.data;
         var name = sanitize(data.name || r.file.name.replace(/\.(json|txt)$/i, ""), "作业集");
-        // 智能默认：仓库里已有同名作业集 → 直接进「迭代」；否则走「新建」
-        var hitJob = null;
-        catalog.jobs.forEach(function (j) { if (!hitJob && j.name === name) hitJob = j; });
+        // 智能默认：仓库里只有一个同名作业集 → 直接进「迭代」；重名或不存在 → 让用户手动选
+        var nameMatches = catalog.jobs.filter(function (j) { return j.name === name; });
+        var hitJob = nameMatches.length === 1 ? nameMatches[0] : null;
+        var ambiguousName = nameMatches.length > 1;
+        var warns = jobWarnings(data);
+        if (ambiguousName) {
+          warns.push("检测到多个同名作业集，请手动选择阵型；如果要迭代，请切换为“迭代作业集”并选择正确目标。");
+        }
         items.push({
           uid: ++seq,
           filename: r.file.name,
           text: r.text,
           data: data,
           mode: hitJob ? "iterate" : "new",
-          group: hitJob ? hitJob.group : (catalog.groups.length ? catalog.groups[0].id : "__new__"),
+          group: hitJob ? hitJob.group : (ambiguousName ? "" : (catalog.groups.length ? catalog.groups[0].id : "__new__")),
           newGroup: "",
           job: name,
           author: hitJob && hitJob.author ? hitJob.author : "",
           authorTouched: false,
           date: today(),
           note: "",
-          warnings: jobWarnings(data),
+          warnings: warns,
           fields: {
             name: name,
             code: data.code || "",
@@ -543,6 +548,10 @@
       var job = sanitize(item.job, "");
       if (item.group === "__new__" && !group) { errs.push((item.fields.name || item.filename) + "：请填写新阵型名"); return; }
       if (!job) { errs.push((item.fields.name || item.filename) + "：请填写作业集名"); return; }
+      if (item.mode === "iterate" && !findJob(group, job)) {
+        errs.push((item.fields.name || item.filename) + "：选择了迭代，但目标作业集不存在。请重新选择已有作业集，或改成“新建作业集”。");
+        return;
+      }
       out.push({
         mode: item.mode,
         group: group,

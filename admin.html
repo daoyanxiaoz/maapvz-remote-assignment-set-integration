@@ -85,7 +85,7 @@
     </div>
     <div class="table-card" id="audit-card">
       <h3>仓库体检</h3>
-      <div class="table-sub">扫一遍 <code>jobs/</code>：空目录、同名/同 code 的重复作业集、版本目录名不是日期、目录名与作业集名称不一致。</div>
+      <div class="table-sub">扫一遍 <code>jobs/</code>：空目录、重复 code 的作业集、版本目录名不是日期、目录名与作业集名称不一致。</div>
       <div class="pub-actions">
         <button class="btn" id="do-audit" type="button">重新体检</button>
         <button class="btn" id="cleanup-empty" type="button">清理空目录</button>
@@ -97,12 +97,12 @@
     <div class="table-card">
       <h3>① 上传作业集</h3>
       <div class="adm-tip">
-        拖入编辑器导出的 <code>.json</code>（也认 <code>.txt</code>），选好阵型 / 填好作者后点「写入仓库」。<br>
-        <b>作业集名和已有的一致 = 迭代新版本</b>（旧版本原样保留）；写成新名字 = 新建一份作业集。<br>
+        拖入编辑器导出的 <code>.json</code>（也认 <code>.txt</code>），或直接拖入 <code>上架包_*.bundle.json</code>，会自动读取里面的作业集。<br>
+        <b>同一阵型下，作业集名和已有的一致 = 迭代新版本</b>（旧版本原样保留）；写成新名字 = 新建一份作业集；不同阵型允许同名。<br>
         写入时会自动规整：<b>局外选卡强制「自动选卡」</b>，候选池只留本作业集实际用到的植物。
       </div>
       <div class="drop-zone" id="drop" style="margin-top:10px">
-        <div class="drop-title">把作业集文件拖到这里</div>
+        <div class="drop-title">把作业集或上架包拖到这里</div>
         <div class="drop-sub">或者点这里选择文件</div>
         <div class="drop-actions">
           <button class="btn primary" id="pick" type="button">选择文件</button>
@@ -577,9 +577,69 @@
     });
   }
 
+  function b64ToText(s) {
+    var bin = atob(s || "");
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+
+  function queueJob(text, filename, data, sourceGroup, bundleItem) {
+    if (!data || !Array.isArray(data.tables) || !data.code) {
+      toast(filename + "：缺少 tables / code 字段，不是有效的作业集 JSON。");
+      return;
+    }
+    var name = String((bundleItem && bundleItem.job) || data.name || filename.replace(/\.(json|txt)$/i, "")).trim();
+    var key = filename + "|" + name;
+    if (pending.some(function (x) { return x.key === key; })) {
+      toast(filename + "：已经加过了");
+      return;
+    }
+    var warn = data.outer_pick ? "" : "无 outer_pick";
+    if (sourceGroup) warn = (warn ? warn + " · " : "") + "来自上架包：" + sourceGroup;
+    pending.push({
+      key: key,
+      filename: filename,
+      text: text,
+      job: name,
+      code: data.code || "",
+      plants: (data.tables || []).length,
+      warn: warn,
+      mode: bundleItem ? (bundleItem.mode || "new") : "new",
+      sourceGroup: sourceGroup || "",
+      fromBundle: !!bundleItem,
+      bundleDate: bundleItem ? (bundleItem.date || "") : "",
+      bundleAuthor: bundleItem ? (bundleItem.author || "") : "",
+      bundleNote: bundleItem ? (bundleItem.note || "") : ""
+    });
+  }
+
+  function applyBundleDefaults() {
+    if (!pending.length) return;
+    var first = pending[0];
+    var sameGroup = pending.every(function (p) { return p.sourceGroup === first.sourceGroup; });
+    if (sameGroup && first.fromBundle) {
+      var sel = $("up-group");
+      var found = false;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === first.sourceGroup) { found = true; break; }
+      }
+      if (found) {
+        sel.value = first.sourceGroup;
+        $("up-newgroup").hidden = sel.value !== "__new__";
+      }
+    }
+    var sameDate = pending.every(function (p) { return p.bundleDate === first.bundleDate; });
+    if (first.bundleDate && sameDate) $("up-date").value = first.bundleDate;
+    var sameAuthor = pending.every(function (p) { return p.bundleAuthor === first.bundleAuthor; });
+    if (first.bundleAuthor && sameAuthor) $("up-author").value = first.bundleAuthor;
+    var sameNote = pending.every(function (p) { return p.bundleNote === first.bundleNote; });
+    if (first.bundleNote && sameNote) $("up-note").value = first.bundleNote;
+  }
+
   function addFiles(files) {
     var list = Array.prototype.slice.call(files || []).filter(function (f) { return /\.(json|txt)$/i.test(f.name); });
-    if (!list.length) { toast("请选择 .json 作业集文件"); return; }
+    if (!list.length) { toast("请选择 .json 作业集或上架包文件"); return; }
     Promise.all(list.map(function (f) {
       return readFile(f).then(function (text) {
         var data = JSON.parse(text.replace(/^\uFEFF/, ""));
@@ -588,22 +648,27 @@
     })).then(function (rows) {
       rows.forEach(function (r) {
         if (r.error) { toast(r.file.name + "：" + r.error.message); return; }
-        var name = String(r.data.name || r.file.name.replace(/\.(json|txt)$/i, "")).trim();
-        var key = r.file.name + "|" + name;
-        if (pending.some(function (x) { return x.key === key; })) {
-          toast(r.file.name + "：已经加过了");
+        if (r.data && r.data.format === "maapvz-jobset-bundle") {
+          var items = r.data.items;
+          if (!Array.isArray(items) || !items.length) {
+            toast(r.file.name + "：上架包里没有 items");
+            return;
+          }
+          items.forEach(function (bi, idx) {
+            try {
+              var innerText = b64ToText(bi.content_b64 || "");
+              var innerData = JSON.parse(innerText.replace(/^\uFEFF/, ""));
+              var innerName = bi.filename || ((bi.job || innerData.name || "作业集") + ".json");
+              queueJob(innerText, innerName, innerData, bi.group || "", bi);
+            } catch (err) {
+              toast(r.file.name + " 第 " + (idx + 1) + " 项：" + err.message);
+            }
+          });
           return;
         }
-        pending.push({
-          key: key,
-          filename: r.file.name,
-          text: r.text,
-          job: name,
-          code: r.data.code || "",
-          plants: (r.data.tables || []).length,
-          warn: r.data.outer_pick ? "" : "无 outer_pick"
-        });
+        queueJob(r.text, r.file.name, r.data, "", null);
       });
+      applyBundleDefaults();
       renderFiles();
     });
   }
@@ -646,7 +711,7 @@
       note: $("up-note").value,
       mode: "new",
       items: pending.map(function (p) {
-        return { filename: p.filename, job: p.job, content_b64: b64(p.text) };
+        return { filename: p.filename, job: p.job, mode: p.mode || "new", content_b64: b64(p.text) };
       })
     };
     log.classList.remove("err");

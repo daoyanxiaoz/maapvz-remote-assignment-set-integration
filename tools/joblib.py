@@ -608,6 +608,37 @@ def scan_jobs():
     return out
 
 
+def find_job(group, job):
+    """按（阵型, 作业集目录名）精确查找已有作业集；找不到返回 None。"""
+    g = sanitize_component(group, "") if group else ""
+    j = sanitize_component(job, "")
+    if not j:
+        return None
+    for rec in scan_jobs():
+        if rec["group"] == g and rec["job"] == j:
+            return rec
+    return None
+
+
+def find_code_conflict(code, group="", job=""):
+    """同一 code 若已属于另一个作业集，返回那条记录；否则返回 None。
+
+    同一作业集的多个版本共用 code 是正常的，所以 group/job 相同的记录会跳过。
+    """
+    code = str(code or "").strip()
+    if not code:
+        return None
+    g = sanitize_component(group, "") if group else ""
+    j = sanitize_component(job, "") if job else ""
+    for rec in scan_jobs():
+        if rec["group"] == g and rec["job"] == j:
+            continue
+        for v in rec["versions"]:
+            if str(v["fields"].get("code") or "").strip() == code:
+                return rec
+    return None
+
+
 def group_display_name(group):
     """阵型目录名 → 站点显示名：去掉开头的 g（jobs/g心塔 → 心塔）。"""
     gid = str(group or "")
@@ -755,14 +786,7 @@ def audit_jobs():
                 "code「%s」出现在多个作业集里：%s" % (
                     code, "；".join(sorted("%s → %s" % (g or "（不归入阵型）", j) for g, j in owners))))
 
-    # 5) 同名作业集（跨阵型重名，卡片上看起来像两个一样的）
-    by_name = {}
-    for rec in recs:
-        by_name.setdefault(rec["job"], []).append(rec["group"] or "（不归入阵型）")
-    for name, owners in by_name.items():
-        if len(owners) > 1:
-            add("warn", "dup-name", os.path.join(JOBS_DIR, name),
-                "同名作业集「%s」出现在：%s" % (name, "、".join(owners)))
+    # 5) 同名作业集允许存在（不同阵型可以重名；真正的重复由上面的重复 code 拦截）
 
     # 6) 作业集目录名和作业集里写的 name 不一致（站点显示 name，目录名只是身份）
     for rec in recs:
