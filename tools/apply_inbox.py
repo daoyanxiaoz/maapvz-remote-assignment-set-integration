@@ -73,6 +73,12 @@ def decode_item(item):
         data = joblib.load_json_text(text)
     except Exception as e:
         raise ValueError("作业集不是合法 JSON：%s" % e)
+    if isinstance(data, dict) and data.get("format") == joblib.BUNDLE_FORMAT:
+        raise ValueError(
+            "这是上架包（*.bundle.json），不是作业集。"
+            "请把上架包放到 inbox/，或运行 tools/apply_inbox.py 处理；"
+            "维护工具的上传框要拖编辑器导出的作业集 JSON。"
+        )
     if not joblib.looks_like_job(data):
         raise ValueError("作业集缺少 tables / code 字段")
 
