@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "updated": "2026-11-05T08:44:46Z",
+  "updated": "2026-11-05T08:52:49Z",
   "count": 11,
   "version_count": 14,
   "groups": [
@@ -12,7 +12,7 @@
       "order": 999,
       "count": 7,
       "version_count": 9,
-      "updated": "2026-11-05T08:44:45Z",
+      "updated": "2026-11-05T08:46:38Z",
       "jobs": [
         "g挂机阵/摇滚原大桑葚",
         "g挂机阵/地宫原大火龙果",
@@ -59,7 +59,7 @@
       "dir": "jobs/g挂机阵/摇滚原大桑葚",
       "code": "pvz_20261026_213157",
       "date": "2026-11-05",
-      "updated": "2026-11-05T08:44:45Z",
+      "updated": "2026-11-05T08:46:38Z",
       "version_count": 2,
       "versions": [
         {
