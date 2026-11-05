@@ -543,6 +543,10 @@
       var job = sanitize(item.job, "");
       if (item.group === "__new__" && !group) { errs.push((item.fields.name || item.filename) + "：请填写新阵型名"); return; }
       if (!job) { errs.push((item.fields.name || item.filename) + "：请填写作业集名"); return; }
+      if (item.mode === "iterate" && !findJob(group, job)) {
+        errs.push((item.fields.name || item.filename) + "：选择了迭代，但目标作业集不存在。请重新选择已有作业集，或改成“新建作业集”。");
+        return;
+      }
       out.push({
         mode: item.mode,
         group: group,
