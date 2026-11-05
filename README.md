@@ -114,7 +114,7 @@ jobs/
 │   ├── apply_inbox.py    消费 inbox/*.bundle.json → 落库 → 重建索引
 │   ├── publish.py        本地命令行上架
 │   ├── normalize_jobs.py 批量把作业集规整成「自动选卡 + 固定植物」
-│   ├── audit.py          仓库体检（空目录 / 重复 code / 同名 / 版本目录名），--clean 删空目录
+│   ├── audit.py          仓库体检（空目录 / 重复 code / 版本目录名），--clean 删空目录
 │   └── migrate_legacy.py 旧版平铺 jobs/*.json 迁移（一次性，幂等）
 └── .github/workflows/
     ├── apply-inbox.yml    inbox/ 有新包 → 拆包落库 → 重建 index.json（唯一会自动提交的 Action）

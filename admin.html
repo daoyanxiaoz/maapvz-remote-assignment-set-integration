@@ -85,7 +85,7 @@
     </div>
     <div class="table-card" id="audit-card">
       <h3>仓库体检</h3>
-      <div class="table-sub">扫一遍 <code>jobs/</code>：空目录、同名/同 code 的重复作业集、版本目录名不是日期、目录名与作业集名称不一致。</div>
+      <div class="table-sub">扫一遍 <code>jobs/</code>：空目录、重复 code 的作业集、版本目录名不是日期、目录名与作业集名称不一致。</div>
       <div class="pub-actions">
         <button class="btn" id="do-audit" type="button">重新体检</button>
         <button class="btn" id="cleanup-empty" type="button">清理空目录</button>
@@ -98,7 +98,7 @@
       <h3>① 上传作业集</h3>
       <div class="adm-tip">
         拖入编辑器导出的 <code>.json</code>（也认 <code>.txt</code>），选好阵型 / 填好作者后点「写入仓库」。<br>
-        <b>作业集名和已有的一致 = 迭代新版本</b>（旧版本原样保留）；写成新名字 = 新建一份作业集。<br>
+        <b>同一阵型下，作业集名和已有的一致 = 迭代新版本</b>（旧版本原样保留）；写成新名字 = 新建一份作业集；不同阵型允许同名。<br>
         写入时会自动规整：<b>局外选卡强制「自动选卡」</b>，候选池只留本作业集实际用到的植物。
       </div>
       <div class="drop-zone" id="drop" style="margin-top:10px">

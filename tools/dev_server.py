@@ -110,11 +110,6 @@ def api_upload(payload):
     note = payload.get("note")
 
     # 先全部校验，再统一写入：避免第一份写成功、第二份因重复 code 失败，留下半套数据
-    snapshot = joblib.scan_jobs()
-    name_owners = {}
-    for rec in snapshot:
-        name_owners.setdefault(rec["job"], set()).add(rec["group"])
-
     warnings = []
     validated = []
     seen_codes = {}
@@ -149,11 +144,6 @@ def api_upload(payload):
                        g or "（不归入阵型）", j)
                 )
             seen_codes[code] = owner
-
-        other_groups = name_owners.get(j, set()) - {g}
-        if other_groups:
-            warnings.append("「%s」在阵型「%s」里已经有同名作业集（会变成两个）"
-                            % (j, "、".join(sorted(x or "（不归入阵型）" for x in other_groups))))
 
         validated.append((g, j, d, fname, text, auth, nt, changes))
 

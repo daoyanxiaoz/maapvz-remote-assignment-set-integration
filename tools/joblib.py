@@ -786,14 +786,7 @@ def audit_jobs():
                 "code「%s」出现在多个作业集里：%s" % (
                     code, "；".join(sorted("%s → %s" % (g or "（不归入阵型）", j) for g, j in owners))))
 
-    # 5) 同名作业集（跨阵型重名，卡片上看起来像两个一样的）
-    by_name = {}
-    for rec in recs:
-        by_name.setdefault(rec["job"], []).append(rec["group"] or "（不归入阵型）")
-    for name, owners in by_name.items():
-        if len(owners) > 1:
-            add("warn", "dup-name", os.path.join(JOBS_DIR, name),
-                "同名作业集「%s」出现在：%s" % (name, "、".join(owners)))
+    # 5) 同名作业集允许存在（不同阵型可以重名；真正的重复由上面的重复 code 拦截）
 
     # 6) 作业集目录名和作业集里写的 name 不一致（站点显示 name，目录名只是身份）
     for rec in recs:
