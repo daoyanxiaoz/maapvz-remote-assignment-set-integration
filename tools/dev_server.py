@@ -109,19 +109,15 @@ def api_upload(payload):
     author = payload.get("author")
     note = payload.get("note")
 
-    written = []
-    warnings = []
-    # 查重快照：同 code / 同名作业集（同阵型下追加版本是正常的，这里只提醒真正会「变成两个」的情况）
+    # 先全部校验，再统一写入：避免第一份写成功、第二份因重复 code 失败，留下半套数据
     snapshot = joblib.scan_jobs()
     name_owners = {}
-    code_owners = {}
     for rec in snapshot:
         name_owners.setdefault(rec["job"], set()).add(rec["group"])
-        for v in rec["versions"]:
-            c = v["fields"].get("code")
-            if c:
-                code_owners.setdefault(c, set()).add((rec["group"], rec["job"]))
 
+    warnings = []
+    validated = []
+    seen_codes = {}
     for it in items:
         item = {
             "mode": payload.get("mode") or "new",
@@ -138,20 +134,31 @@ def api_upload(payload):
         except Exception as e:
             raise ApiError("%s：%s" % (it.get("filename") or "文件", e))
 
-        other_groups = name_owners.get(j, set()) - {g}
-        if other_groups:
-            warnings.append("「%s」在阵型「%s」里已经有同名作业集（会变成两个）"
-                            % (j, "、".join(sorted(x or "（不归入阵型）" for x in other_groups))))
+        # 同一批上传里也不允许同一个 code 落到两个不同作业集
         try:
             code = joblib.job_fields(joblib.load_json_text(text)).get("code")
         except Exception:
             code = None
         if code:
-            others = code_owners.get(code, set()) - {(g, j)}
-            if others:
-                warnings.append("code「%s」已存在于：%s" % (
-                    code, "、".join(sorted("%s/%s" % (a or "（不归入阵型）", b) for a, b in others))))
+            owner = (g, j)
+            previous = seen_codes.get(code)
+            if previous and previous != owner:
+                raise ApiError(
+                    "同一批文件里 code「%s」同时出现在 %s/%s 和 %s/%s，已拒绝写入。"
+                    % (code, previous[0] or "（不归入阵型）", previous[1],
+                       g or "（不归入阵型）", j)
+                )
+            seen_codes[code] = owner
 
+        other_groups = name_owners.get(j, set()) - {g}
+        if other_groups:
+            warnings.append("「%s」在阵型「%s」里已经有同名作业集（会变成两个）"
+                            % (j, "、".join(sorted(x or "（不归入阵型）" for x in other_groups))))
+
+        validated.append((g, j, d, fname, text, auth, nt, changes))
+
+    written = []
+    for g, j, d, fname, text, auth, nt, changes in validated:
         target = joblib.place_version(g, j, d, fname, text, auth, nt)
         rel = os.path.relpath(target, ROOT).replace(os.sep, "/")
         written.append({"path": rel, "job": j, "changes": changes})
