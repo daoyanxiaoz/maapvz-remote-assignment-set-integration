@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "updated": "2026-11-06T15:28:33Z",
+  "updated": "2026-11-07T10:39:22Z",
   "count": 17,
-  "version_count": 21,
+  "version_count": 22,
   "groups": [
     {
       "id": "g挂机阵",
@@ -11,8 +11,8 @@
       "icon": "",
       "order": 999,
       "count": 11,
-      "version_count": 13,
-      "updated": "2026-11-06T15:28:32Z",
+      "version_count": 14,
+      "updated": "2026-11-07T10:39:21Z",
       "jobs": [
         "g挂机阵/原大桑葚通用模版",
         "g挂机阵/地宫原大火龙果（神器版本）",
@@ -62,10 +62,23 @@
       "name": "原大桑葚通用模版",
       "dir": "jobs/g挂机阵/原大桑葚通用模版",
       "code": "pvz_20261106_214522",
-      "date": "2026-11-06",
-      "updated": "2026-11-06T15:28:32Z",
-      "version_count": 1,
+      "date": "2026-11-07",
+      "updated": "2026-11-07T10:39:21Z",
+      "version_count": 2,
       "versions": [
+        {
+          "label": "2026-11-07",
+          "date": "2026-11-07",
+          "file": "jobs/g挂机阵/原大桑葚通用模版/2026-11-07/原大桑葚通用模版.json",
+          "name": "原大桑葚通用模版",
+          "code": "pvz_20261106_214522",
+          "authors": [
+            "UZnBk"
+          ],
+          "author": "UZnBk",
+          "note": "优化细节",
+          "size": 102348
+        },
         {
           "label": "2026-11-06",
           "date": "2026-11-06",
@@ -77,13 +90,13 @@
           ],
           "author": "UZnBK",
           "note": "适配埃及，西部，功夫，未来，黑暗，冰河，蒸汽",
-          "size": 102734
+          "size": 107158
         }
       ],
       "authors": [
-        "UZnBK"
+        "UZnBk"
       ],
-      "author": "UZnBK",
+      "author": "UZnBk",
       "worlds": [],
       "world_primary": null,
       "tables": 3,
@@ -317,7 +330,7 @@
           ],
           "author": "每天都睡觉",
           "note": "",
-          "size": 84860
+          "size": 88734
         },
         {
           "label": "地宫塔蕉/2026-11-05",
@@ -330,7 +343,7 @@
           ],
           "author": "每天都睡觉",
           "note": "",
-          "size": 54225
+          "size": 56767
         }
       ],
       "authors": [
@@ -587,7 +600,7 @@
           ],
           "author": "火龙果领域大神",
           "note": "加入神器葫芦 棱镜塔",
-          "size": 50963
+          "size": 48801
         }
       ],
       "authors": [
@@ -843,7 +856,7 @@
           ],
           "author": "lanker",
           "note": "",
-          "size": 172024
+          "size": 179560
         }
       ],
       "authors": [
@@ -1128,7 +1141,7 @@
           ],
           "author": "白月IO",
           "note": "",
-          "size": 105474
+          "size": 109926
         }
       ],
       "authors": [
@@ -1401,7 +1414,7 @@
           ],
           "author": "UZnBK",
           "note": "",
-          "size": 75654
+          "size": 79038
         }
       ],
       "authors": [
@@ -1659,7 +1672,7 @@
           ],
           "author": "白月IO",
           "note": "修复小瑕疵",
-          "size": 102256
+          "size": 98081
         },
         {
           "label": "2026-10-30",
@@ -1944,7 +1957,7 @@
           ],
           "author": "火龙果领域大神",
           "note": "加入加速",
-          "size": 48939
+          "size": 46849
         },
         {
           "label": "2026-11-03",
@@ -1957,7 +1970,7 @@
           ],
           "author": "火龙果领域大神",
           "note": "",
-          "size": 47972
+          "size": 45925
         }
       ],
       "authors": [
@@ -3993,7 +4006,7 @@
       "dir": "jobs/失落难民带瓷",
       "code": "pvz_20261024_223230",
       "date": "2026-10-24",
-      "updated": "2026-11-01T18:26:48Z",
+      "updated": "2026-11-01T17:50:20Z",
       "version_count": 1,
       "versions": [
         {
@@ -4247,7 +4260,7 @@
       "dir": "jobs/失落丐中丐",
       "code": "pvz_20261023_171234",
       "date": "2026-10-23",
-      "updated": "2026-11-01T18:26:48Z",
+      "updated": "2026-11-01T17:50:20Z",
       "version_count": 1,
       "versions": [
         {
