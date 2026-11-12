@@ -1,0 +1,3931 @@
+{
+  "code": "pvz_20261109_173909",
+  "name": "恐龙原冰大火龙果",
+  "version": "1.0",
+  "max_level": 149,
+  "world": "恐龙危机",
+  "sub_worlds": [
+    "神秘埃及",
+    "海盗港湾",
+    "狂野西部",
+    "功夫世界",
+    "未来世界",
+    "黑暗时代",
+    "巨浪沙滩",
+    "冰河世界",
+    "天空之城",
+    "失落之城",
+    "摇滚年代",
+    "摩登世界",
+    "蒸汽时代",
+    "复兴时代",
+    "童话世界",
+    "地宫无尽"
+  ],
+  "plant_notes": {
+    "超级机枪射手": {
+      "tier": 5
+    },
+    "暗物质火龙果": {
+      "tier": 5
+    },
+    "芦荟医师": {
+      "tier": 3
+    }
+  },
+  "artifact_notes": {},
+  "tags": [],
+  "everyN": 10,
+  "swipeMs": 80,
+  "outer_pick": {
+    "plants": [
+      "暗物质火龙果",
+      "超级机枪射手",
+      "芦荟医师",
+      "原始豌豆射手",
+      "寒冰射手",
+      "电能豌豆",
+      "能量花",
+      "暗影豌豆"
+    ],
+    "mode": "auto",
+    "order": []
+  },
+  "reserved_version": 1,
+  "world_chains": {
+    "enable": false,
+    "items": []
+  },
+  "mode_check": {
+    "enable": false,
+    "expect": "ranked",
+    "on_missing": "warn"
+  },
+  "tables": [
+    {
+      "from_level": 1,
+      "to_level": 41,
+      "label": "",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "cover": {
+        "picks": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40
+        ]
+      },
+      "lineup": {
+        "plants": [
+          "暗物质火龙果",
+          "超级机枪射手",
+          "芦荟医师",
+          "原始豌豆射手",
+          "寒冰射手",
+          "电能豌豆",
+          "能量花",
+          "暗影豌豆"
+        ],
+        "deck": null,
+        "artifact": "葫芦神器"
+      },
+      "boss_lineup": {
+        "plants": [
+          "暗物质火龙果",
+          "超级机枪射手",
+          "芦荟医师",
+          "原始豌豆射手",
+          "寒冰射手",
+          "电能豌豆",
+          "能量花",
+          "暗影豌豆"
+        ],
+        "deck": null,
+        "artifact": "棱镜塔神器"
+      },
+      "slots": {
+        "1": "暗物质火龙果",
+        "2": "超级机枪射手",
+        "3": "芦荟医师",
+        "4": "原始豌豆射手",
+        "5": "寒冰射手",
+        "6": "电能豌豆",
+        "7": "能量花",
+        "8": "暗影豌豆"
+      },
+      "squad": null,
+      "boss_squad": null,
+      "bossLineupMode": "",
+      "bossDeckNo": 1,
+      "bossSlots": {
+        "6": "电能豌豆",
+        "7": "能量花"
+      },
+      "artifact": "葫芦神器",
+      "artifact_en": "artifact_calabash",
+      "artifact_body": "mid",
+      "bossArtifact": "棱镜塔神器",
+      "boss_artifact_en": "artifact_prismtower",
+      "boss_artifact_body": null,
+      "slotModes": {
+        "card1": "once",
+        "card2": "once",
+        "card3": "once",
+        "card4": "once",
+        "card5": "once",
+        "card6": "once",
+        "card7": "once",
+        "card8": "once",
+        "feed": "once",
+        "shovel": "once",
+        "tapcell": "once",
+        "artifactswipe": "once",
+        "skill": "once"
+      },
+      "slotOrder": [
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card1",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "key": "card2",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "key": "card3",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "key": "card4",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "key": "card7",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1
+          ]
+        }
+      ],
+      "loopOrder": [],
+      "endOrder": [
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 2000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "葫芦神器",
+          "artType": "special",
+          "artBody": "big"
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 3000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "葫芦神器",
+          "artType": "special",
+          "artBody": "mid"
+        }
+      ],
+      "waitAfter": {},
+      "endType": "detect",
+      "endPostDelay": 0,
+      "endLoopCount": 3,
+      "endAfterAction": "sub",
+      "endSettleMs": 15000,
+      "endSubAction": "end",
+      "bossSlotModes": {
+        "feed": "loop"
+      },
+      "bossSlotOrder": [
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "card7",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1
+          ]
+        }
+      ],
+      "bossLoopOrder": [
+        {
+          "key": "card6",
+          "from": 0,
+          "to": 1
+        },
+        {
+          "key": "feed",
+          "from": 0,
+          "to": 1
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 3000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "棱镜塔神器",
+          "artType": "click"
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 2000
+        }
+      ],
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "name": "全部植物",
+          "img": "全部植物.png"
+        },
+        {
+          "id": "orange",
+          "name": "橙色植物",
+          "img": "橙色植物.png"
+        },
+        {
+          "id": "purple",
+          "name": "紫色植物",
+          "img": "紫色植物.png"
+        },
+        {
+          "id": "blue",
+          "name": "蓝色植物",
+          "img": "蓝色植物.png"
+        },
+        {
+          "id": "green",
+          "name": "绿色植物",
+          "img": "绿色植物.png"
+        },
+        {
+          "id": "view",
+          "name": "查看",
+          "img": "查看.png",
+          "pinned": true
+        }
+      ],
+      "boardEarly": [
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 1,
+              "seq": 5,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 4
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 1,
+              "seq": 2,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 11
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 5
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 32
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 1,
+              "seq": 6,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 14
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 1,
+              "seq": 15,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 23
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 1,
+              "seq": 6,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 24
+            }
+          ],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 8,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 40
+            }
+          ],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 2,
+              "seq": 4,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 3
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 2,
+              "seq": 11,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 19
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 6
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 33
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 2,
+              "seq": 7,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 15
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 2,
+              "seq": 4,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 13
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 2,
+              "seq": 7,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 25
+            }
+          ],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 8,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 41
+            }
+          ],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 2
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 3,
+              "seq": 12,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 20
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 7
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 34
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 3,
+              "seq": 8,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 16
+            }
+          ],
+          [],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 3,
+              "seq": 8,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 26
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 4,
+              "seq": 2,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 1
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 4,
+              "seq": 1,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 10
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 8
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 4,
+              "seq": 9,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 17
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 4,
+              "seq": 14,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 22
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 4,
+              "seq": 9,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 27
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 5,
+              "seq": 1,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 0
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 5,
+              "seq": 13,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 21
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 9
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 5,
+              "seq": 10,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 18
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 5,
+              "seq": 3,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 12
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 5,
+              "seq": 10,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 28
+            }
+          ],
+          [],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 1
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 2
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [
+            {
+              "id": "card6",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 3,
+              "row": 3,
+              "seq": 2,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 0
+            },
+            {
+              "id": "feed",
+              "label": "喂豆",
+              "type": "feed",
+              "mode": "loop",
+              "col": 3,
+              "row": 3,
+              "seq": 1,
+              "ord": 3
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "pre_battle": [],
+      "pick_favorite": false,
+      "pick_tiers": {},
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "1",
+            "cells": [
+              "格子1_1",
+              "格子4_1",
+              "格子5_1",
+              "格子1_2",
+              "格子2_2",
+              "格子4_2",
+              "格子1_3",
+              "格子2_3",
+              "格子4_3",
+              "格子1_4",
+              "格子4_4",
+              "格子5_4",
+              "格子1_5",
+              "格子2_5",
+              "格子4_5"
+            ]
+          },
+          {
+            "slot": "2",
+            "cells": [
+              "格子3_1",
+              "格子6_1",
+              "格子3_2",
+              "格子6_2",
+              "格子3_3",
+              "格子6_3",
+              "格子3_4",
+              "格子6_4",
+              "格子3_5",
+              "格子6_5"
+            ]
+          },
+          {
+            "slot": "3",
+            "cells": [
+              "格子2_1",
+              "格子5_2",
+              "格子2_4",
+              "格子5_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3"
+            ]
+          },
+          {
+            "slot": "7",
+            "cells": [
+              "格子8_1",
+              "格子8_2"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "loop": false,
+        "once": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "mode": "once",
+            "cells": [
+              "格子1_5",
+              "格子1_4",
+              "格子1_3",
+              "格子1_2",
+              "格子1_1",
+              "格子4_1",
+              "格子4_2",
+              "格子4_3",
+              "格子4_4",
+              "格子4_5",
+              "格子2_2",
+              "格子2_3",
+              "格子2_5",
+              "格子5_4",
+              "格子5_1"
+            ]
+          },
+          {
+            "key": "card2",
+            "slot": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "mode": "once",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5",
+              "格子6_1",
+              "格子6_2",
+              "格子6_3",
+              "格子6_4",
+              "格子6_5"
+            ]
+          },
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "芦荟医师",
+            "mode": "once",
+            "cells": [
+              "格子2_4",
+              "格子2_1",
+              "格子5_5",
+              "格子5_2"
+            ]
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "mode": "once",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3"
+            ]
+          },
+          {
+            "key": "card7",
+            "slot": 7,
+            "type": "plant",
+            "label": "能量花",
+            "mode": "once",
+            "cells": [
+              "格子8_1",
+              "格子8_2"
+            ]
+          }
+        ],
+        "loop_chain": [],
+        "end_chain": [
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "end",
+            "cells": [],
+            "ms": 2000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "end",
+            "cells": [],
+            "artName": "葫芦神器",
+            "artType": "special",
+            "artBody": "big"
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "end",
+            "cells": [],
+            "ms": 3000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "end",
+            "cells": [],
+            "artName": "葫芦神器",
+            "artType": "special",
+            "artBody": "mid"
+          }
+        ],
+        "sequence": [
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 2,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 3,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 4,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 5,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_1",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 6,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_1",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 7,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 8,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 9,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 10,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 11,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 12,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 13,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 14,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子5_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 15,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子5_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_2",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 3,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_3",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 4,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_4",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 5,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_5",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 6,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 7,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_2",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 8,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_3",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 9,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_4",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 10,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_5",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_4",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_1",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子5_5",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 4,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子5_2",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_1",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_2",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_3",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 1,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子8_1",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 2,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子8_2",
+            "mode": "once"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [
+          {
+            "slot": "6",
+            "cells": [
+              "格子3_3"
+            ]
+          },
+          {
+            "slot": "7",
+            "cells": [
+              "格子7_1",
+              "格子7_2"
+            ]
+          }
+        ],
+        "feed": [
+          "格子3_3"
+        ],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "card7",
+            "slot": 7,
+            "type": "plant",
+            "label": "能量花",
+            "mode": "once",
+            "cells": [
+              "格子7_1",
+              "格子7_2"
+            ]
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "card6",
+            "slot": 6,
+            "type": "plant",
+            "label": "电能豌豆",
+            "mode": "loop",
+            "cells": [
+              "格子3_3"
+            ]
+          },
+          {
+            "key": "feed",
+            "slot": null,
+            "type": "feed",
+            "label": "喂豆",
+            "mode": "loop",
+            "cells": [
+              "格子3_3"
+            ]
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "loop",
+            "cells": [],
+            "ms": 3000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "loop",
+            "cells": [],
+            "artName": "棱镜塔神器",
+            "artType": "click"
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "loop",
+            "cells": [],
+            "ms": 2000
+          }
+        ],
+        "sequence": [
+          {
+            "slot": 7,
+            "order": 1,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子7_1",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 2,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子7_2",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 1,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子3_3",
+            "mode": "loop"
+          },
+          {
+            "slot": null,
+            "order": 1,
+            "type": "feed",
+            "label": "喂豆",
+            "cell": "格子3_3",
+            "mode": "loop"
+          }
+        ]
+      }
+    },
+    {
+      "from_level": 41,
+      "to_level": 150,
+      "label": "",
+      "levels": [
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149
+      ],
+      "cover": {
+        "picks": [
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149
+        ]
+      },
+      "lineup": {
+        "plants": [
+          "暗物质火龙果",
+          "超级机枪射手",
+          "芦荟医师",
+          "原始豌豆射手",
+          "寒冰射手",
+          "电能豌豆",
+          "能量花",
+          "暗影豌豆"
+        ],
+        "deck": null,
+        "artifact": "葫芦神器"
+      },
+      "boss_lineup": {
+        "plants": [
+          "暗物质火龙果",
+          "超级机枪射手",
+          "芦荟医师",
+          "原始豌豆射手",
+          "寒冰射手",
+          "电能豌豆",
+          "能量花",
+          "暗影豌豆"
+        ],
+        "deck": null,
+        "artifact": "棱镜塔神器"
+      },
+      "slots": {
+        "1": "暗物质火龙果",
+        "2": "超级机枪射手",
+        "3": "芦荟医师",
+        "4": "原始豌豆射手",
+        "5": "寒冰射手",
+        "6": "电能豌豆",
+        "7": "能量花",
+        "8": "暗影豌豆"
+      },
+      "squad": null,
+      "boss_squad": null,
+      "bossLineupMode": "",
+      "bossDeckNo": 1,
+      "bossSlots": {
+        "6": "电能豌豆",
+        "7": "能量花"
+      },
+      "artifact": "葫芦神器",
+      "artifact_en": "artifact_calabash",
+      "artifact_body": "mid",
+      "bossArtifact": "棱镜塔神器",
+      "boss_artifact_en": "artifact_prismtower",
+      "boss_artifact_body": null,
+      "slotModes": {
+        "card1": "once",
+        "card2": "once",
+        "card3": "once",
+        "card4": "once",
+        "card5": "once",
+        "card6": "once",
+        "card7": "once",
+        "card8": "once",
+        "feed": "once",
+        "shovel": "once",
+        "tapcell": "once",
+        "artifactswipe": "once",
+        "skill": "once"
+      },
+      "slotOrder": [
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "ga:wave",
+          "ga": "wave"
+        },
+        {
+          "key": "card1",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "key": "card2",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "key": "card3",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "key": "card4",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "card5",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "card8",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "card7",
+          "from": 0,
+          "to": null
+        }
+      ],
+      "loopOrder": [],
+      "endOrder": [
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 2000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "葫芦神器",
+          "artType": "special",
+          "artBody": "big"
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 3000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "葫芦神器",
+          "artType": "special",
+          "artBody": "mid"
+        }
+      ],
+      "waitAfter": {},
+      "endType": "detect",
+      "endPostDelay": 0,
+      "endLoopCount": 3,
+      "endAfterAction": "sub",
+      "endSettleMs": 15000,
+      "endSubAction": "end",
+      "bossSlotModes": {
+        "feed": "loop"
+      },
+      "bossSlotOrder": [
+        {
+          "key": "ga:speed",
+          "ga": "speed"
+        },
+        {
+          "key": "card7",
+          "from": -1,
+          "to": -1,
+          "picked": [
+            0,
+            1
+          ]
+        }
+      ],
+      "bossLoopOrder": [
+        {
+          "key": "card6",
+          "from": 0,
+          "to": 1
+        },
+        {
+          "key": "feed",
+          "from": 0,
+          "to": 1
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 3000
+        },
+        {
+          "key": "ga:artifact",
+          "ga": "artifact",
+          "artName": "棱镜塔神器",
+          "artType": "click"
+        },
+        {
+          "key": "ga:wait",
+          "ga": "wait",
+          "ms": 2000
+        }
+      ],
+      "bossWaitAfter": {},
+      "supplyPicks": [
+        {
+          "id": "all",
+          "name": "全部植物",
+          "img": "全部植物.png"
+        },
+        {
+          "id": "orange",
+          "name": "橙色植物",
+          "img": "橙色植物.png"
+        },
+        {
+          "id": "purple",
+          "name": "紫色植物",
+          "img": "紫色植物.png"
+        },
+        {
+          "id": "blue",
+          "name": "蓝色植物",
+          "img": "蓝色植物.png"
+        },
+        {
+          "id": "green",
+          "name": "绿色植物",
+          "img": "绿色植物.png"
+        },
+        {
+          "id": "view",
+          "name": "查看",
+          "img": "查看.png",
+          "pinned": true
+        }
+      ],
+      "boardEarly": [
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 1,
+              "seq": 5,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 4
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 1,
+              "seq": 2,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 11
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 5
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 30
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 1,
+              "seq": 6,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 14
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 1,
+              "seq": 15,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 23
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 1,
+              "seq": 6,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 24
+            },
+            {
+              "id": "card5",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 35
+            }
+          ],
+          [
+            {
+              "id": "card8",
+              "label": "暗影豌豆",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 1,
+              "seq": 2,
+              "plant": {
+                "name": "暗影豌豆",
+                "img": "static/plant/shadowpeashooter.webp",
+                "rare": 3
+              },
+              "ord": 40
+            }
+          ],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 8,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 45
+            }
+          ],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 2,
+              "seq": 4,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 3
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 2,
+              "seq": 11,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 19
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 6
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 31
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 2,
+              "seq": 7,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 15
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 2,
+              "seq": 4,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 13
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 2,
+              "seq": 7,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 25
+            },
+            {
+              "id": "card5",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 36
+            }
+          ],
+          [
+            {
+              "id": "card8",
+              "label": "暗影豌豆",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 2,
+              "seq": 3,
+              "plant": {
+                "name": "暗影豌豆",
+                "img": "static/plant/shadowpeashooter.webp",
+                "rare": 3
+              },
+              "ord": 41
+            }
+          ],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 8,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 46
+            }
+          ],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 2
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 3,
+              "seq": 12,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 20
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 7
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 32
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 3,
+              "seq": 8,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 16
+            }
+          ],
+          [],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 3,
+              "seq": 8,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 26
+            },
+            {
+              "id": "card5",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 3,
+              "seq": 3,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 37
+            }
+          ],
+          [
+            {
+              "id": "card8",
+              "label": "暗影豌豆",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 3,
+              "seq": 4,
+              "plant": {
+                "name": "暗影豌豆",
+                "img": "static/plant/shadowpeashooter.webp",
+                "rare": 3
+              },
+              "ord": 42
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 4,
+              "seq": 2,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 1
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 4,
+              "seq": 1,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 10
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 8
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 33
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 4,
+              "seq": 9,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 17
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 4,
+              "seq": 14,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 22
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 4,
+              "seq": 9,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 27
+            },
+            {
+              "id": "card5",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 4,
+              "seq": 4,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 38
+            }
+          ],
+          [
+            {
+              "id": "card8",
+              "label": "暗影豌豆",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 4,
+              "seq": 5,
+              "plant": {
+                "name": "暗影豌豆",
+                "img": "static/plant/shadowpeashooter.webp",
+                "rare": 3
+              },
+              "ord": 43
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 1,
+              "row": 5,
+              "seq": 1,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 0
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 2,
+              "row": 5,
+              "seq": 13,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 21
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 9
+            },
+            {
+              "id": "card4",
+              "label": "原始豌豆射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 3,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "原始豌豆射手",
+                "img": "static/plant/primalpeashooter.webp",
+                "rare": 2
+              },
+              "ord": 34
+            }
+          ],
+          [
+            {
+              "id": "card1",
+              "label": "暗物质火龙果",
+              "type": "plant",
+              "mode": "once",
+              "col": 4,
+              "row": 5,
+              "seq": 10,
+              "plant": {
+                "name": "暗物质火龙果",
+                "img": "static/plant/darkmatter_dragonfruit.webp",
+                "rare": 4
+              },
+              "ord": 18
+            }
+          ],
+          [
+            {
+              "id": "card3",
+              "label": "芦荟医师",
+              "type": "plant",
+              "mode": "once",
+              "col": 5,
+              "row": 5,
+              "seq": 3,
+              "plant": {
+                "name": "芦荟医师",
+                "img": "static/plant/aloes.webp",
+                "rare": 3
+              },
+              "ord": 12
+            }
+          ],
+          [
+            {
+              "id": "card2",
+              "label": "超级机枪射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 5,
+              "seq": 10,
+              "plant": {
+                "name": "超级机枪射手",
+                "img": "static/plant/megagatling.webp",
+                "rare": 4
+              },
+              "ord": 28
+            },
+            {
+              "id": "card5",
+              "label": "寒冰射手",
+              "type": "plant",
+              "mode": "once",
+              "col": 6,
+              "row": 5,
+              "seq": 5,
+              "plant": {
+                "name": "寒冰射手",
+                "img": "static/plant/snowpea.webp",
+                "rare": 1
+              },
+              "ord": 39
+            }
+          ],
+          [
+            {
+              "id": "card8",
+              "label": "暗影豌豆",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 5,
+              "seq": 6,
+              "plant": {
+                "name": "暗影豌豆",
+                "img": "static/plant/shadowpeashooter.webp",
+                "rare": 3
+              },
+              "ord": 44
+            }
+          ],
+          [],
+          []
+        ]
+      ],
+      "boardLate": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 1,
+              "seq": 1,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 0
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "card7",
+              "label": "能量花",
+              "type": "plant",
+              "mode": "once",
+              "col": 7,
+              "row": 2,
+              "seq": 2,
+              "plant": {
+                "name": "能量花",
+                "img": "static/plant/powerlily.webp",
+                "rare": 2
+              },
+              "ord": 1
+            }
+          ],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "card6",
+              "label": "电能豌豆",
+              "type": "plant",
+              "mode": "loop",
+              "col": 6,
+              "row": 4,
+              "seq": 2,
+              "plant": {
+                "name": "电能豌豆",
+                "img": "static/plant/electricpeashooter.webp",
+                "rare": 4
+              },
+              "ord": 2
+            },
+            {
+              "id": "feed",
+              "label": "喂豆",
+              "type": "feed",
+              "mode": "loop",
+              "col": 6,
+              "row": 4,
+              "seq": 1,
+              "ord": 3
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      ],
+      "pre_battle": [],
+      "pick_favorite": false,
+      "pick_tiers": {},
+      "non_boss": {
+        "plant": [
+          {
+            "slot": "1",
+            "cells": [
+              "格子1_1",
+              "格子4_1",
+              "格子5_1",
+              "格子1_2",
+              "格子2_2",
+              "格子4_2",
+              "格子1_3",
+              "格子2_3",
+              "格子4_3",
+              "格子1_4",
+              "格子4_4",
+              "格子5_4",
+              "格子1_5",
+              "格子2_5",
+              "格子4_5"
+            ]
+          },
+          {
+            "slot": "2",
+            "cells": [
+              "格子3_1",
+              "格子6_1",
+              "格子3_2",
+              "格子6_2",
+              "格子3_3",
+              "格子6_3",
+              "格子3_4",
+              "格子6_4",
+              "格子3_5",
+              "格子6_5"
+            ]
+          },
+          {
+            "slot": "3",
+            "cells": [
+              "格子2_1",
+              "格子5_2",
+              "格子2_4",
+              "格子5_5"
+            ]
+          },
+          {
+            "slot": "4",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "slot": "5",
+            "cells": [
+              "格子6_1",
+              "格子6_2",
+              "格子6_3",
+              "格子6_4",
+              "格子6_5"
+            ]
+          },
+          {
+            "slot": "7",
+            "cells": [
+              "格子8_1",
+              "格子8_2"
+            ]
+          },
+          {
+            "slot": "8",
+            "cells": [
+              "格子7_1",
+              "格子7_2",
+              "格子7_3",
+              "格子7_4",
+              "格子7_5"
+            ]
+          }
+        ],
+        "feed": [],
+        "shovel": [],
+        "wave": false,
+        "loop": false,
+        "once": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "ga:wave",
+            "slot": null,
+            "type": "action",
+            "action": "wave",
+            "label": "点波",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "card1",
+            "slot": 1,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "mode": "once",
+            "cells": [
+              "格子1_5",
+              "格子1_4",
+              "格子1_3",
+              "格子1_2",
+              "格子1_1",
+              "格子4_1",
+              "格子4_2",
+              "格子4_3",
+              "格子4_4",
+              "格子4_5",
+              "格子2_2",
+              "格子2_3",
+              "格子2_5",
+              "格子5_4",
+              "格子5_1"
+            ]
+          },
+          {
+            "key": "card2",
+            "slot": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "mode": "once",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5",
+              "格子6_1",
+              "格子6_2",
+              "格子6_3",
+              "格子6_4",
+              "格子6_5"
+            ]
+          },
+          {
+            "key": "card3",
+            "slot": 3,
+            "type": "plant",
+            "label": "芦荟医师",
+            "mode": "once",
+            "cells": [
+              "格子2_4",
+              "格子2_1",
+              "格子5_5",
+              "格子5_2"
+            ]
+          },
+          {
+            "key": "card4",
+            "slot": 4,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "mode": "once",
+            "cells": [
+              "格子3_1",
+              "格子3_2",
+              "格子3_3",
+              "格子3_4",
+              "格子3_5"
+            ]
+          },
+          {
+            "key": "card5",
+            "slot": 5,
+            "type": "plant",
+            "label": "寒冰射手",
+            "mode": "once",
+            "cells": [
+              "格子6_1",
+              "格子6_2",
+              "格子6_3",
+              "格子6_4",
+              "格子6_5"
+            ]
+          },
+          {
+            "key": "card8",
+            "slot": 8,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "mode": "once",
+            "cells": [
+              "格子7_1",
+              "格子7_2",
+              "格子7_3",
+              "格子7_4",
+              "格子7_5"
+            ]
+          },
+          {
+            "key": "card7",
+            "slot": 7,
+            "type": "plant",
+            "label": "能量花",
+            "mode": "once",
+            "cells": [
+              "格子8_1",
+              "格子8_2"
+            ]
+          }
+        ],
+        "loop_chain": [],
+        "end_chain": [
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "end",
+            "cells": [],
+            "ms": 2000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "end",
+            "cells": [],
+            "artName": "葫芦神器",
+            "artType": "special",
+            "artBody": "big"
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "end",
+            "cells": [],
+            "ms": 3000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "end",
+            "cells": [],
+            "artName": "葫芦神器",
+            "artType": "special",
+            "artBody": "mid"
+          }
+        ],
+        "sequence": [
+          {
+            "slot": 1,
+            "order": 1,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 2,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 3,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 4,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 5,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子1_1",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 6,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_1",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 7,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 8,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 9,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 10,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子4_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 11,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_2",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 12,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_3",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 13,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子2_5",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 14,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子5_4",
+            "mode": "once"
+          },
+          {
+            "slot": 1,
+            "order": 15,
+            "type": "plant",
+            "label": "暗物质火龙果",
+            "cell": "格子5_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 1,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 2,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_2",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 3,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_3",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 4,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_4",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 5,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子3_5",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 6,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_1",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 7,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_2",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 8,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_3",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 9,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_4",
+            "mode": "once"
+          },
+          {
+            "slot": 2,
+            "order": 10,
+            "type": "plant",
+            "label": "超级机枪射手",
+            "cell": "格子6_5",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 1,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_4",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 2,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子2_1",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 3,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子5_5",
+            "mode": "once"
+          },
+          {
+            "slot": 3,
+            "order": 4,
+            "type": "plant",
+            "label": "芦荟医师",
+            "cell": "格子5_2",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 1,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_1",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 2,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_2",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 3,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_3",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 4,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_4",
+            "mode": "once"
+          },
+          {
+            "slot": 4,
+            "order": 5,
+            "type": "plant",
+            "label": "原始豌豆射手",
+            "cell": "格子3_5",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 1,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子6_1",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 2,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子6_2",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 3,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子6_3",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 4,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子6_4",
+            "mode": "once"
+          },
+          {
+            "slot": 5,
+            "order": 5,
+            "type": "plant",
+            "label": "寒冰射手",
+            "cell": "格子6_5",
+            "mode": "once"
+          },
+          {
+            "slot": 8,
+            "order": 1,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "cell": "格子7_1",
+            "mode": "once"
+          },
+          {
+            "slot": 8,
+            "order": 2,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "cell": "格子7_2",
+            "mode": "once"
+          },
+          {
+            "slot": 8,
+            "order": 3,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "cell": "格子7_3",
+            "mode": "once"
+          },
+          {
+            "slot": 8,
+            "order": 4,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "cell": "格子7_4",
+            "mode": "once"
+          },
+          {
+            "slot": 8,
+            "order": 5,
+            "type": "plant",
+            "label": "暗影豌豆",
+            "cell": "格子7_5",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 1,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子8_1",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 2,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子8_2",
+            "mode": "once"
+          }
+        ]
+      },
+      "boss": {
+        "plant": [
+          {
+            "slot": "6",
+            "cells": [
+              "格子6_4"
+            ]
+          },
+          {
+            "slot": "7",
+            "cells": [
+              "格子7_1",
+              "格子7_2"
+            ]
+          }
+        ],
+        "feed": [
+          "格子6_4"
+        ],
+        "shovel": [],
+        "wave": false,
+        "once_chain": [
+          {
+            "key": "ga:speed",
+            "slot": null,
+            "type": "action",
+            "action": "speed",
+            "label": "加速",
+            "mode": "once",
+            "cells": []
+          },
+          {
+            "key": "card7",
+            "slot": 7,
+            "type": "plant",
+            "label": "能量花",
+            "mode": "once",
+            "cells": [
+              "格子7_1",
+              "格子7_2"
+            ]
+          }
+        ],
+        "loop_chain": [
+          {
+            "key": "card6",
+            "slot": 6,
+            "type": "plant",
+            "label": "电能豌豆",
+            "mode": "loop",
+            "cells": [
+              "格子6_4"
+            ]
+          },
+          {
+            "key": "feed",
+            "slot": null,
+            "type": "feed",
+            "label": "喂豆",
+            "mode": "loop",
+            "cells": [
+              "格子6_4"
+            ]
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "loop",
+            "cells": [],
+            "ms": 3000
+          },
+          {
+            "key": "ga:artifact",
+            "slot": null,
+            "type": "action",
+            "action": "artifact",
+            "label": "使用神器",
+            "mode": "loop",
+            "cells": [],
+            "artName": "棱镜塔神器",
+            "artType": "click"
+          },
+          {
+            "key": "ga:wait",
+            "slot": null,
+            "type": "action",
+            "action": "wait",
+            "label": "等待",
+            "mode": "loop",
+            "cells": [],
+            "ms": 2000
+          }
+        ],
+        "sequence": [
+          {
+            "slot": 7,
+            "order": 1,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子7_1",
+            "mode": "once"
+          },
+          {
+            "slot": 7,
+            "order": 2,
+            "type": "plant",
+            "label": "能量花",
+            "cell": "格子7_2",
+            "mode": "once"
+          },
+          {
+            "slot": 6,
+            "order": 1,
+            "type": "plant",
+            "label": "电能豌豆",
+            "cell": "格子6_4",
+            "mode": "loop"
+          },
+          {
+            "slot": null,
+            "order": 1,
+            "type": "feed",
+            "label": "喂豆",
+            "cell": "格子6_4",
+            "mode": "loop"
+          }
+        ]
+      }
+    }
+  ]
+}
